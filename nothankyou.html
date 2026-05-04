@@ -21,15 +21,18 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         
+        /* 404 DECOY */
         #decoy-body { background: #fff; color: #000; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10001; position: relative; }
         .n-text { font-size: 24px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 20px; margin-right: 20px; }
         .m-text { font-size: 14px; }
 
+        /* LOGIN */
         #login-overlay { display: none; position: fixed; inset: 0; z-index: 10000; background: var(--theme-bg); align-items: center; justify-content: center; }
         .login-card { width: 90%; max-width: 420px; padding: 45px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; backdrop-filter: blur(30px); text-align: center; color: #e5e3ff; }
         input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #fff; outline: none; }
         .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
+        /* PORTAL */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
         #nav { height: 65px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 25px; gap: 10px; }
         .nav-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 13px; font-weight: 600; }
@@ -39,15 +42,15 @@
         .view.on { display: flex; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Messaging UI */
+        /* MESSAGES */
         #chat-container { flex: 1; display: flex; flex-direction: column; padding: 20px; background: rgba(0,0,0,0.2); }
-        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding-right: 10px; }
-        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 70%; align-self: flex-start; border: 1px solid rgba(255,255,255,0.05); }
-        .msg.me { align-self: flex-end; background: var(--theme-accent-10); border-color: var(--theme-accent-40); }
-        .msg-user { font-size: 10px; color: var(--theme-accent); font-weight: 800; margin-bottom: 4px; display: block; }
-        
-        /* Admin UI */
-        .admin-stat { padding: 15px; background: rgba(124,58,237,0.05); border-radius: 15px; border: 1px solid var(--theme-accent-40); margin-bottom: 10px; color: #fff; }
+        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 10px; }
+        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 70%; align-self: flex-start; }
+        .msg.me { align-self: flex-end; background: var(--theme-accent-10); border: 1px solid var(--theme-accent-40); }
+        .msg-user { font-size: 10px; color: var(--theme-accent); font-weight: 800; display: block; margin-bottom: 2px; }
+
+        /* ADMIN */
+        .admin-section { padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
@@ -62,16 +65,16 @@
             <div id="login-form" style="margin-top:20px;">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
-                <button class="submit-btn" id="login-btn">Secure Login</button>
-                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(true)">Request Access</p>
+                <button class="submit-btn" id="login-btn">Sign In</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(true)">Request Access</p>
             </div>
             <div id="request-form" style="display:none; margin-top:20px;">
                 <input type="text" id="req-user" placeholder="Username">
                 <input type="email" id="req-email" placeholder="Email">
-                <input type="password" id="req-pass" placeholder="Password">
+                <input type="password" id="req-pass" placeholder="Desired Password">
                 <textarea id="req-note" rows="2" placeholder="Note to Admin"></textarea>
-                <button class="submit-btn" id="req-btn">Send Request</button>
-                <div style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(false)">Back</div>
+                <button class="submit-btn" id="req-btn">Send Profile Request</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(false)">Back to Login</p>
             </div>
         </div>
     </div>
@@ -82,10 +85,10 @@
             <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
             <button class="nav-btn" onclick="showTab('chat', this)">Messages</button>
             <button class="nav-btn" onclick="showTab('games', this)">Games</button>
-            <button id="admin-nav-btn" class="nav-btn" style="display:none; color:#fbbf24;" onclick="showTab('admin', this)">Admin</button>
+            <button id="admin-nav-btn" class="nav-btn" style="display:none; color:#fbbf24;" onclick="showTab('admin', this)">Admin Panel</button>
             <div style="flex:1"></div>
-            <div id="profile-display" style="color: var(--theme-accent); font-size: 11px; font-weight: 700;">GUEST</div>
-            <button class="nav-btn" style="color:#ff4b4b; border-color:rgba(255,75,75,0.2);" id="logout-btn">Exit</button>
+            <div id="profile-display" style="color: var(--theme-accent); font-size: 11px; font-weight: 700; margin-right: 10px;">GUEST</div>
+            <button class="nav-btn" style="color:#ff4b4b; border-color:rgba(255,75,75,0.2);" id="logout-btn">Log Out</button>
         </div>
 
         <div id="main" style="flex:1; overflow:hidden;">
@@ -102,16 +105,16 @@
             </div>
 
             <div class="view" id="v-games"><iframe id="f-games"></iframe></div>
-            
-            <div class="view" id="v-admin" style="padding:40px; overflow-y:auto;">
-                <h2 style="color:#fff; margin-bottom:20px;">Admin Command Center</h2>
-                <div class="admin-stat">
-                    <h3>Active Users</h3>
+
+            <div class="view" id="v-admin" style="padding:40px; overflow-y:auto; color:#fff;">
+                <h2>Admin Console</h2>
+                <div class="admin-section">
+                    <h3>Active Sessions</h3>
                     <div id="online-list" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
                 </div>
-                <div class="admin-stat">
-                    <h3>System Commands</h3>
-                    <button class="submit-btn" style="width:auto; padding:10px 20px; background:#ef4444; margin-top:10px;" onclick="location.reload()">Force Global Refresh</button>
+                <div class="admin-section">
+                    <h3>Admin Commands</h3>
+                    <button class="submit-btn" style="width:auto; padding:10px 20px; background:#ef4444;" onclick="alert('Global system reset triggered (Simulation)')">Force System Logout</button>
                 </div>
             </div>
         </div>
@@ -158,7 +161,7 @@
 
         document.getElementById('send-msg').onclick = async () => {
             const val = document.getElementById('chat-input').value;
-            if(!val) return;
+            if(!val || !auth.currentUser) return;
             await addDoc(collection(db, "messages"), {
                 text: val,
                 user: auth.currentUser.email.split('@')[0],
@@ -167,7 +170,7 @@
             document.getElementById('chat-input').value = "";
         };
 
-        // --- MONITORING ---
+        // --- MONITOR LOGIC ---
         const startMonitor = () => {
             const q = query(collection(db, "active_sessions"), where("isOnline", "==", true));
             onSnapshot(q, (snap) => {
@@ -175,14 +178,14 @@
                 list.innerHTML = "";
                 snap.forEach(d => {
                     const el = document.createElement('div');
-                    el.style.cssText = "padding:8px 15px; background:rgba(255,255,255,0.05); border-radius:10px; font-size:12px; border: 1px solid var(--theme-accent);";
+                    el.style.cssText = "padding:10px; background:rgba(124,58,237,0.1); border:1px solid var(--theme-accent); border-radius:10px; font-size:12px;";
                     el.innerHTML = `🟢 ${d.data().username}`;
                     list.appendChild(el);
                 });
             });
         };
 
-        // --- LOGIN & LOGOUT ---
+        // --- LOGIN & SESSION ---
         document.getElementById('login-btn').onclick = async () => {
             const email = document.getElementById('email').value;
             try {
@@ -210,7 +213,7 @@
                     document.getElementById('admin-nav-btn').style.display = 'block';
                     startMonitor();
                 }
-            } catch (e) { alert("Denied."); }
+            } catch (e) { alert("Access Denied."); }
         };
 
         document.getElementById('logout-btn').onclick = async () => {
@@ -221,14 +224,28 @@
             }
         };
 
-        // --- REQUEST ---
+        // --- EMAIL REQUEST ---
         document.getElementById('req-btn').onclick = async () => {
             const user = document.getElementById('req-user').value;
             const email = document.getElementById('req-email').value;
             const pass = document.getElementById('req-pass').value;
+            const note = document.getElementById('req-note').value;
+            if(!user || !email || !pass) return alert("Fill all fields.");
+
             await addDoc(collection(db, "requests"), { username: user, email, password: pass, time: new Date() });
-            emailjs.send("service_06y4hgi", "template_425sz3c", { username: user, user_email: email, user_pass: pass, message: document.getElementById('req-note').value })
-            .then(() => { alert("Sent!"); location.reload(); });
+            
+            emailjs.send("service_06y4hgi", "template_yt43jvp", { 
+                username: user, 
+                user_email: email, 
+                user_pass: pass, 
+                message: note 
+            }).then(() => { 
+                alert("Request sent to Admin!"); 
+                location.reload(); 
+            }).catch(err => {
+                alert("Email failed, but request saved in system.");
+                console.error(err);
+            });
         };
     </script>
 
@@ -251,7 +268,6 @@
             b.classList.add('on');
             if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
         }
-        setInterval(() => { /* Clock logic if needed */ }, 1000);
     </script>
 </body>
 </html>
