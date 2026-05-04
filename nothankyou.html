@@ -12,25 +12,34 @@
             --border: rgba(255, 255, 255, 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #fff; overflow: hidden; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
         
-        #decoy { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 20px; color: #333; }
+        /* DECOY IMAGE PAGE */
+        #decoy { 
+            position: fixed; inset: 0; 
+            background: url('IMG_0140.png') no-repeat center center; 
+            background-size: cover; 
+            z-index: 9999; 
+            cursor: default;
+        }
 
+        /* AUTH OVERLAY */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        .card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
+        .card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
+        /* PORTAL UI */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
         #nav { height: 65px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 10px; border-bottom: 1px solid var(--border); }
-        .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 10px 15px; border-radius: 10px; }
+        .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 10px 15px; border-radius: 10px; transition: 0.2s; }
         .nav-item.active { background: rgba(124,58,237,0.1); color: var(--accent); }
 
-        .view { display: none; width: 100%; height: 100%; overflow: hidden; }
+        .view { display: none; width: 100%; height: 100%; }
         .view.active { display: flex; flex-direction: column; }
         
-        /* CHAT SYSTEM */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        /* CHAT */
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.05); color: #fff; max-width: 75%; align-self: flex-start; border: 1px solid var(--border); }
         .msg.me { align-self: flex-end; background: rgba(124,58,237,0.15); border-color: var(--accent); }
 
@@ -38,36 +47,33 @@
         #cmd-menu {
             display: none; position: absolute; bottom: 85px; left: 20px; width: 250px;
             background: #16162d; border: 1px solid var(--accent); border-radius: 12px;
-            overflow: hidden; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden; z-index: 1001;
         }
-        .cmd-item {
-            padding: 12px; color: #fff; font-size: 13px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .cmd-item { padding: 12px; color: #fff; font-size: 13px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .cmd-item:hover { background: var(--accent); }
-        .cmd-desc { font-size: 10px; color: var(--muted); display: block; }
         
         iframe { flex: 1; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="decoy">404 Not Found</div>
+    <div id="decoy"></div>
 
     <div id="auth-overlay">
         <div class="card">
             <div id="login-form">
-                <h2>M-TOOL Entry</h2><br>
+                <h2 style="margin-bottom:20px;">M-TOOL Entry</h2>
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
                 <button class="btn" id="login-btn">Initialize</button>
                 <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
             <div id="req-form" style="display:none;">
-                <h2>Request Access</h2><br>
+                <h2 style="margin-bottom:20px;">Request Credentials</h2>
                 <input type="text" id="r-user" placeholder="Username">
                 <input type="email" id="r-email" placeholder="Email">
-                <input type="password" id="r-pass" placeholder="Desired Password">
-                <button class="btn" id="req-btn">Submit</button>
+                <input type="password" id="r-pass" placeholder="Password">
+                <button class="btn" id="req-btn">Submit Request</button>
                 <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
             </div>
         </div>
@@ -75,22 +81,20 @@
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent)">M-TOOL</b>
+            <b style="color:var(--accent); margin-right:10px;">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
             <div class="nav-item" onclick="tab('chat', this)">Chat</div>
             <div class="nav-item" onclick="tab('games', this)">Games</div>
             <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-item" id="out-btn">Exit</button>
+            <button class="nav-item" style="color:#ff4b4b; background:transparent; border:none;" id="out-btn">Logout</button>
         </div>
 
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
         
         <div id="v-chat" class="view">
             <div id="chat-box"></div>
-            
             <div id="cmd-menu"></div>
-
             <div style="padding:20px; background:rgba(0,0,0,0.3); display:flex; gap:10px; position:relative;">
                 <input type="text" id="chat-in" placeholder="Type / for commands..." autocomplete="off" style="margin:0;">
                 <button class="btn" style="width:80px;" id="send-btn">Send</button>
@@ -98,7 +102,10 @@
         </div>
 
         <div id="v-games" class="view"><iframe id="f-games"></iframe></div>
-        <div id="v-admin" class="view" style="padding:30px; color:#fff;"><h2>Admin Node</h2><div id="online-list"></div></div>
+        <div id="v-admin" class="view" style="padding:30px; color:#fff; overflow-y:auto;">
+            <h2>Admin Terminal</h2><hr style="opacity:0.1; margin:15px 0;">
+            <div id="online-list">Connecting to nodes...</div>
+        </div>
     </div>
 
     <script type="module">
@@ -122,39 +129,28 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- COMMAND MENU LOGIC ---
+        // --- COMMANDS ---
         const commands = [
-            { cmd: '/clear', desc: 'Admin: Wipe all messages', admin: true },
-            { cmd: '/blast ', desc: 'Admin: Send global alert', admin: true },
-            { cmd: '/help', desc: 'Show system info', admin: false },
-            { cmd: '/shrug', desc: 'Type ¯\\_(ツ)_/¯', admin: false }
+            { cmd: '/clear', desc: 'Wipe Chat (Admin)', admin: true },
+            { cmd: '/blast ', desc: 'Global Alert (Admin)', admin: true },
+            { cmd: '/shrug', desc: '¯\\_(ツ)_/¯', admin: false }
         ];
 
         const chatInput = document.getElementById('chat-in');
         const menu = document.getElementById('cmd-menu');
 
         chatInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val.startsWith('/')) {
+            if (e.target.value.startsWith('/')) {
                 menu.style.display = 'block';
                 const isAdmin = auth.currentUser.email === ADM;
-                menu.innerHTML = commands
-                    .filter(c => !c.admin || (c.admin && isAdmin))
-                    .map(c => `<div class="cmd-item" onclick="window.fillCmd('${c.cmd}')">
-                        <b>${c.cmd}</b> <span class="cmd-desc">${c.desc}</span>
-                    </div>`).join('');
-            } else {
-                menu.style.display = 'none';
-            }
+                menu.innerHTML = commands.filter(c => !c.admin || (c.admin && isAdmin))
+                    .map(c => `<div class="cmd-item" onclick="window.fillCmd('${c.cmd}')"><b>${c.cmd}</b> - ${c.desc}</div>`).join('');
+            } else { menu.style.display = 'none'; }
         });
 
-        window.fillCmd = (c) => {
-            chatInput.value = c;
-            menu.style.display = 'none';
-            chatInput.focus();
-        };
+        window.fillCmd = (c) => { chatInput.value = c; menu.style.display = 'none'; chatInput.focus(); };
 
-        // --- CHAT LOGIC ---
+        // --- CORE FUNCTIONS ---
         const startChat = () => {
             const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
             onSnapshot(q, (snap) => {
@@ -163,46 +159,80 @@
                 snap.forEach(d => {
                     const m = d.data();
                     const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
-                    box.innerHTML += `<div class="msg ${isMe ? 'me' : ''}"><small>${m.user}</small><br>${m.text}</div>`;
+                    box.innerHTML += `<div class="msg ${isMe ? 'me' : ''}"><small style="color:var(--accent)">${m.user}</small><br>${m.text}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
         };
 
-        document.getElementById('send-btn').onclick = async () => {
+        // FIXED SEND BUTTON
+        document.getElementById('send-btn').addEventListener('click', async () => {
             const val = chatInput.value;
             if(!val) return;
-            
             if(val === '/clear' && auth.currentUser.email === ADM) {
                 const docs = await getDocs(collection(db, "messages"));
                 docs.forEach(async d => await deleteDoc(doc(db, "messages", d.id)));
-            } else if (val === '/shrug') {
-                await addDoc(collection(db, "messages"), { text: "¯\\_(ツ)_/¯", user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, timestamp: serverTimestamp() });
             } else {
                 await addDoc(collection(db, "messages"), { text: val, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, timestamp: serverTimestamp() });
             }
-            chatInput.value = "";
-            menu.style.display = 'none';
-        };
+            chatInput.value = ""; menu.style.display = 'none';
+        });
 
-        // --- LOGIN & AUTH ---
-        document.getElementById('login-btn').onclick = async () => {
+        // FIXED LOGIN BUTTON
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
             try {
-                const res = await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
+                const res = await signInWithEmailAndPassword(auth, e, p);
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                 startChat();
-                if(res.user.email === ADM) document.getElementById('adm-nav').style.display = 'block';
-            } catch { alert("Denied"); }
+                if(e === ADM) {
+                    document.getElementById('adm-nav').style.display = 'block';
+                    onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (s) => {
+                        const list = document.getElementById('online-list');
+                        list.innerHTML = "<h4>Active Nodes:</h4>";
+                        s.forEach(u => list.innerHTML += `<p>🟢 ${u.data().username}</p>`);
+                    });
+                }
+                await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: e.split('@')[0] }, { merge: true });
+            } catch { alert("Invalid Credentials"); }
+        });
+
+        document.getElementById('req-btn').onclick = async () => {
+            const u = document.getElementById('r-user').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+            await addDoc(collection(db, "requests"), { u, e, p, time: serverTimestamp() });
+            emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
+            alert("Request sent.");
         };
 
         document.getElementById('out-btn').onclick = () => { signOut(auth); location.reload(); };
     </script>
 
     <script>
-        document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy').style.display = 'none'; document.getElementById('auth-overlay').style.display = 'flex'; } };
-        function toggleMode(req) { document.getElementById('login-form').style.display = req ? 'none' : 'block'; document.getElementById('req-form').style.display = req ? 'block' : 'none'; }
+        // Secret Entry
+        document.onkeydown = (e) => { 
+            if(e.ctrlKey && e.key === 'x') { 
+                document.getElementById('decoy').style.display = 'none'; 
+                document.getElementById('auth-overlay').style.display = 'flex'; 
+            } 
+        };
+        // Also allow clicking the image while holding Ctrl
+        document.getElementById('decoy').onclick = (e) => {
+            if(e.ctrlKey) {
+                document.getElementById('decoy').style.display = 'none'; 
+                document.getElementById('auth-overlay').style.display = 'flex'; 
+            }
+        };
+
+        function toggleMode(req) {
+            document.getElementById('login-form').style.display = req ? 'none' : 'block';
+            document.getElementById('req-form').style.display = req ? 'block' : 'none';
+        }
+
         function tab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
