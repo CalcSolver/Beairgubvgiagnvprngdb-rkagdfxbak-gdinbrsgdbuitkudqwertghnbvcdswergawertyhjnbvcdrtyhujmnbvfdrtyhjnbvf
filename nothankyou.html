@@ -18,42 +18,54 @@
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
         
         .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; border: 1px solid var(--border); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
-        #nav { height: 65px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 25px; gap: 15px; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
+        #nav { height: 65px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 25px; gap: 15px; border-bottom: 1px solid var(--border); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); }
 
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.active { display: flex; flex-direction: column; }
         
-        iframe { flex: 1; border: none; transition: 0.6s filter; z-index: 1; }
+        iframe { flex: 1; border: none; transition: 0.5s filter; }
 
-        /* ADMIN CONSOLE */
-        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; }
+        /* SCARY OVERLAY */
+        #scare-overlay { 
+            display: none; position: fixed; inset: 0; background: #000; 
+            z-index: 1001; align-items: center; justify-content: center; 
+            text-align: center; padding: 20px;
+        }
+        #scare-text { 
+            color: #ff0000; font-size: 3rem; font-weight: 900; 
+            text-transform: uppercase; letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(255,0,0,0.7);
+            animation: glitch 0.1s infinite;
+        }
+
+        /* ADMIN STYLE */
+        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; overflow-y: auto; }
         .user-node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .node-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
-        .c-btn { padding: 6px; font-size: 10px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
-        .c-btn.kill { background: #ef4444; border: none; }
-        .c-btn:hover { background: var(--accent); }
+        .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .c-btn { padding: 8px; font-size: 11px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
+        .c-btn.kill { background: #ef4444; border: none; grid-column: span 3; margin-top: 5px; }
+        .msg-input { width: 100%; margin: 10px 0 5px 0; padding: 8px; font-size: 12px; border-radius: 5px; }
 
-        /* EFFECTS */
-        #matrix-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; display: none; }
-        .rainbow-mode { animation: rainbow-bg 5s linear infinite; }
-        @keyframes rainbow-bg {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
     </style>
 </head>
 <body>
 
     <div id="decoy"></div>
-    <canvas id="matrix-canvas"></canvas>
+    <div id="scare-overlay"><h1 id="scare-text"></h1></div>
 
     <div id="auth-overlay">
         <div class="card">
@@ -65,11 +77,11 @@
                 <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
             <div id="req-form" style="display:none;">
-                <h2>REGISTER NODE</h2><br>
+                <h2>REGISTER</h2><br>
                 <input type="text" id="r-user" placeholder="Username">
                 <input type="email" id="r-email" placeholder="Email">
-                <input type="password" id="r-pass" placeholder="Desired Password">
-                <button class="btn" id="req-btn">Submit to Admin</button>
+                <input type="password" id="r-pass" placeholder="Password">
+                <button class="btn" id="req-btn">Submit Request</button>
                 <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
             </div>
         </div>
@@ -79,19 +91,12 @@
         <div id="nav">
             <b style="color:var(--accent); font-size: 20px;">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
-            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">System Admin</div>
+            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin Monitor</div>
             <div style="flex:1"></div>
             <button class="nav-item" id="out-btn" style="color:#ef4444; background:none; border:none;">Purge</button>
         </div>
-
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
-        
-        <div id="v-admin" class="view" style="overflow-y:auto;">
-            <div class="admin-wrap">
-                <h2 style="margin-bottom:10px;">Node Monitor</h2>
-                <div id="online-list"></div>
-            </div>
-        </div>
+        <div id="v-admin" class="view" style="overflow-y:auto;"><div class="admin-wrap" id="online-list"></div></div>
     </div>
 
     <script type="module">
@@ -115,39 +120,13 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- GLOBAL ADMIN COMMANDS ---
-        window.sendCmd = async (uid, effect) => {
-            await updateDoc(doc(db, "active_sessions", uid), { effect: effect });
+        window.sendCmd = async (uid, type, val = '') => {
+            await updateDoc(doc(db, "active_sessions", uid), { effect: type, msg: val });
         };
 
         window.killNode = async (uid) => {
-            if(confirm("Terminate this node?")) await deleteDoc(doc(db, "active_sessions", uid));
+            if(confirm("Terminate Node?")) await deleteDoc(doc(db, "active_sessions", uid));
         };
-
-        // --- MATRIX EFFECT CODE ---
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        let matrixInterval;
-        function startMatrix() {
-            canvas.style.display = 'block';
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%";
-            const fontSize = 16;
-            const columns = canvas.width / fontSize;
-            const drops = Array(Math.floor(columns)).fill(1);
-            matrixInterval = setInterval(() => {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
-                for(let i=0; i<drops.length; i++) {
-                    const text = letters.charAt(Math.floor(Math.random() * letters.length));
-                    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
-                    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                    drops[i]++;
-                }
-            }, 33);
-        }
-        function stopMatrix() { clearInterval(matrixInterval); ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
 
         window.onload = () => {
             document.getElementById('login-btn').onclick = async () => {
@@ -158,42 +137,41 @@
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                     
-                    // --- THE KILL SWITCH & COMMAND LISTENER ---
                     onSnapshot(doc(db, "active_sessions", res.user.uid), (snap) => {
-                        if (!snap.exists()) {
-                            alert("SESSION TERMINATED BY ADMIN");
-                            location.reload(); return;
-                        }
-                        const data = snap.data();
-                        const frame = document.getElementById('f-home');
-                        // Reset effects first
-                        frame.style.filter = "none"; document.body.classList.remove('rainbow-mode'); stopMatrix();
+                        if (!snap.exists()) { location.reload(); return; }
+                        const d = snap.data();
+                        const sOverlay = document.getElementById('scare-overlay');
+                        const sText = document.getElementById('scare-text');
                         
-                        if(data.effect === 'blur') frame.style.filter = "blur(15px)";
-                        if(data.effect === 'rainbow') document.body.classList.add('rainbow-mode');
-                        if(data.effect === 'matrix') startMatrix();
-                        if(data.effect === 'shake') frame.style.animation = "shake 0.2s infinite";
+                        if(d.effect === 'msg') {
+                            sOverlay.style.display = 'flex';
+                            sText.innerText = d.msg || "SYSTEM BREACH";
+                        } else {
+                            sOverlay.style.display = 'none';
+                        }
+
+                        const frame = document.getElementById('f-home');
+                        frame.style.filter = d.effect === 'blur' ? 'blur(15px)' : 'none';
+                        frame.style.animation = d.effect === 'shake' ? 'glitch 0.2s infinite' : 'none';
                     });
 
                     if(email === ADM_EMAIL) {
                         document.getElementById('adm-nav').style.display = 'block';
                         onSnapshot(collection(db, "active_sessions"), (s) => {
                             const list = document.getElementById('online-list');
-                            list.innerHTML = "";
+                            list.innerHTML = "<h2>Active Nodes</h2>";
                             s.forEach(u => {
                                 const d = u.data();
                                 if(d.email !== ADM_EMAIL) {
                                     list.innerHTML += `
                                         <div class="user-node">
-                                            <div class="node-header">
-                                                <b>🟢 ${d.username}</b>
-                                                <button class="c-btn kill" onclick="window.killNode('${u.id}')">KILL SESSION</button>
-                                            </div>
+                                            <b>🟢 ${d.username}</b>
+                                            <input type="text" class="msg-input" id="in-${u.id}" placeholder="Enter scary message...">
                                             <div class="controls">
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'msg', document.getElementById('in-${u.id}').value)">Send Text</button>
                                                 <button class="c-btn" onclick="window.sendCmd('${u.id}', 'blur')">Blur</button>
-                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'matrix')">Matrix</button>
-                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'rainbow')">Rainbow</button>
                                                 <button class="c-btn" onclick="window.sendCmd('${u.id}', 'none')">Reset</button>
+                                                <button class="c-btn kill" onclick="window.killNode('${u.id}')">KILL NODE</button>
                                             </div>
                                         </div>`;
                                 }
@@ -202,15 +180,11 @@
                     }
 
                     await setDoc(doc(db, "active_sessions", res.user.uid), { 
-                        isOnline: true, username: email.split('@')[0], email: email, 
-                        lastSeen: Date.now(), effect: 'none' 
+                        username: email.split('@')[0], email: email, lastSeen: Date.now(), effect: 'none' 
                     }, { merge: true });
 
-                    setInterval(async () => {
-                        if(auth.currentUser) await updateDoc(doc(db, "active_sessions", res.user.uid), { lastSeen: Date.now() });
-                    }, 30000);
-
-                } catch { alert("Access Denied."); }
+                    setInterval(async () => { if(auth.currentUser) await updateDoc(doc(db, "active_sessions", res.user.uid), { lastSeen: Date.now() }); }, 30000);
+                } catch { alert("Failed."); }
             };
 
             document.getElementById('req-btn').onclick = async () => {
@@ -219,7 +193,7 @@
                 const p = document.getElementById('r-pass').value;
                 await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
                 emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-                alert("Request Sent."); toggleMode(false);
+                alert("Sent."); toggleMode(false);
             };
 
             document.getElementById('out-btn').onclick = async () => {
