@@ -29,9 +29,8 @@ small{font-size:11px;color:#ccc;font-family:monospace;display:block;margin-top:2
 .nb{font-size:12px;font-weight:600;padding:0 11px;height:30px;border-radius:6px;border:1px solid transparent;background:transparent;color:#8899bb;cursor:pointer;transition:.15s;white-space:nowrap}
 .nb:hover{background:#151c26;color:#e8eef8;border-color:#253044}
 .nb.on{background:rgba(0,212,255,.1);color:#00d4ff;border-color:rgba(0,212,255,.3)}
-.nb.gr{color:#00aa55}.nb.gr:hover,.nb.gr.on{background:rgba(0,255,136,.08);color:#00ff88;border-color:rgba(0,255,136,.25)}
-.nb.or{color:#aa5520}.nb.or:hover,.nb.or.on{background:rgba(255,140,66,.08);color:#ff8c42;border-color:rgba(255,140,66,.25)}
-.nb.pu{color:#7733bb}.nb.pu:hover,.nb.pu.on{background:rgba(168,85,247,.08);color:#a855f7;border-color:rgba(168,85,247,.25)}
+.nb.or{color:#ff8c42}.nb.or:hover,.nb.or.on{background:rgba(255,140,66,0.1);color:#ff8c42;border-color:rgba(255,140,66,0.3)}
+.nb.gr{color:#00ff88}.nb.gr:hover,.nb.gr.on{background:rgba(0,255,136,0.1);color:#00ff88;border-color:rgba(0,255,136,0.3)}
 #clock{font-family:monospace;font-size:12px;color:#8899bb;padding:4px 10px;background:#0e1117;border:1px solid #1e2736;border-radius:6px}
 
 #body{flex:1;overflow:hidden;display:flex;flex-direction:column}
@@ -40,7 +39,7 @@ small{font-size:11px;color:#ccc;font-family:monospace;display:block;margin-top:2
 .iframe-bar{height:40px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0}
 .iurl{font-family:monospace;font-size:11px;color:#4a5568;flex:1}
 iframe.full{flex:1;border:none;width:100%;height:100%}
-.blob-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:#00d4ff;cursor:pointer}
+.blob-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,0.08);color:#00d4ff;cursor:pointer}
 </style>
 </head>
 <body>
@@ -70,20 +69,20 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
     <button class="nb or" id="nb-yt" onclick="go('yt')">📺 YouTube</button>
     <button class="nb gr" id="nb-unblocker" onclick="go('unblocker')">🔓 Unblocker</button>
     <button class="nb" id="nb-games" onclick="go('games')">🎮 Games</button>
-    <button class="nb pu" id="nb-editor" onclick="go('editor')">⌨ HTML</button>
+    <button class="nb" id="nb-editor" onclick="go('editor')">⌨ HTML</button>
     <div class="sp"></div>
     <div id="clock">00:00:00</div>
   </div>
 
   <div id="body">
     <div class="pn on" id="pn-home" style="padding:40px; text-align:center">
-      <h1 style="font-size:40px; margin-bottom:10px">Welcome</h1>
-      <p style="color:#8899bb">Press <b>Ctrl + Shift + 7</b> to hide/reveal this portal.</p>
+      <h1 style="font-size:40px; margin-bottom:10px">Private Portal</h1>
+      <p style="color:#8899bb">Shortcut: <b>Ctrl + X</b></p>
     </div>
 
     <div class="pn" id="pn-yt">
       <div class="iframe-bar">
-        <span class="iurl">https://yt.chocolatemoo53.com</span>
+        <span class="iurl">YouTube Proxy</span>
         <button class="blob-btn" onclick="openBlob('https://yt.chocolatemoo53.com/watch?v=E7KBZzMrj5I')">🌐 Blob Tab</button>
       </div>
       <iframe class="full" id="yt-f" allow="autoplay; fullscreen"></iframe>
@@ -104,13 +103,11 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
             <button class="blob-btn" onclick="runCode()">▶ Run Code</button>
         </div>
         <div style="display:flex; flex:1">
-            <textarea id="code" style="flex:1; background:#060810; color:#fff; padding:15px; border:none; outline:none; font-family:monospace"><!DOCTYPE html>
+            <textarea id="code" style="flex:1; background:#060810; color:#fff; padding:15px; border:none; outline:none; font-family:monospace; resize:none"><!DOCTYPE html>
 <html>
 <body>
-  <h1 style="color:cyan">JS Test</h1>
-  <script>
-    console.log("JS is running in this iframe!");
-  </script>
+  <h1 style="color:cyan">Live HTML</h1>
+  <p>Write code here.</p>
 </body>
 </html></textarea>
             <iframe id="preview" style="flex:1; background:#fff; border:none"></iframe>
@@ -122,24 +119,21 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
 <script>
 var framesReady = false;
 
-// 1. Shortcut Listener (Ctrl + Shift + 7)
+// Shortcut Listener: Ctrl + X
 document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.shiftKey && e.key === '7') {
-        e.preventDefault();
+    if (e.ctrlKey && e.key.toLowerCase() === 'x') {
+        e.preventDefault(); // Stops browser "Cut" command
         const portal = document.getElementById('portal');
         
         if (portal.style.display === 'flex') {
-            // If already open, just hide it
             portal.style.display = 'none';
             document.getElementById('decoy').style.display = 'block';
         } else {
-            // If hidden, show the warning first
             document.getElementById('warning-modal').style.display = 'flex';
         }
     }
 });
 
-// 2. Warning Acceptance
 function acceptWarning() {
     document.getElementById('warning-modal').style.display = 'none';
     document.getElementById('decoy').style.display = 'none';
@@ -153,28 +147,25 @@ function acceptWarning() {
     }
 }
 
-// 3. Navigation
 function go(id) {
     document.querySelectorAll('.pn').forEach(p => p.classList.remove('on'));
     document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
     document.getElementById('pn-' + id).classList.add('on');
-    document.getElementById('nb-' + id).classList.add('on');
+    const btn = document.getElementById('nb-' + id);
+    if(btn) btn.classList.add('on');
 }
 
-// 4. Blob Opener
 function openBlob(url) {
-    const html = `<html><body style="margin:0"><iframe src="${url}" style="width:100%;height:100vh;border:none"></iframe></body></html>`;
+    const html = `<html><body style="margin:0"><iframe src="${url}" style="width:100%;height:100vh;border:none" allowfullscreen></iframe></body></html>`;
     const blob = new Blob([html], {type: 'text/html'});
     window.open(URL.createObjectURL(blob), '_blank');
 }
 
-// 5. HTML Editor Run
 function runCode() {
     const code = document.getElementById('code').value;
     document.getElementById('preview').srcdoc = code;
 }
 
-// 6. Clock
 setInterval(() => {
     document.getElementById('clock').textContent = new Date().toLocaleTimeString();
 }, 1000);
