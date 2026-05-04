@@ -15,32 +15,27 @@
         body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
         
         #decoy { position: fixed; inset: 0; background: #000 url('IMG_0140.png') no-repeat center center; background-size: cover; z-index: 9999; }
+        
+        /* AUTH SYSTEM */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
         .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
+        /* PORTAL */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
         #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid var(--border); }
-        .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; transition: 0.3s; }
-        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); }
 
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.active { display: flex; flex-direction: column; }
         
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; align-self: flex-start; border: 1px solid var(--border); font-size: 14px; }
-        .msg.me { align-self: flex-end; background: rgba(124,58,237,0.3); border-color: var(--accent); }
+        /* ADMIN LIST */
+        .user-node { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
         
-        #cmd-menu { display: none; position: absolute; bottom: 80px; left: 20px; width: 220px; background: #121225; border: 1px solid var(--accent); border-radius: 10px; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .cmd-item { padding: 12px; color: #fff; font-size: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .cmd-item:hover { background: var(--accent); }
-
-        .admin-list-container { background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid var(--border); padding: 15px; max-width: 500px; }
-        .user-node { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
-        
-        iframe { flex: 1; border: none; transition: 0.6s filter, 0.2s transform; }
+        iframe { flex: 1; border: none; transition: 0.6s filter; }
         @keyframes shake { 0% {transform: translate(1px, 1px);} 50% {transform: translate(-1px, -2px);} 100% {transform: translate(1px, 1px);} }
     </style>
 </head>
@@ -50,48 +45,48 @@
 
     <div id="auth-overlay">
         <div class="card">
-            <h2>M-TOOL INITIALIZE</h2><br>
-            <input type="email" id="email" placeholder="Email Address">
-            <input type="password" id="pass" placeholder="Security Key">
-            <button class="btn" id="login-btn" style="width:100%">Verify Credentials</button>
+            <div id="login-form">
+                <h2 style="letter-spacing:1px">M-TOOL LOGIN</h2><br>
+                <input type="email" id="email" placeholder="Node Email">
+                <input type="password" id="pass" placeholder="Security Key">
+                <button class="btn" id="login-btn">Verify Access</button>
+                <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request New Account</p>
+            </div>
+            <div id="req-form" style="display:none;">
+                <h2>REGISTER NODE</h2><br>
+                <input type="text" id="r-user" placeholder="Username">
+                <input type="email" id="r-email" placeholder="Email">
+                <input type="password" id="r-pass" placeholder="Desired Password">
+                <button class="btn" id="req-btn">Submit Request</button>
+                <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back to Login</p>
+            </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent); font-size: 18px; letter-spacing: 1px;">M-TOOL</b>
+            <b style="color:var(--accent); font-size: 18px;">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
-            <div class="nav-item" onclick="tab('chat', this)">Chat</div>
-            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin Panel</div>
+            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin Monitor</div>
             <div style="flex:1"></div>
-            <button class="nav-item" id="out-btn" style="color:#ff4b4b; background:none; border:none;">Purge Connection</button>
+            <button class="nav-item" id="out-btn" style="color:#ff4b4b; background:none; border:none;">Purge Session</button>
         </div>
 
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
-        <div id="v-chat" class="view">
-            <div id="chat-box"></div>
-            <div id="cmd-menu"></div>
-            <div style="padding:15px; background:rgba(0,0,0,0.2); display:flex; gap:10px; position:relative;">
-                <input type="text" id="chat-in" placeholder="Type / for admin commands..." autocomplete="off" style="margin:0;">
-                <button class="btn" style="width:80px; padding:0;" id="send-btn">Send</button>
-            </div>
-        </div>
         
         <div id="v-admin" class="view" style="padding:40px; color:#fff; overflow-y:auto;">
             <div style="display:flex; justify-content:space-between; align-items:center; max-width:500px; margin-bottom:20px;">
                 <h2>Network Monitor</h2>
-                <button class="btn" style="background:#333; font-size:12px; padding:5px 15px;" onclick="tab('home', document.querySelector('.nav-item'))">Close Monitor</button>
+                <button class="btn" style="background:#333; font-size:11px; width:auto; padding:5px 15px;" onclick="tab('home', document.querySelector('.nav-item'))">Hide Monitor</button>
             </div>
-            <div class="admin-list-container">
-                <div id="online-list">Initializing scan...</div>
-            </div>
+            <div id="online-list" style="max-width:500px;"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, orderBy, limit, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -107,41 +102,14 @@
         const db = getFirestore(app);
         const ADM_EMAIL = "hjass2865@gmail.com";
 
+        emailjs.init("6iGADKihYbPC4ecb_");
+
         window.removeUser = async (uid) => {
-            if(confirm("Terminate this session?")) await deleteDoc(doc(db, "active_sessions", uid));
+            if(confirm("Kick user?")) await deleteDoc(doc(db, "active_sessions", uid));
         };
 
         window.onload = () => {
-            const chatIn = document.getElementById('chat-in');
-            const menu = document.getElementById('cmd-menu');
-
-            const execCmd = async (input) => {
-                const isAdmin = auth.currentUser.email === ADM_EMAIL;
-                const parts = input.split(' ');
-                const cmd = parts[0].toLowerCase();
-                const targetName = parts[1] ? parts[1].toLowerCase() : null;
-
-                if (cmd === '/clear' && isAdmin) {
-                    const docs = await getDocs(collection(db, "messages"));
-                    docs.forEach(async d => await deleteDoc(doc(db, "messages", d.id)));
-                } 
-                else if (['/blur', '/shake', '/reset'].includes(cmd) && isAdmin && targetName) {
-                    const q = query(collection(db, "active_sessions"), where("username", "==", targetName));
-                    const snap = await getDocs(q);
-                    snap.forEach(async (u) => {
-                        await updateDoc(doc(db, "active_sessions", u.id), { effect: cmd.replace('/', '') });
-                    });
-                }
-                else {
-                    await addDoc(collection(db, "messages"), { 
-                        text: input, 
-                        user: auth.currentUser.email.split('@')[0], 
-                        uid: auth.currentUser.uid, 
-                        timestamp: serverTimestamp() 
-                    });
-                }
-            };
-
+            // --- LOGIN LOGIC ---
             document.getElementById('login-btn').onclick = async () => {
                 const email = document.getElementById('email').value;
                 try {
@@ -150,9 +118,7 @@
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                     
-                    const myUser = email.split('@')[0].toLowerCase();
-
-                    // EFFECT LISTENER (This makes /blur SiaXav30 work)
+                    // Listen for remote effects
                     onSnapshot(doc(db, "active_sessions", res.user.uid), (doc) => {
                         if (doc.exists()) {
                             const data = doc.data();
@@ -163,7 +129,7 @@
                         }
                     });
 
-                    // ADMIN ONLY FEATURES
+                    // Admin only setup
                     if(email === ADM_EMAIL) {
                         document.getElementById('adm-nav').style.display = 'block';
                         onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (s) => {
@@ -173,40 +139,31 @@
                                 if(u.data().email !== ADM_EMAIL) {
                                     list.innerHTML += `
                                         <div class="user-node">
-                                            <span>🟢 <b>${u.data().username}</b></span>
-                                            <button style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:5px; font-size:10px; font-weight:bold; cursor:pointer;" onclick="window.removeUser('${u.id}')">KICK</button>
+                                            <span>🟢 ${u.data().username}</span>
+                                            <button style="background:#ff4b4b; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;" onclick="window.removeUser('${u.id}')">KICK</button>
                                         </div>`;
                                 }
                             });
                         });
                     }
 
-                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: myUser, email: email, effect: 'none' }, { merge: true });
-                    
-                    onSnapshot(query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(40)), (snap) => {
-                        const box = document.getElementById('chat-box'); box.innerHTML = "";
-                        snap.forEach(d => {
-                            const m = d.data();
-                            box.innerHTML += `<div class="msg ${m.uid === auth.currentUser.uid ? 'me' : ''}"><small style="color:var(--accent); font-weight:bold;">${m.user}</small><br>${m.text}</div>`;
-                        });
-                        box.scrollTop = box.scrollHeight;
-                    });
+                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: email.split('@')[0], email: email, effect: 'none' }, { merge: true });
 
-                } catch { alert("Authentication Failed."); }
+                } catch { alert("Authentication Error"); }
             };
 
-            document.getElementById('send-btn').onclick = () => {
-                if(!chatIn.value) return;
-                execCmd(chatIn.value);
-                chatIn.value = ""; menu.style.display = 'none';
+            // --- REGISTER LOGIC ---
+            document.getElementById('req-btn').onclick = async () => {
+                const u = document.getElementById('r-user').value;
+                const e = document.getElementById('r-email').value;
+                const p = document.getElementById('r-pass').value;
+                if(!u || !e || !p) return alert("Fill all fields");
+                
+                await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
+                emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
+                alert("Request sent to Admin.");
+                toggleMode(false);
             };
-
-            chatIn.addEventListener('input', (e) => {
-                if (e.target.value.startsWith('/') && auth.currentUser.email === ADM_EMAIL) {
-                    menu.style.display = 'block';
-                    menu.innerHTML = ['/blur ', '/shake ', '/reset ', '/clear'].map(c => `<div class="cmd-item" onclick="document.getElementById('chat-in').value='${c}'; document.getElementById('chat-in').focus(); document.getElementById('cmd-menu').style.display='none';">${c}</div>`).join('');
-                } else { menu.style.display = 'none'; }
-            });
 
             document.getElementById('out-btn').onclick = async () => {
                 if(auth.currentUser) await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
@@ -217,12 +174,17 @@
 
     <script>
         document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy').style.display = 'none'; document.getElementById('auth-overlay').style.display = 'flex'; } };
+        
         function tab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             btn.classList.add('active');
-            if(id === 'home') document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
+        }
+
+        function toggleMode(req) {
+            document.getElementById('login-form').style.display = req ? 'none' : 'block';
+            document.getElementById('req-form').style.display = req ? 'block' : 'none';
         }
     </script>
 </body>
