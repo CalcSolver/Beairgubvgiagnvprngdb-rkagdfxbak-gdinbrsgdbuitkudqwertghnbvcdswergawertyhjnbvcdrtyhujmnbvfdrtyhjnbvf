@@ -1,792 +1,255 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>404 Not Found</title>
-<link id="fav" rel="shortcut icon" type="image/png" href="https://www.google.com/favicon.ico">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#fff;font-family:sans-serif;color:#555;display:flex;align-items:center;justify-content:center;height:100vh}
-.n{font-size:90px;font-weight:700;color:#e0e0e0}
-p{font-size:14px;color:#999;margin-top:6px}
-small{font-size:11px;color:#ccc;font-family:monospace;display:block;margin-top:20px}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <link id="fav" rel="shortcut icon" type="image/png" href="https://www.google.com/favicon.ico">
+    <style>
+        :root {
+            --theme-bg: #0b0b18;
+            --theme-accent: #7c3aed;
+            --theme-accent-2: #4f46e5;
+            --theme-glow-1: rgba(124,58,237,0.15);
+            --theme-glow-2: rgba(79,70,229,0.1);
+            --theme-muted: #8078a8;
+            --theme-muted-2: #6058a0;
+            --theme-accent-10: rgba(124,58,237,0.1);
+            --theme-accent-40: rgba(124,58,237,0.4);
+        }
 
-#portal{display:none;position:fixed;inset:0;z-index:999;flex-direction:column;background:#07090f;color:#e8eef8;font-family:'Segoe UI',sans-serif}
-#nav{height:50px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 12px;gap:4px;flex-shrink:0}
-.brand{font-family:monospace;font-size:13px;font-weight:700;color:#00d4ff;letter-spacing:2px;margin-right:6px}
-.sep{width:1px;height:22px;background:#253044;margin:0 4px}
-.sp{flex:1}
-.nb{font-size:12px;font-weight:600;padding:0 11px;height:30px;border-radius:6px;border:1px solid transparent;background:transparent;color:#8899bb;cursor:pointer;transition:.15s;white-space:nowrap}
-.nb:hover{background:#151c26;color:#e8eef8;border-color:#253044}
-.nb.on{background:rgba(0,212,255,.1);color:#00d4ff;border-color:rgba(0,212,255,.3)}
-.nb.gr{color:#00aa55}.nb.gr:hover,.nb.gr.on{background:rgba(0,255,136,.08);color:#00ff88;border-color:rgba(0,255,136,.25)}
-.nb.or{color:#aa5520}.nb.or:hover,.nb.or.on{background:rgba(255,140,66,.08);color:#ff8c42;border-color:rgba(255,140,66,.25)}
-.nb.pu{color:#7733bb}.nb.pu:hover,.nb.pu.on{background:rgba(168,85,247,.08);color:#a855f7;border-color:rgba(168,85,247,.25)}
-#clock{font-family:monospace;font-size:12px;color:#8899bb;padding:4px 10px;background:#0e1117;border:1px solid #1e2736;border-radius:6px}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        /* --- 404 STEALTH MODE --- */
+        #decoy-body { 
+            background: #fff; color: #000; height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        .n-text { font-size: 24px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 20px; margin-right: 20px; }
+        .m-text { font-size: 14px; }
 
-#body{flex:1;overflow:hidden;display:flex;flex-direction:column}
-.pn{display:none;flex:1;flex-direction:column;overflow:hidden}
-.pn.on{display:flex}
+        /* --- THE NEW LOG-IN EXPERIENCE --- */
+        #login-overlay {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: var(--theme-bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--theme-glow-1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, var(--theme-glow-2) 0%, transparent 50%);
+            align-items: center; justify-content: center;
+        }
 
-.iframe-bar{height:40px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;flex-wrap:wrap}
-.iframe-bar .iurl{font-family:monospace;font-size:11px;color:#4a5568;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.blob-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:#00d4ff;cursor:pointer;transition:.15s;white-space:nowrap}
-.blob-btn:hover{background:rgba(0,212,255,.18);border-color:#00d4ff}
-.ab-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,255,136,.3);background:rgba(0,255,136,.08);color:#00ff88;cursor:pointer;transition:.15s;white-space:nowrap}
-.ab-btn:hover{background:rgba(0,255,136,.18);border-color:#00ff88}
-iframe.full{flex:1;border:none;width:100%;height:100%}
+        .login-card {
+            width: 90%; max-width: 420px; padding: 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px var(--theme-accent-10);
+            backdrop-filter: blur(30px);
+            text-align: center; color: #e5e3ff;
+            animation: fadeIn 0.5s ease-out;
+        }
 
-#home-scroll{flex:1;overflow-y:auto;padding:40px}
-.hero{text-align:center;margin-bottom:36px}
-.hero h1{font-size:48px;font-weight:900;background:linear-gradient(135deg,#e8eef8,#00d4ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
-.hero p{color:#8899bb;margin-top:8px;font-size:15px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:32px}
-.card{background:#0e1117;border:1px solid #1e2736;border-radius:12px;padding:20px;cursor:pointer;transition:.2s}
-.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.ci{font-size:28px;margin-bottom:8px}
-.ct{font-size:14px;font-weight:700}
-.cd{font-size:11px;color:#8899bb;margin-top:4px}
-.stats{display:flex;border-radius:10px;overflow:hidden;margin-bottom:32px}
-.stat{flex:1;padding:14px;text-align:center;background:#0e1117}
-.stat+.stat{border-left:1px solid #1e2736}
-.sv{font-size:20px;font-weight:900;color:#00d4ff;font-family:monospace}
-.sl{font-size:10px;color:#4a5568;margin-top:2px}
-.ql{display:flex;flex-wrap:wrap;gap:8px}
-.qb{padding:7px 14px;border-radius:20px;background:#0e1117;border:1px solid #253044;color:#8899bb;font-size:12px;cursor:pointer;transition:.15s}
-.qb:hover{background:#151c26;color:#e8eef8}
-.sec{font-size:10px;font-weight:700;color:#4a5568;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.hint{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center;padding:40px}
-.hint .ic{font-size:52px}
-.hint h2{font-size:22px;font-weight:700}
-.hint p{font-size:13px;color:#8899bb;max-width:420px;line-height:1.6}
-.url{background:#0e1117;border:1px solid #253044;border-radius:8px;padding:10px 16px;font-family:monospace;font-size:11px;color:#00d4ff;word-break:break-all;max-width:500px}
-.ob{padding:11px 24px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;transition:.15s}
-.ob:hover{transform:translateY(-1px)}
-.hint-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+        .login-card h1 { 
+            font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; 
+            background: linear-gradient(to bottom, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
 
-#ebar{background:#0d1117;border-bottom:1px solid #1e2736;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-shrink:0}
-#ebar label{font-size:11px;color:#8899bb;font-family:monospace}
-#esplit{display:flex;flex:1;overflow:hidden}
-#code{flex:1;background:#060810;color:#e2e8f0;border:none;outline:none;padding:14px;font-family:monospace;font-size:13px;resize:none;line-height:1.6;border-right:1px solid #1e2736}
-#preview{flex:1;border:none;background:#fff}
+        .login-card p { font-size: 14px; color: var(--theme-muted); margin-bottom: 32px; }
 
-#tbar{background:#0d1117;border-bottom:1px solid #1e2736;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-shrink:0}
-#turl{flex:1;background:#0e1117;border:1px solid #253044;color:#e8eef8;padding:7px 11px;border-radius:7px;font-family:monospace;font-size:12px;outline:none}
-#turl:focus{border-color:#00d4ff}
-#tframe{flex:1;border:none;background:#07090f}
+        input, textarea {
+            width: 100%; padding: 15px; margin-bottom: 18px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; color: #fff; outline: none; transition: all 0.3s ease; font-size: 15px;
+        }
+        input:focus { 
+            border-color: var(--theme-accent); 
+            background: rgba(124,58,237,0.08); 
+            box-shadow: 0 0 20px rgba(124,58,237,0.15);
+        }
 
-/* Settings must sit ABOVE portal (z-index:999) */
-#sbg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.25s}
-#sbg.open{opacity:1;pointer-events:all}
-#settings{position:fixed;top:0;right:-340px;bottom:0;width:340px;background:rgba(7,9,15,.98);backdrop-filter:blur(20px);border-left:1px solid #253044;z-index:1001;transition:.25s;display:flex;flex-direction:column;overflow:hidden}
-#settings.open{right:0}
-#shead{padding:16px 18px;border-bottom:1px solid #1e2736;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-#shead h3{font-size:14px;font-weight:700}
-#sclose{background:none;border:none;color:#8899bb;font-size:24px;cursor:pointer;line-height:1;padding:0}
-#sclose:hover{color:#e8eef8}
-.stabs{display:flex;border-bottom:1px solid #1e2736;flex-shrink:0}
-.st{flex:1;padding:9px;text-align:center;font-size:11px;font-weight:700;color:#4a5568;cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
-.st:hover{color:#8899bb}.st.on{color:#00d4ff;border-bottom-color:#00d4ff}
-#sbody{flex:1;overflow-y:auto;padding:18px}
-.stab{display:none}.stab.on{display:block}
-.sg{margin-bottom:18px}
-.sl2{display:block;font-size:10px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
-.si{width:100%;background:#0e1117;border:1px solid #253044;color:#e8eef8;padding:8px 11px;border-radius:7px;font-family:monospace;font-size:12px;outline:none}
-.si:focus{border-color:#00d4ff}
-select.si{font-family:sans-serif;cursor:pointer}
-textarea.si{resize:none;height:90px;line-height:1.5}
-.sh{font-size:10px;color:#4a5568;margin-top:4px;line-height:1.5}
-.sd{border:none;border-top:1px solid #1e2736;margin:16px 0}
-.sr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-.sr span{font-size:12px;color:#8899bb}
-.tog{position:relative;width:36px;height:20px;flex-shrink:0}
-.tog input{opacity:0;width:0;height:0;position:absolute}
-.tsl{position:absolute;inset:0;background:#253044;border-radius:20px;cursor:pointer;transition:.2s}
-.tsl::before{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:.2s}
-.tog input:checked+.tsl{background:#0099cc}
-.tog input:checked+.tsl::before{transform:translateX(16px)}
-.btn{width:100%;padding:9px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:.15s;margin-bottom:7px}
-.ba{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2);color:#00d4ff}.ba:hover{background:rgba(0,212,255,.15)}
-.bg2{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.2);color:#00ff88}.bg2:hover{background:rgba(0,255,136,.15)}
-.br{background:rgba(255,71,87,.08);border-color:rgba(255,71,87,.2);color:#ff4757}.br:hover{background:rgba(255,71,87,.15)}
-.swatches{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
-.sw{width:30px;height:30px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:.15s}
-.sw:hover,.sw.on{border-color:#fff;transform:scale(1.1)}
-.skrow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #1e2736}
-.skl{flex:1;font-size:12px;color:#8899bb}
-.skk{background:#0e1117;border:1px solid #253044;color:#00d4ff;padding:4px 9px;border-radius:5px;font-family:monospace;font-size:11px;cursor:pointer;min-width:80px;text-align:center;transition:.15s}
-.skk:hover{border-color:#00d4ff}
-.skk.rec{border-color:#ff4757;color:#ff4757;animation:pulse 1s infinite}
+        .submit-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2));
+            color: white; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 8px 25px rgba(124,58,237,0.3);
+        }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(124,58,237,0.5); opacity: 0.95; }
+        .submit-btn:active { transform: translateY(-1px); }
 
-#tc{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center}
-.toast{background:#151c26;border:1px solid #253044;color:#e8eef8;padding:9px 18px;border-radius:8px;font-size:12px;animation:tin .2s ease}
-.toast.ok{color:#00ff88;border-color:rgba(0,255,136,.3)}
-.toast.er{color:#ff4757;border-color:rgba(255,71,87,.3)}
-@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-#bg{position:fixed;inset:0;z-index:-1;background:#07090f}
-#bg::after{content:'';position:absolute;inset:0;background:rgba(7,9,15,.75);transition:opacity .3s}
-#bg.no-ov::after{opacity:0}
-</style>
+        .switch-link { 
+            font-size: 13px; margin-top: 25px; color: var(--theme-muted); cursor: pointer; 
+            transition: 0.2s; display: inline-block;
+        }
+        .switch-link:hover { color: var(--theme-accent); text-decoration: underline; }
+
+        /* --- PORTAL UI --- */
+        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
+        #nav { height: 65px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 25px; gap: 10px; }
+        .nav-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
+        .nav-btn.on { background: var(--theme-accent-10); color: var(--theme-accent); border-color: var(--theme-accent-40); }
+        .nav-btn:hover:not(.on) { color: #fff; background: rgba(255,255,255,0.05); }
+
+        .view { display: none; width: 100%; height: 100%; overflow: hidden; }
+        .view.on { display: flex; flex-direction: column; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        #editor-split { display: flex; flex: 1; }
+        #code-in { width: 50%; background: #070714; color: #00ff88; padding: 25px; border: none; font-family: 'Fira Code', monospace; outline: none; resize: none; font-size: 14px; }
+        #code-out { width: 50%; background: #fff; border: none; }
+    </style>
 </head>
 <body>
 
-<div id="decoy" style="text-align:center">
-  <div class="n">404</div>
-  <p>Page not found.</p>
-  <small>nginx/1.24.0</small>
-</div>
-
-<div id="portal">
-  <div id="bg"></div>
-
-  <div id="nav">
-    <span class="brand">WS://</span>
-    <div class="sep"></div>
-    <button class="nb on"  id="nb-home"       onclick="go('home')">🏠 Home</button>
-    <button class="nb"     id="nb-ai"         onclick="go('ai')">🤖 AI</button>
-    <button class="nb gr"  id="nb-unblocker"  onclick="go('unblocker')">🔓 Unblocker</button>
-    <button class="nb"     id="nb-games"      onclick="go('games')">🎮 Games</button>
-    <button class="nb"     id="nb-sound"      onclick="go('sound')">🎵 Sounds</button>
-    <button class="nb or"  id="nb-video"      onclick="go('video')">🎬 Video</button>
-    <button class="nb pu"  id="nb-editor"     onclick="go('editor')">⌨ HTML</button>
-    <button class="nb gr"  id="nb-tester"     onclick="go('tester')">🔗 Tester</button>
-    <div class="sep"></div>
-    <button class="nb" onclick="reloadPane()">↺</button>
-    <button class="nb" onclick="popout()">⤴</button>
-    <div class="sp"></div>
-    <button class="nb" onclick="openS()">⚙ Settings</button>
-    <div id="clock">--:--:--</div>
-  </div>
-
-  <div id="body">
-
-    <!-- HOME -->
-    <div class="pn on" id="pn-home">
-      <div id="home-scroll">
-        <div class="hero">
-          <h1>Private Portal</h1>
-          <p>Everything you need — hidden behind a 404.</p>
+    <div id="decoy-body">
+        <div>
+            <span class="n-text">404</span>
+            <span class="m-text">Not Found</span>
         </div>
-        <div class="sec">QUICK ACCESS</div>
-        <div class="grid">
-          <div class="card" onclick="go('ai')"          style="border-color:#1a2a3a"><div class="ci">🤖</div><div class="ct">AI Chat</div><div class="cd">gptchatly.com</div></div>
-          <div class="card" onclick="go('unblocker')"   style="border-color:#1a2a1a"><div class="ci">🔓</div><div class="ct">Unblocker</div><div class="cd">ixlmath.nwpa.com.au</div></div>
-          <div class="card" onclick="go('games')"       style="border-color:#2a2a1a"><div class="ci">🎮</div><div class="ct">Games</div><div class="cd">calcsolver.github.io</div></div>
-          <div class="card" onclick="go('sound')"       style="border-color:#2a1a2a"><div class="ci">🎵</div><div class="ct">Soundboard</div><div class="cd">calcsolver soundboard</div></div>
-          <div class="card" onclick="go('video')"       style="border-color:#2a2010"><div class="ci">🎬</div><div class="ct">Video Editor</div><div class="cd">veed.io</div></div>
-          <div class="card" onclick="go('editor')"      style="border-color:#201a2a"><div class="ci">⌨</div><div class="ct">HTML Editor</div><div class="cd">built-in</div></div>
-          <div class="card" onclick="go('tester')"      style="border-color:#1a2a2a"><div class="ci">🔗</div><div class="ct">iFrame Tester</div><div class="cd">built-in</div></div>
-          <div class="card" onclick="openS()"           style="border-color:#2a1a1a"><div class="ci">⚙</div><div class="ct">Settings</div><div class="cd">customise everything</div></div>
+        <div style="position: fixed; bottom: 20px; font-family: serif; font-size: 13px; color: #333;">nginx/1.24.0</div>
+    </div>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h1>System Login</h1>
+            <p>Authorization required to access portal.</p>
+            
+            <div id="login-form">
+                <input type="email" id="email" placeholder="Email Address">
+                <input type="password" id="pass" placeholder="Password">
+                <button class="submit-btn" id="login-btn">Sign In</button>
+                <div class="switch-link" onclick="toggleAuth(true)">Don't have access? Request here.</div>
+            </div>
+
+            <div id="request-form" style="display:none;">
+                <input type="email" id="req-email" placeholder="Your Email">
+                <input type="password" id="req-pass" placeholder="Create Password">
+                <textarea id="req-note" rows="3" placeholder="Note to Admin (e.g. 'I'm from 2nd period math')"></textarea>
+                <button class="submit-btn" id="req-btn" style="background: linear-gradient(135deg, #4f46e5, #3730a3);">Submit Request</button>
+                <div class="switch-link" onclick="toggleAuth(false)">Back to Login</div>
+            </div>
         </div>
-        <div class="stats">
-          <div class="stat"><div class="sv" id="st-time">--:--</div><div class="sl">TIME</div></div>
-          <div class="stat"><div class="sv" id="st-vis">0</div><div class="sl">VISITS</div></div>
-          <div class="stat"><div class="sv" id="st-up">0s</div><div class="sl">UPTIME</div></div>
+    </div>
+
+    <div id="portal">
+        <div id="nav">
+            <div style="font-weight: 900; color: var(--theme-accent); margin-right: 25px; font-family: monospace; letter-spacing: 2px; font-size: 18px;">M-TOOL</div>
+            <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
+            <button class="nav-btn" onclick="showTab('games', this)">Games</button>
+            <button class="nav-btn" onclick="showTab('ixl', this)">IXL</button>
+            <button class="nav-btn" onclick="showTab('editor', this)">Editor</button>
+            <button class="nav-btn" onclick="showTab('trans', this)">Translate</button>
+            <div style="flex:1"></div>
+            <div id="clock" style="font-family: monospace; color: var(--theme-muted-2); font-size: 14px; font-weight: 600;">00:00:00</div>
         </div>
-        <div class="sec">QUICK LINKS</div>
-        <div class="ql">
-          <button class="qb" onclick="openBlob('https://gptchatly.com')">GPTChatly</button>
-          <button class="qb" onclick="go('games')">CalcSolver</button>
-          <button class="qb" onclick="go('unblocker')">Unblocker</button>
-          <button class="qb" onclick="openBlob('https://www.veed.io')">Veed.io</button>
-          <button class="qb" onclick="loadFrame('games','https://kaloodinaz.github.io/neal-fun/')">Neal.fun</button>
+
+        <div id="main" style="flex:1; overflow:hidden;">
+            <div class="view on" id="v-home" style="padding:80px; background: radial-gradient(circle at bottom right, var(--theme-glow-1), transparent);">
+                <h1 style="color:#fff; font-size:48px; letter-spacing:-2px; margin-bottom: 20px;">Welcome Back.</h1>
+                <p style="color:var(--theme-muted); font-size: 18px; max-width: 600px; line-height: 1.6;">Your private suite of tools is now unlocked. Navigate through the top menu to access unblocked content and utility modules.</p>
+            </div>
+
+            <div class="view" id="v-editor">
+                <div id="editor-split">
+                    <textarea id="code-in" oninput="runCode()"><h1>Editor</h1><p>Start coding...</p></textarea>
+                    <iframe id="code-out"></iframe>
+                </div>
+            </div>
+
+            <div class="view" id="v-trans"><iframe src="https://translate.google.com/"></iframe></div>
+            <div class="view" id="v-games"><iframe id="f-games"></iframe></div>
+            <div class="view" id="v-ixl">
+                <div style="padding:20px; background:rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <button class="submit-btn" style="width:auto; padding:12px 30px;" onclick="openBlob('https://ixlmath.nwpa.com.au/')">Launch IXL (Stealth Tab)</button>
+                </div>
+                <iframe id="f-ixl"></iframe>
+            </div>
         </div>
-      </div>
     </div>
 
-    <!-- AI -->
-    <div class="pn" id="pn-ai">
-      <div class="iframe-bar">
-        <span class="iurl">https://gptchatly.com</span>
-        <button class="blob-btn" onclick="openBlob('https://gptchatly.com')">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlank('https://gptchatly.com')">📄 about:blank</button>
-      </div>
-      <div class="hint">
-        <div class="ic">🤖</div>
-        <h2>AI Chat</h2>
-        <p>gptchatly.com blocks iframes. Open it in a disguised tab below.</p>
-        <div class="url">https://gptchatly.com</div>
-        <div class="hint-btns">
-          <button class="ob" style="background:#00d4ff;color:#000" onclick="openBlob('https://gptchatly.com')">🌐 Open as Blob Tab ↗</button>
-          <button class="ob" style="background:#00ff88;color:#000" onclick="openAboutBlank('https://gptchatly.com')">📄 Open in about:blank ↗</button>
-        </div>
-      </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <!-- UNBLOCKER -->
-    <div class="pn" id="pn-unblocker">
-      <div class="iframe-bar">
-        <span class="iurl" id="unblocker-url">https://ixlmath.nwpa.com.au</span>
-        <button class="blob-btn" onclick="openBlob('https://ixlmath.nwpa.com.au')">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlank('https://ixlmath.nwpa.com.au')">📄 about:blank</button>
-      </div>
-      <iframe class="full" id="unblocker-f"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation"
-        allow="autoplay; fullscreen; clipboard-write"></iframe>
-    </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
+            authDomain: "testing-12bc9.firebaseapp.com",
+            projectId: "testing-12bc9",
+            storageBucket: "testing-12bc9.firebasestorage.app",
+            messagingSenderId: "626782607651",
+            appId: "1:626782607651:web:c5980863cef82d904a5496"
+        };
 
-    <!-- GAMES -->
-    <div class="pn" id="pn-games">
-      <div class="iframe-bar">
-        <span class="iurl" id="games-url">https://calcsolver.github.io/</span>
-        <button class="blob-btn" onclick="openBlob(document.getElementById('games-url').textContent.trim())">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlank(document.getElementById('games-url').textContent.trim())">📄 about:blank</button>
-      </div>
-      <iframe class="full" id="games-f"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation"
-        allow="autoplay; fullscreen; clipboard-write"></iframe>
-    </div>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    <!-- SOUND -->
-    <div class="pn" id="pn-sound">
-      <div class="iframe-bar">
-        <span class="iurl" id="sound-url">https://calcsolver.github.io/ChatGPT.github.io/</span>
-        <button class="blob-btn" onclick="openBlob(document.getElementById('sound-url').textContent.trim())">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlank(document.getElementById('sound-url').textContent.trim())">📄 about:blank</button>
-      </div>
-      <iframe class="full" id="sound-f"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation"
-        allow="autoplay; fullscreen; clipboard-write"></iframe>
-    </div>
+        document.getElementById('login-btn').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value)
+                .then(() => {
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('portal').style.display = 'flex';
+                }).catch(() => alert("Access Denied."));
+        };
 
-    <!-- VIDEO -->
-    <div class="pn" id="pn-video">
-      <div class="iframe-bar">
-        <span class="iurl">https://www.veed.io</span>
-        <button class="blob-btn" onclick="openBlob('https://www.veed.io')">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlank('https://www.veed.io')">📄 about:blank</button>
-      </div>
-      <div class="hint">
-        <div class="ic">🎬</div>
-        <h2>Video Editor</h2>
-        <p>Veed.io blocks iframes. Open it in a disguised tab below.</p>
-        <div class="url">https://www.veed.io</div>
-        <div class="hint-btns">
-          <button class="ob" style="background:#ff8c42;color:#000" onclick="openBlob('https://www.veed.io')">🌐 Open as Blob Tab ↗</button>
-          <button class="ob" style="background:#00ff88;color:#000" onclick="openAboutBlank('https://www.veed.io')">📄 Open in about:blank ↗</button>
-        </div>
-      </div>
-    </div>
+        document.getElementById('req-btn').onclick = async () => {
+            const email = document.getElementById('req-email').value;
+            if(!email) return alert("Email required.");
+            await addDoc(collection(db, "requests"), {
+                email: email,
+                password: document.getElementById('req-pass').value,
+                note: document.getElementById('req-note').value,
+                time: new Date()
+            });
+            alert("Request submitted.");
+            location.reload();
+        };
+    </script>
 
-    <!-- HTML EDITOR -->
-    <div class="pn" id="pn-editor">
-      <div id="ebar">
-        <label>⌨ HTML Editor</label>
-        <button class="nb gr" onclick="runCode()"   style="height:27px;font-size:11px">▶ Run</button>
-        <button class="nb"    onclick="clearCode()" style="height:27px;font-size:11px">✕ Clear</button>
-        <button class="nb"    onclick="copyCode()"  style="height:27px;font-size:11px">⎘ Copy</button>
-        <button class="nb pu" onclick="saveCode()"  style="height:27px;font-size:11px">⬇ Save</button>
-        <button class="blob-btn" onclick="openBlobHTML()" style="height:27px">🌐 Blob Tab</button>
-        <button class="ab-btn"   onclick="openAboutBlankHTML()" style="height:27px">📄 about:blank</button>
-        <div class="sp"></div>
-        <span id="est" style="font-size:11px;color:#4a5568;font-family:monospace">Ready</span>
-      </div>
-      <div id="esplit">
-        <textarea id="code" spellcheck="false"><!DOCTYPE html>
-<html>
-<head><title>Page</title><style>body{font-family:sans-serif;padding:20px}h1{color:#1a73e8}</style></head>
-<body><h1>Hello World!</h1><p>Edit me then click Run.</p></body>
-</html></textarea>
-        <iframe id="preview"></iframe>
-      </div>
-    </div>
+    <script>
+        // Reveal Switch (CTRL + X)
+        document.onkeydown = (e) => {
+            if(e.ctrlKey && e.key === 'x') {
+                e.preventDefault();
+                document.getElementById('decoy-body').style.display = 'none';
+                document.getElementById('login-overlay').style.display = 'flex';
+            }
+        };
 
-    <!-- TESTER -->
-    <div class="pn" id="pn-tester">
-      <div id="tbar">
-        <span style="font-size:11px;color:#8899bb;font-family:monospace">URL:</span>
-        <input id="turl" type="url" placeholder="https://example.com">
-        <button class="nb gr" onclick="testURL()"     style="height:30px">Load</button>
-        <button class="nb"    onclick="clearTester()" style="height:30px">Clear</button>
-        <button class="blob-btn" onclick="openBlobTester()"        style="height:28px">🌐 Blob</button>
-        <button class="ab-btn"   onclick="openAboutBlankTester()"  style="height:28px">📄 about:blank</button>
-      </div>
-      <iframe id="tframe"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation allow-top-navigation-by-user-activation"
-        allow="autoplay; fullscreen; clipboard-write"></iframe>
-    </div>
+        function toggleAuth(req) {
+            document.getElementById('login-form').style.display = req ? 'none' : 'block';
+            document.getElementById('request-form').style.display = req ? 'block' : 'none';
+        }
 
-  </div>
-</div>
+        function showTab(id, b) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('on'));
+            document.getElementById('v-' + id).classList.add('on');
+            b.classList.add('on');
+            
+            if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
+            if(id === 'ixl') document.getElementById('f-ixl').src = "https://ixlmath.nwpa.com.au/";
+        }
 
-<!-- SETTINGS — z-index above portal -->
-<div id="sbg" onclick="closeS()"></div>
-<div id="settings">
-  <div id="shead">
-    <h3>⚙ Settings</h3>
-    <button id="sclose" onclick="closeS()">&#215;</button>
-  </div>
-  <div class="stabs">
-    <div class="st on" onclick="stab('gen',this)">General</div>
-    <div class="st"    onclick="stab('look',this)">Look</div>
-    <div class="st"    onclick="stab('keys',this)">Shortcuts</div>
-    <div class="st"    onclick="stab('adv',this)">Advanced</div>
-  </div>
-  <div id="sbody">
-    <div class="stab on" id="stab-gen">
-      <div class="sg">
-        <label class="sl2">Tab Title Cloak</label>
-        <input class="si" id="cfg-title" placeholder="e.g. Google Classroom">
-        <p class="sh">Renames the browser tab. Press Enter or click Apply.</p>
-        <button class="btn ba" onclick="applyTitle()" style="margin-top:6px">Apply Title</button>
-      </div>
-      <div class="sg">
-        <label class="sl2">Tab Icon</label>
-        <select class="si" id="cfg-icon-preset" onchange="applyIconPreset(this.value)" style="margin-bottom:6px">
-          <option value="">— Choose preset —</option>
-          <option value="https://www.google.com/favicon.ico">Google</option>
-          <option value="https://www.google.com.au/favicon.ico">Google AU</option>
-          <option value="https://classroom.google.com/favicon.ico">Google Classroom</option>
-          <option value="https://www.gstatic.com/images/branding/product/ico/docs_48dp.png">Google Docs</option>
-          <option value="https://ssl.gstatic.com/images/branding/product/ico/sheets_48dp.png">Google Sheets</option>
-          <option value="custom">Custom URL…</option>
-        </select>
-        <div id="custom-icon-wrap" style="display:none">
-          <input class="si" id="cfg-icon-url" placeholder="https://example.com/favicon.ico">
-          <button class="btn ba" onclick="applyIconCustom()" style="margin-top:6px">Apply Custom Icon</button>
-        </div>
-      </div>
-      <div class="sd"></div>
-      <div class="sg"><label class="sl2">Toggles</label>
-        <div class="sr"><span>Show nav bar</span><label class="tog"><input type="checkbox" id="tog-nav" checked onchange="toggleNav(this)"><span class="tsl"></span></label></div>
-      </div>
-      <div class="sd"></div>
-      <div class="sg">
-        <label class="sl2">Open-in options</label>
-        <div class="sr"><span>Show about:blank buttons</span><label class="tog"><input type="checkbox" id="tog-ab" checked onchange="toggleAbButtons(this)"><span class="tsl"></span></label></div>
-      </div>
-      <div class="sd"></div>
-      <div class="sg"><label class="sl2">Scratchpad</label><textarea class="si" id="notes" placeholder="Notes, links, homework..."></textarea><p class="sh">Auto-saved.</p></div>
-    </div>
-    <div class="stab" id="stab-look">
-      <div class="sg"><label class="sl2">Accent Colour</label>
-        <div class="swatches">
-          <div class="sw on" style="background:#00d4ff" data-c="#00d4ff" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#00ff88" data-c="#00ff88" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#a855f7" data-c="#a855f7" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#ff8c42" data-c="#ff8c42" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#ff4757" data-c="#ff4757" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#ffd60a" data-c="#ffd60a" onclick="setAccent(this)"></div>
-          <div class="sw" style="background:#f472b6" data-c="#f472b6" onclick="setAccent(this)"></div>
-          <input type="color" class="sw" style="padding:0;cursor:pointer" oninput="setAccentVal(this.value)" title="Custom">
-        </div>
-      </div>
-      <div class="sd"></div>
-      <div class="sg"><label class="sl2">Background</label>
-        <select class="si" id="bg-sel" onchange="setBg(this.value)">
-          <option value="solid">Solid Dark</option>
-          <option value="grid">Grid</option>
-          <option value="dots">Dots</option>
-          <option value="cyan">Cyan Mesh</option>
-          <option value="purple">Purple Haze</option>
-          <option value="img">Custom Image URL</option>
-        </select>
-        <div id="bg-img-wrap" style="display:none;margin-top:8px">
-          <input class="si" id="bg-url" placeholder="https://...image.jpg">
-          <button class="btn ba" onclick="applyBgImg()" style="margin-top:6px">Apply</button>
-        </div>
-        <button class="btn bg2" onclick="document.getElementById('bg-file').click()" style="margin-top:8px">Upload Image</button>
-        <input type="file" id="bg-file" accept="image/*" style="display:none" onchange="uploadBg(this)">
-      </div>
-      <div class="sg"><div class="sr"><span>Dark overlay</span><label class="tog"><input type="checkbox" id="tog-ov" checked onchange="toggleOv(this)"><span class="tsl"></span></label></div></div>
-    </div>
-    <div class="stab" id="stab-keys">
-      <p style="font-size:11px;color:#4a5568;margin-bottom:14px;line-height:1.5">Click a key badge to re-record.</p>
-      <div id="sk-list"></div>
-      <div class="sd"></div>
-      <button class="btn ba" onclick="resetKeys()">Reset Defaults</button>
-    </div>
-    <div class="stab" id="stab-adv">
-      <div class="sg"><label class="sl2">Quick Load in Tester</label><input class="si" id="adv-url" type="url" placeholder="https://..."><button class="btn ba" onclick="advLoad()" style="margin-top:7px">Load</button></div>
-      <div class="sd"></div>
-      <div class="sg"><label class="sl2">Unblocker URL</label>
-        <input class="si" id="adv-ixl" type="url" placeholder="https://ixlmath.nwpa.com.au">
-        <button class="btn ba" onclick="advSetIxl()" style="margin-top:7px">Update URL</button>
-        <p class="sh">Change the Unblocker iframe source.</p>
-      </div>
-      <div class="sd"></div>
-      <div class="sg"><label class="sl2">Export / Import</label>
-        <button class="btn bg2" onclick="exportCfg()">Export Settings</button>
-        <button class="btn ba"  onclick="document.getElementById('imp-f').click()">Import Settings</button>
-        <input type="file" id="imp-f" accept=".json" style="display:none" onchange="importCfg(this)">
-      </div>
-      <div class="sd"></div>
-      <button class="btn br" onclick="nuke()">Clear All Data</button>
-    </div>
-  </div>
-</div>
+        function runCode() {
+            const html = document.getElementById('code-in').value;
+            const out = document.getElementById('code-out').contentWindow.document;
+            out.open(); out.write(html); out.close();
+        }
 
-<div id="tc"></div>
+        function openBlob(url) {
+            var win = window.open('about:blank');
+            var f = win.document.createElement('iframe');
+            f.style.cssText = "width:100%; height:100%; border:none; margin:0; padding:0;"; 
+            f.src = url;
+            win.document.body.style.margin = "0";
+            win.document.body.appendChild(f);
+        }
 
-<script>
-var cur='home', t0=Date.now();
-var visits=(+localStorage.getItem('v')||0)+1;
-localStorage.setItem('v',visits);
-
-var DKEYS={
-  panic:   {l:'🚨 Panic',   k:'Escape'},
-  home:    {l:'🏠 Home',    k:'ctrl+h'},
-  settings:{l:'⚙ Settings',k:'ctrl+,'}
-};
-var keys=JSON.parse(localStorage.getItem('keys')||'null')||JSON.parse(JSON.stringify(DKEYS));
-var recId=null, framesReady=false;
-
-var DARK_BLOB=URL.createObjectURL(new Blob(['<!DOCTYPE html><html><head><style>html,body{margin:0;background:#07090f;height:100%}</style></head><body></body></html>'],{type:'text/html'}));
-
-var IXL_URL=localStorage.getItem('ixl_url')||'https://ixlmath.nwpa.com.au';
-
-/* ── Open helpers ─────────────────────────────────────────────────── */
-function openBlob(url){
-  if(!url||url===DARK_BLOB||url==='about:blank'){toast('No URL to open','er');return;}
-  var html='<!DOCTYPE html><html><head><title>Google</title>'
-    +'<link rel="icon" href="https://www.google.com/favicon.ico">'
-    +'<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}'
-    +'iframe{width:100%;height:100vh;border:none;display:block}</style></head>'
-    +'<body><iframe src="'+url+'" allow="autoplay;fullscreen;clipboard-write" allowfullscreen></iframe></body></html>';
-  window.open(URL.createObjectURL(new Blob([html],{type:'text/html'})),'_blank');
-  toast('Opened as Google blob tab','ok');
-}
-
-function openAboutBlank(url){
-  if(!url||url===DARK_BLOB||url==='about:blank'){toast('No URL to open','er');return;}
-  var w=window.open('about:blank','_blank');
-  if(!w){toast('Popup blocked','er');return;}
-  w.document.open();
-  w.document.write('<!DOCTYPE html><html><head><title>Google</title>'
-    +'<link rel="icon" href="https://www.google.com/favicon.ico">'
-    +'<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}'
-    +'iframe{width:100%;height:100vh;border:none;display:block}</style></head>'
-    +'<body><iframe src="'+url+'" allow="autoplay;fullscreen;clipboard-write" allowfullscreen></iframe></body></html>');
-  w.document.close();
-  toast('Opened in about:blank tab','ok');
-}
-
-function openBlobHTML(){
-  var src=document.getElementById('code').value;
-  var inner=URL.createObjectURL(new Blob([src],{type:'text/html'}));
-  openBlob(inner);
-}
-
-function openAboutBlankHTML(){
-  var src=document.getElementById('code').value;
-  var inner=URL.createObjectURL(new Blob([src],{type:'text/html'}));
-  openAboutBlank(inner);
-}
-
-function openBlobTester(){
-  var u=document.getElementById('turl').value.trim();
-  if(!u){toast('Enter a URL first','er');return;}
-  openBlob(u.startsWith('http')?u:'https://'+u);
-}
-
-function openAboutBlankTester(){
-  var u=document.getElementById('turl').value.trim();
-  if(!u){toast('Enter a URL first','er');return;}
-  openAboutBlank(u.startsWith('http')?u:'https://'+u);
-}
-
-/* ── Keyboard ─────────────────────────────────────────────────────── */
-document.onkeydown=function(e){
-  if(e.ctrlKey&&e.key==='x'){e.preventDefault();openPortal();return;}
-  if(recId){recordKey(e);return;}
-  var c=[];
-  if(e.ctrlKey)c.push('ctrl');
-  if(e.altKey)c.push('alt');
-  if(e.shiftKey)c.push('shift');
-  if(!['Control','Alt','Shift'].includes(e.key))c.push(e.key);
-  var p=c.join('+');
-  if(p===keys.panic.k)location='https://google.com';
-  if(p===keys.home.k){e.preventDefault();go('home');}
-  if(p===keys.settings.k){e.preventDefault();openS();}
-};
-
-/* ── Portal open ──────────────────────────────────────────────────── */
-function openPortal(){
-  document.getElementById('decoy').style.display='none';
-  document.getElementById('portal').style.display='flex';
-  if(!framesReady){
-    framesReady=true;
-    document.getElementById('unblocker-f').src=IXL_URL;
-    document.getElementById('games-f').src='https://calcsolver.github.io/';
-    document.getElementById('sound-f').src='https://calcsolver.github.io/ChatGPT.github.io/';
-    document.getElementById('tframe').src=DARK_BLOB;
-  }
-}
-
-/* ── Navigation ───────────────────────────────────────────────────── */
-function go(id){
-  document.querySelectorAll('.pn').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.nb[id^="nb-"]').forEach(function(b){b.classList.remove('on');});
-  document.getElementById('pn-'+id).classList.add('on');
-  var nb=document.getElementById('nb-'+id);if(nb)nb.classList.add('on');
-  cur=id;
-}
-
-function loadFrame(panelId,url){
-  go(panelId);
-  var el=document.getElementById(panelId+'-f');
-  if(el)el.src=url;
-  var ul=document.getElementById(panelId+'-url');
-  if(ul)ul.textContent=url;
-}
-
-function tload(u){
-  go('tester');
-  document.getElementById('turl').value=u;
-  document.getElementById('tframe').src=u;
-}
-
-function reloadPane(){
-  var map={unblocker:'unblocker-f',games:'games-f',sound:'sound-f',tester:'tframe'};
-  var fid=map[cur];
-  if(fid){var el=document.getElementById(fid);el.src=el.src;}
-}
-
-function popout(){
-  var map={
-    unblocker:document.getElementById('unblocker-f').src,
-    games:document.getElementById('games-f').src,
-    sound:document.getElementById('sound-f').src,
-    tester:document.getElementById('tframe').src
-  };
-  var u=map[cur];
-  if(u&&u!==DARK_BLOB&&u!=='about:blank')openBlob(u);
-  else toast('Nothing to pop out','er');
-}
-
-/* ── Editor ───────────────────────────────────────────────────────── */
-function runCode(){
-  document.getElementById('preview').srcdoc=document.getElementById('code').value;
-  var e=document.getElementById('est');e.textContent='Updated ✓';
-  setTimeout(function(){e.textContent='Ready';},2000);
-}
-function clearCode(){if(confirm('Clear editor?')){document.getElementById('code').value='';document.getElementById('preview').srcdoc='';}}
-function copyCode(){navigator.clipboard.writeText(document.getElementById('code').value).then(function(){toast('Copied','ok');});}
-function saveCode(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([document.getElementById('code').value],{type:'text/html'}));a.download='page.html';a.click();toast('Saved','ok');}
-
-/* ── Tester ───────────────────────────────────────────────────────── */
-function testURL(){
-  var u=document.getElementById('turl').value.trim();if(!u)return;
-  var full=u.startsWith('http')?u:'https://'+u;
-  document.getElementById('tframe').src=full;
-  toast('Loading...','ok');
-}
-function clearTester(){
-  document.getElementById('turl').value='';
-  document.getElementById('tframe').src=DARK_BLOB;
-}
-document.getElementById('turl').addEventListener('keydown',function(e){if(e.key==='Enter')testURL();});
-
-/* ── Settings panel ───────────────────────────────────────────────── */
-function openS(){
-  document.getElementById('settings').classList.add('open');
-  document.getElementById('sbg').classList.add('open');
-}
-function closeS(){
-  document.getElementById('settings').classList.remove('open');
-  document.getElementById('sbg').classList.remove('open');
-}
-function stab(id,el){
-  document.querySelectorAll('.stab').forEach(function(s){s.classList.remove('on');});
-  document.querySelectorAll('.st').forEach(function(s){s.classList.remove('on');});
-  document.getElementById('stab-'+id).classList.add('on');
-  el.classList.add('on');
-}
-
-/* Title */
-function applyTitle(){
-  var v=document.getElementById('cfg-title').value.trim();
-  document.title=v||'404 Not Found';
-  localStorage.setItem('ws_title',v);
-  toast('Title applied','ok');
-}
-
-/* Icon */
-function applyIconPreset(v){
-  document.getElementById('custom-icon-wrap').style.display=(v==='custom')?'block':'none';
-  if(v&&v!=='custom'){
-    document.getElementById('fav').href=v;
-    localStorage.setItem('ws_icon',v);
-    toast('Icon applied','ok');
-  }
-}
-function applyIconCustom(){
-  var u=document.getElementById('cfg-icon-url').value.trim();
-  if(!u){toast('Enter an icon URL','er');return;}
-  document.getElementById('fav').href=u;
-  localStorage.setItem('ws_icon',u);
-  toast('Icon applied','ok');
-}
-
-/* Nav toggle */
-function toggleNav(cb){
-  document.getElementById('nav').style.display=cb.checked?'flex':'none';
-  localStorage.setItem('tog_nav',cb.checked?'1':'0');
-}
-
-/* about:blank button visibility */
-function toggleAbButtons(cb){
-  var show=cb.checked;
-  document.querySelectorAll('.ab-btn').forEach(function(b){b.style.display=show?'':'none';});
-  localStorage.setItem('tog_ab',show?'1':'0');
-}
-
-/* Overlay */
-function toggleOv(cb){
-  document.getElementById('bg').classList.toggle('no-ov',!cb.checked);
-  localStorage.setItem('tog_ov',cb.checked?'1':'0');
-}
-
-/* Accent */
-function setAccent(el){document.querySelectorAll('.sw').forEach(function(s){s.classList.remove('on');});el.classList.add('on');setAccentVal(el.dataset.c);}
-function setAccentVal(c){document.documentElement.style.setProperty('--ac',c);localStorage.setItem('ac',c);toast('Colour updated','ok');}
-
-/* Background */
-function setBg(v){
-  var bg=document.getElementById('bg');
-  document.getElementById('bg-img-wrap').style.display=v==='img'?'block':'none';
-  bg.style.cssText='position:fixed;inset:0;z-index:-1;';
-  if(v==='solid')bg.style.background='#07090f';
-  else if(v==='grid'){bg.style.background='#07090f';bg.style.backgroundImage='linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px)';bg.style.backgroundSize='40px 40px';}
-  else if(v==='dots'){bg.style.background='#07090f';bg.style.backgroundImage='radial-gradient(rgba(0,212,255,.15) 1px,transparent 1px)';bg.style.backgroundSize='30px 30px';}
-  else if(v==='cyan')bg.style.background='linear-gradient(135deg,#07090f,#001830,#002040)';
-  else if(v==='purple')bg.style.background='linear-gradient(135deg,#0f0718,#1a0a2e,#0a1540)';
-  localStorage.setItem('bg',v);
-}
-function applyBgImg(){var u=document.getElementById('bg-url').value.trim();if(u)setBgSrc(u);}
-function uploadBg(i){var f=i.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){setBgSrc(e.target.result);};r.readAsDataURL(f);}
-function setBgSrc(s){var bg=document.getElementById('bg');bg.style.cssText='position:fixed;inset:0;z-index:-1;background-image:url('+s+');background-size:cover;background-position:center';}
-document.addEventListener('dragover',function(e){e.preventDefault();});
-document.addEventListener('drop',function(e){
-  e.preventDefault();
-  var f=e.dataTransfer.files[0];
-  if(f&&f.type.startsWith('image/')){var r=new FileReader();r.onload=function(ev){setBgSrc(ev.target.result);toast('Background set','ok');};r.readAsDataURL(f);}
-});
-
-/* Unblocker URL update */
-function advSetIxl(){
-  var u=document.getElementById('adv-ixl').value.trim();
-  if(!u){toast('Enter a URL','er');return;}
-  IXL_URL=u;
-  localStorage.setItem('ixl_url',u);
-  if(framesReady)document.getElementById('unblocker-f').src=u;
-  document.getElementById('unblocker-url').textContent=u;
-  toast('Unblocker URL updated','ok');
-}
-
-/* Shortcuts */
-function renderKeys(){
-  var l=document.getElementById('sk-list');l.innerHTML='';
-  Object.keys(keys).forEach(function(id){
-    var row=document.createElement('div');row.className='skrow';
-    row.innerHTML='<span class="skl">'+keys[id].l+'</span><div class="skk" id="sk-'+id+'" onclick="startRec(\''+id+'\')">'+keys[id].k+'</div>';
-    l.appendChild(row);
-  });
-}
-function startRec(id){if(recId)return;recId=id;var el=document.getElementById('sk-'+id);el.textContent='● listening…';el.classList.add('rec');toast('Press your combo','ok');}
-function recordKey(e){
-  e.preventDefault();
-  var c=[];
-  if(e.ctrlKey)c.push('ctrl');if(e.altKey)c.push('alt');if(e.shiftKey)c.push('shift');
-  if(!['Control','Alt','Shift','Meta'].includes(e.key))c.push(e.key);
-  var combo=c.join('+');
-  keys[recId].k=combo;
-  var el=document.getElementById('sk-'+recId);el.textContent=combo;el.classList.remove('rec');
-  localStorage.setItem('keys',JSON.stringify(keys));
-  toast('Saved: '+combo,'ok');
-  recId=null;
-}
-function resetKeys(){keys=JSON.parse(JSON.stringify(DKEYS));localStorage.setItem('keys',JSON.stringify(keys));renderKeys();toast('Reset','ok');}
-
-/* Export / Import */
-function exportCfg(){
-  var d={title:document.getElementById('cfg-title').value,notes:document.getElementById('notes').value,keys:keys,ixl_url:IXL_URL};
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download='portal-settings.json';a.click();toast('Exported','ok');
-}
-function importCfg(i){
-  var f=i.files[0];if(!f)return;
-  var r=new FileReader();
-  r.onload=function(e){
-    try{
-      var d=JSON.parse(e.target.result);
-      if(d.title){document.getElementById('cfg-title').value=d.title;document.title=d.title;localStorage.setItem('ws_title',d.title);}
-      if(d.notes){document.getElementById('notes').value=d.notes;localStorage.setItem('notes',d.notes);}
-      if(d.keys){keys=d.keys;localStorage.setItem('keys',JSON.stringify(keys));renderKeys();}
-      if(d.ixl_url){IXL_URL=d.ixl_url;localStorage.setItem('ixl_url',d.ixl_url);document.getElementById('adv-ixl').value=d.ixl_url;}
-      toast('Imported','ok');
-    }catch(x){toast('Invalid file','er');}
-  };
-  r.readAsText(f);
-}
-function advLoad(){var u=document.getElementById('adv-url').value.trim();if(u){closeS();tload(u);}}
-function nuke(){if(!confirm('Delete all portal data?'))return;localStorage.clear();toast('Cleared','er');setTimeout(function(){location.reload();},1500);}
-function toast(msg,type){var el=document.createElement('div');el.className='toast'+(type?' '+type:'');el.textContent=msg;document.getElementById('tc').appendChild(el);setTimeout(function(){el.remove();},2800);}
-
-/* ── Clock / stats ────────────────────────────────────────────────── */
-function tick(){
-  var n=new Date(),p=function(v){return String(v).padStart(2,'0');};
-  document.getElementById('clock').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
-  document.getElementById('st-time').textContent=p(n.getHours())+':'+p(n.getMinutes());
-  var up=Math.floor((Date.now()-t0)/1000);
-  document.getElementById('st-up').textContent=up<60?up+'s':up<3600?Math.floor(up/60)+'m':Math.floor(up/3600)+'h';
-}
-setInterval(tick,1000);tick();
-document.getElementById('st-vis').textContent=visits;
-
-/* ── Restore saved preferences ────────────────────────────────────── */
-(function(){
-  /* Accent */
-  var ac=localStorage.getItem('ac');
-  if(ac){
-    document.documentElement.style.setProperty('--ac',ac);
-    document.querySelectorAll('.sw[data-c]').forEach(function(s){s.classList.toggle('on',s.dataset.c===ac);});
-  }
-
-  /* Title */
-  var title=localStorage.getItem('ws_title');
-  if(title){document.title=title;document.getElementById('cfg-title').value=title;}
-  document.getElementById('cfg-title').addEventListener('keydown',function(e){if(e.key==='Enter')applyTitle();});
-
-  /* Icon */
-  var icon=localStorage.getItem('ws_icon');
-  if(icon){
-    document.getElementById('fav').href=icon;
-    var sel=document.getElementById('cfg-icon-preset');
-    var found=false;
-    for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===icon){sel.value=icon;found=true;break;}}
-    if(!found&&icon){sel.value='custom';document.getElementById('custom-icon-wrap').style.display='block';document.getElementById('cfg-icon-url').value=icon;}
-  }
-
-  /* Notes */
-  var notes=document.getElementById('notes');
-  notes.value=localStorage.getItem('notes')||'';
-  notes.oninput=function(){localStorage.setItem('notes',this.value);};
-
-  /* Nav toggle */
-  var tn=localStorage.getItem('tog_nav');
-  if(tn==='0'){document.getElementById('tog-nav').checked=false;document.getElementById('nav').style.display='none';}
-
-  /* about:blank toggle */
-  var tab=localStorage.getItem('tog_ab');
-  if(tab==='0'){
-    document.getElementById('tog-ab').checked=false;
-    document.querySelectorAll('.ab-btn').forEach(function(b){b.style.display='none';});
-  }
-
-  /* Overlay toggle */
-  var tov=localStorage.getItem('tog_ov');
-  if(tov==='0'){document.getElementById('tog-ov').checked=false;document.getElementById('bg').classList.add('no-ov');}
-
-  /* Background */
-  var bg=localStorage.getItem('bg');if(bg){document.getElementById('bg-sel').value=bg;setBg(bg);}
-
-  /* Unblocker URL */
-  var iu=localStorage.getItem('ixl_url');
-  if(iu){IXL_URL=iu;document.getElementById('adv-ixl').value=iu;}
-
-  renderKeys();
-})();
-</script>
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        runCode(); 
+    </script>
 </body>
 </html>
