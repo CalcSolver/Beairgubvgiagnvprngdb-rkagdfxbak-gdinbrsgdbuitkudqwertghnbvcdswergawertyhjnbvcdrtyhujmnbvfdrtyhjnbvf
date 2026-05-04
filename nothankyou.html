@@ -11,118 +11,97 @@
             --theme-bg: #0b0b18;
             --theme-accent: #7c3aed;
             --theme-accent-2: #4f46e5;
-            --theme-glow-1: rgba(124,58,237,0.15);
-            --theme-glow-2: rgba(79,70,229,0.1);
             --theme-muted: #8078a8;
-            --theme-muted-2: #6058a0;
             --theme-accent-10: rgba(124,58,237,0.1);
             --theme-accent-40: rgba(124,58,237,0.4);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
         
-        #decoy-body { background: #fff; color: #000; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10001; position: relative; }
-        .n-text { font-size: 24px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 20px; margin-right: 20px; }
-        .m-text { font-size: 14px; }
-
+        /* DECOY */
+        #decoy-body { background: #fff; color: #000; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10001; position: relative; }
+        
+        /* LOGIN & CARDS */
         #login-overlay { display: none; position: fixed; inset: 0; z-index: 10000; background: var(--theme-bg); align-items: center; justify-content: center; }
-        .login-card { width: 90%; max-width: 420px; padding: 45px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; backdrop-filter: blur(30px); text-align: center; color: #e5e3ff; }
-        input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #fff; outline: none; }
-        .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .card { width: 90%; max-width: 420px; padding: 40px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; outline: none; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .btn:disabled { opacity: 0.5; }
 
+        /* PORTAL */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
-        #nav { height: 65px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 25px; gap: 10px; }
-        .nav-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 13px; font-weight: 600; }
-        .nav-btn.on { background: var(--theme-accent-10); color: var(--theme-accent); border-color: var(--theme-accent-40); }
+        #nav { height: 60px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; padding: 0 20px; gap: 10px; }
+        .nav-btn { padding: 8px 15px; border-radius: 8px; border: none; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 13px; }
+        .nav-btn.on { background: var(--theme-accent-10); color: var(--theme-accent); }
+
+        /* CHAT */
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; position: relative; }
+        .msg.me { align-self: flex-end; background: var(--theme-accent-10); border: 1px solid var(--theme-accent-40); }
+        .del-btn { color: #ff4b4b; font-size: 10px; cursor: pointer; margin-left: 10px; display: none; }
         
-        .view { display: none; width: 100%; height: 100%; overflow: hidden; }
+        .view { display: none; width: 100%; height: 100%; }
         .view.on { display: flex; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; }
-
-        #chat-container { flex: 1; display: flex; flex-direction: column; padding: 20px; background: rgba(0,0,0,0.2); }
-        #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 10px; }
-        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 70%; align-self: flex-start; }
-        .msg.me { align-self: flex-end; background: var(--theme-accent-10); border: 1px solid var(--theme-accent-40); }
-        .msg-user { font-size: 10px; color: var(--theme-accent); font-weight: 800; display: block; margin-bottom: 2px; }
-
-        .admin-section { padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .user-badge { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 5px; border: 1px solid rgba(124, 58, 237, 0.2); }
     </style>
 </head>
 <body>
 
     <div id="decoy-body">
-        <div><span class="n-text">404</span><span class="m-text">Not Found</span></div>
+        <div style="font-size:24px; font-weight:500;">404 Not Found</div>
     </div>
 
     <div id="login-overlay">
-        <div class="login-card">
-            <h1>Authorization</h1>
+        <div class="card">
             <div id="login-form">
+                <h2>Authorization</h2><br>
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
-                <button class="submit-btn" id="login-btn">Secure Login</button>
-                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(true)">Request Access</p>
+                <button class="btn" id="login-btn">Login</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(true)">Request Access</p>
             </div>
             <div id="request-form" style="display:none;">
+                <h2>Request Profile</h2><br>
                 <input type="text" id="req-user" placeholder="Username">
                 <input type="email" id="req-email" placeholder="Email">
                 <input type="password" id="req-pass" placeholder="Password">
-                <textarea id="req-note" rows="2" placeholder="Note to Admin"></textarea>
-                <button class="submit-btn" id="req-btn">Send Access Request</button>
-                <p id="cooldown-timer" style="font-size:12px; margin-top:10px; color:#ef4444; display:none;"></p>
-                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(false)">Back</p>
+                <button class="btn" id="req-btn">Send Request</button>
+                <p id="cooldown" style="color:#ff4b4b; font-size:11px; margin-top:5px;"></p>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(false)">Back</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <div style="font-weight: 900; color: var(--theme-accent); margin-right: 20px;">M-TOOL</div>
+            <b style="color:var(--theme-accent)">M-TOOL</b>
             <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
-            <button class="nav-btn" onclick="showTab('chat', this)">Messages</button>
-            <button class="nav-btn" onclick="showTab('games', this)">Games</button>
-            <button id="admin-nav-btn" class="nav-btn" style="display:none; color:#fbbf24;" onclick="showTab('admin', this)">Admin Center</button>
+            <button class="nav-btn" onclick="showTab('chat', this)">Chat</button>
+            <button id="admin-nav" class="nav-btn" style="display:none; color:gold;" onclick="showTab('admin', this)">Admin</button>
             <div style="flex:1"></div>
-            <div id="profile-display" style="color: var(--theme-accent); font-size: 11px; font-weight: 700; margin-right: 10px;">GUEST</div>
-            <button class="nav-btn" style="color:#ff4b4b; border-color:rgba(255,75,75,0.2);" id="logout-btn">Exit</button>
+            <button class="nav-btn" style="color:#ff4b4b" id="logout-btn">Logout</button>
+        </div>
+        
+        <div id="v-home" class="view on"><iframe id="f-home"></iframe></div>
+        
+        <div id="v-chat" class="view">
+            <div id="chat-box"></div>
+            <div style="padding:20px; display:flex; gap:10px; background:rgba(0,0,0,0.2);">
+                <input type="text" id="chat-input" placeholder="Message..." style="margin:0">
+                <button class="btn" style="width:80px" id="send-btn">Send</button>
+            </div>
         </div>
 
-        <div id="main" style="flex:1; overflow:hidden;">
-            <div class="view on" id="v-home"><iframe id="f-home"></iframe></div>
-            <div class="view" id="v-chat">
-                <div id="chat-container">
-                    <div id="chat-box"></div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="chat-input" placeholder="Type a message..." style="margin:0;">
-                        <button class="submit-btn" style="width:100px;" id="send-msg">Send</button>
-                    </div>
-                </div>
-            </div>
-            <div class="view" id="v-games"><iframe id="f-games"></iframe></div>
-            <div class="view" id="v-admin" style="padding:40px; overflow-y:auto; color:#fff;">
-                <h2>Admin Command Center</h2>
-                <div class="admin-section">
-                    <h3>Active Users & Device Data</h3>
-                    <div id="online-list" style="margin-top:15px;"></div>
-                </div>
-                <div class="admin-section">
-                    <h3>Dangerous Commands</h3>
-                    <div style="display:flex; gap:10px;">
-                        <button class="submit-btn" style="width:auto; background:#ef4444;" onclick="location.reload()">Kill All Sessions</button>
-                        <button class="submit-btn" style="width:auto; background:#4b5563;" onclick="alert('Chat logs cleared locally')">Clear Chat View</button>
-                        <button class="submit-btn" style="width:auto; background:#059669;" onclick="showTab('home', document.querySelector('.nav-btn'))">Force Home Redirect</button>
-                    </div>
-                </div>
-            </div>
+        <div id="v-admin" class="view" style="padding:30px; color:#fff; overflow-y:auto;">
+            <h3>Active Users (Devices)</h3><hr><br>
+            <div id="online-list"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, query, where, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -140,151 +119,110 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- DEVICE DETECTION ---
-        const getDeviceInfo = () => {
+        const getDevice = () => {
             const ua = navigator.userAgent;
-            if (/iPhone|iPad|iPod/i.test(ua)) return "Apple Mobile";
-            if (/Android/i.test(ua)) return "Android Mobile";
-            if (/Macintosh/i.test(ua)) return "Mac Desktop";
-            if (/Windows/i.test(ua)) return "Windows PC";
-            return "Unknown Device";
+            if (/iPhone|iPad/i.test(ua)) return "iPhone";
+            if (/Android/i.test(ua)) return "Android";
+            if (/Windows/i.test(ua)) return "Windows";
+            return "PC";
         };
 
-        // --- CHAT SYSTEM ---
+        // --- CHAT LOGIC ---
         const startChat = () => {
-            // Note: If this fails, you MUST create an Index in Firebase Console for timestamp
             const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
             onSnapshot(q, (snap) => {
                 const box = document.getElementById('chat-box');
                 box.innerHTML = "";
                 snap.forEach(d => {
                     const data = d.data();
-                    const isMe = auth.currentUser && data.user === auth.currentUser.email.split('@')[0];
+                    const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
+                    const isAdmin = auth.currentUser && auth.currentUser.email === adminEmail;
+                    
                     const div = document.createElement('div');
                     div.className = `msg ${isMe ? 'me' : ''}`;
-                    div.innerHTML = `<span class="msg-user">${data.user}</span>${data.text}`;
+                    div.innerHTML = `
+                        <small style="color:var(--theme-accent)">${data.user}</small><br>${data.text}
+                        ${isAdmin ? `<span class="del-btn" onclick="window.deleteMsg('${d.id}')" style="display:inline">[Delete]</span>` : ''}
+                    `;
                     box.appendChild(div);
                 });
                 box.scrollTop = box.scrollHeight;
-            }, (error) => { console.error("Chat Error (Index likely missing):", error); });
-        };
-
-        document.getElementById('send-msg').onclick = async () => {
-            const val = document.getElementById('chat-input').value;
-            if(!val || !auth.currentUser) return;
-            await addDoc(collection(db, "messages"), { text: val, user: auth.currentUser.email.split('@')[0], timestamp: serverTimestamp() });
-            document.getElementById('chat-input').value = "";
-        };
-
-        // --- MONITOR SYSTEM ---
-        const startMonitor = () => {
-            const q = query(collection(db, "active_sessions"), where("isOnline", "==", true));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('online-list');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    const el = document.createElement('div');
-                    el.className = "user-badge";
-                    el.innerHTML = `
-                        <span>🟢 <b>${data.username}</b></span>
-                        <span style="font-size:10px; color:var(--theme-muted);">[${data.device || 'Desktop'}]</span>
-                    `;
-                    list.appendChild(el);
-                });
             });
         };
 
-        // --- LOGIN ---
+        window.deleteMsg = async (id) => { await deleteDoc(doc(db, "messages", id)); };
+
+        document.getElementById('send-btn').onclick = async () => {
+            const txt = document.getElementById('chat-input').value;
+            if(!txt) return;
+            await addDoc(collection(db, "messages"), {
+                text: txt,
+                user: auth.currentUser.email.split('@')[0],
+                uid: auth.currentUser.uid,
+                timestamp: serverTimestamp()
+            });
+            document.getElementById('chat-input').value = "";
+        };
+
+        // --- LOGIN & ADMIN ---
         document.getElementById('login-btn').onclick = async () => {
             const email = document.getElementById('email').value;
             try {
-                const userCred = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
-                const uid = userCred.user.uid;
-                const sessionRef = doc(db, "active_sessions", uid);
-
-                let browserId = localStorage.getItem("browser_session_id") || Math.random().toString(36).substring(7);
-                localStorage.setItem("browser_session_id", browserId);
-                
-                const snap = await getDoc(sessionRef);
-                if (snap.exists() && snap.data().isOnline === true && snap.data().currentBrowserId !== browserId) {
-                    alert("Account active elsewhere."); signOut(auth); return;
-                }
-
-                await setDoc(sessionRef, { 
-                    isOnline: true, 
+                const cred = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
+                await setDoc(doc(db, "active_sessions", cred.user.uid), { 
                     username: email.split('@')[0], 
-                    currentBrowserId: browserId, 
-                    device: getDeviceInfo(),
-                    lastActive: serverTimestamp() 
+                    isOnline: true, 
+                    device: getDevice() 
                 }, { merge: true });
                 
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
-                document.getElementById('profile-display').innerText = email.toUpperCase();
-
+                
                 startChat();
-                if (email.toLowerCase() === adminEmail) {
-                    document.getElementById('admin-nav-btn').style.display = 'block';
-                    startMonitor();
+                if(email === adminEmail) {
+                    document.getElementById('admin-nav').style.display = 'block';
+                    onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (snap) => {
+                        const list = document.getElementById('online-list');
+                        list.innerHTML = "";
+                        snap.forEach(u => {
+                            list.innerHTML += `<div style="margin-bottom:10px;">🟢 ${u.data().username} (${u.data().device})</div>`;
+                        });
+                    });
                 }
-            } catch (e) { alert("Access Denied."); }
+            } catch (e) { alert("Access Denied"); }
         };
 
-        document.getElementById('logout-btn').onclick = async () => {
-            if(auth.currentUser) {
-                await setDoc(doc(db, "active_sessions", auth.currentUser.uid), { isOnline: false }, { merge: true });
-                await signOut(auth);
-                location.reload();
-            }
-        };
-
-        // --- ANTI-SPAM REQUEST ---
+        // --- REQUEST WITH ANTI-SPAM ---
         document.getElementById('req-btn').onclick = async () => {
-            const lastReq = localStorage.getItem('last_request_time');
-            const now = Date.now();
-
-            if (lastReq && now - lastReq < 60000) {
-                const wait = Math.ceil((60000 - (now - lastReq)) / 1000);
-                const timer = document.getElementById('cooldown-timer');
-                timer.style.display = 'block';
-                timer.innerText = `Anti-Spam: Wait ${wait}s`;
-                return;
-            }
-
+            const last = localStorage.getItem('last_req');
+            if(last && Date.now() - last < 60000) return alert("Wait 60s");
+            
             const user = document.getElementById('req-user').value;
             const email = document.getElementById('req-email').value;
             const pass = document.getElementById('req-pass').value;
-            if(!user || !email || !pass) return alert("Fill all fields.");
+            
+            await addDoc(collection(db, "requests"), { user, email, pass, device: getDevice() });
+            emailjs.send("service_06y4hgi", "template_56l2irz", { username: user, user_email: email, user_pass: pass, message: "Friend req enabled" });
+            
+            localStorage.setItem('last_req', Date.now());
+            alert("Sent!");
+        };
 
-            localStorage.setItem('last_request_time', now);
-            try {
-                await addDoc(collection(db, "requests"), { username: user, email, password: pass, device: getDeviceInfo(), time: serverTimestamp() });
-                emailjs.send("service_06y4hgi", "template_56l2irz", { username: user, user_email: email, user_pass: pass, message: `Device: ${getDeviceInfo()}` })
-                .then(() => { alert("Sent!"); location.reload(); });
-            } catch (e) { alert("Error."); }
+        document.getElementById('logout-btn').onclick = async () => {
+            await setDoc(doc(db, "active_sessions", auth.currentUser.uid), { isOnline: false }, { merge: true });
+            await signOut(auth); location.reload();
         };
     </script>
 
     <script>
-        document.onkeydown = (e) => {
-            if(e.ctrlKey && e.key === 'x') {
-                e.preventDefault();
-                document.getElementById('decoy-body').style.display = 'none';
-                document.getElementById('login-overlay').style.display = 'flex';
-            }
-        };
-        function toggleAuth(req) {
-            document.getElementById('login-form').style.display = req ? 'none' : 'block';
-            document.getElementById('request-form').style.display = req ? 'block' : 'none';
-        }
-        function showTab(id, b) {
+        document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy-body').style.display = 'none'; document.getElementById('login-overlay').style.display = 'flex'; } };
+        function toggleAuth(req) { document.getElementById('login-form').style.display = req ? 'none' : 'block'; document.getElementById('request-form').style.display = req ? 'block' : 'none'; }
+        function showTab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('on'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
             document.getElementById('v-' + id).classList.add('on');
-            if(b) b.classList.add('on');
-            if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
+            btn.classList.add('on');
         }
     </script>
 </body>
