@@ -14,37 +14,31 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
         
-        /* DECOY IMAGE PAGE */
-        #decoy { 
-            position: fixed; inset: 0; 
-            background: #000 url('IMG_0140.png') no-repeat center center; 
-            background-size: cover; 
-            z-index: 9999; 
-        }
-
-        /* AUTH OVERLAY */
+        #decoy { position: fixed; inset: 0; background: #000 url('IMG_0140.png') no-repeat center center; background-size: cover; z-index: 9999; }
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
         .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
-        /* PORTAL UI */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
         #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 10px; border-bottom: 1px solid var(--border); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.1); color: var(--accent); }
 
-        /* CHAT & CMD */
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; align-self: flex-start; border: 1px solid var(--border); }
         .msg.me { align-self: flex-end; background: var(--accent); }
+        
         #cmd-menu { display: none; position: absolute; bottom: 80px; left: 20px; width: 220px; background: #121225; border: 1px solid var(--accent); border-radius: 10px; z-index: 1001; }
         .cmd-item { padding: 10px; color: #fff; font-size: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .cmd-item:hover { background: var(--accent); }
 
-        /* IDLE WARNING POPUP */
         #idle-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; align-items: center; justify-content: center; }
         
-        iframe { flex: 1; border: none; }
+        .user-node { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 5px; border: 1px solid var(--border); }
+        .kick-btn { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 10px; font-weight: bold; }
+
+        iframe { flex: 1; border: none; transition: 0.3s; }
         @keyframes shake { 0% {transform: translate(1px, 1px);} 50% {transform: translate(-1px, -2px);} 100% {transform: translate(1px, 1px);} }
     </style>
 </head>
@@ -53,10 +47,10 @@
     <div id="decoy"></div>
 
     <div id="idle-modal">
-        <div class="card" style="border-color: red;">
-            <h2>Inactivity Detected</h2><br>
-            <p>Are you still doing something? You will be purged in 2 minutes.</p><br>
-            <button class="btn" onclick="resetIdleTimer(true)">I'm Still Here</button>
+        <div class="card" style="border-color: #ef4444;">
+            <h2>Activity Check</h2><br>
+            <p>System will purge your session in 2 minutes unless you confirm activity.</p><br>
+            <button class="btn" onclick="resetIdleTimer(true)">Maintain Connection</button>
         </div>
     </div>
 
@@ -65,16 +59,16 @@
             <div id="login-form">
                 <h2>M-TOOL OS</h2><br>
                 <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Password">
+                <input type="password" id="pass" placeholder="Security Key">
                 <button class="btn" id="login-btn">Initialize</button>
                 <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
             <div id="req-form" style="display:none;">
-                <h2>Request Access</h2><br>
+                <h2>Request Node Access</h2><br>
                 <input type="text" id="r-user" placeholder="Username">
                 <input type="email" id="r-email" placeholder="Email">
                 <input type="password" id="r-pass" placeholder="Password">
-                <button class="btn" id="req-btn">Send Request</button>
+                <button class="btn" id="req-btn">Submit Request</button>
                 <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
             </div>
         </div>
@@ -82,12 +76,12 @@
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent)">M-TOOL</b>
+            <b style="color:var(--accent); cursor: help;" onclick="alert('ADMIN CMDS:\n/clear - Wipe Chat\n/blur - Blur Screen\n/shake - Vibrate Frame\n/reset - Clear Filters')">M-TOOL ⓘ</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
             <div class="nav-item" onclick="tab('chat', this)">Chat</div>
             <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-item" style="color:red; background:none; border:none;" id="out-btn">Logout</button>
+            <button class="nav-item" style="color:#ef4444; background:none; border:none;" id="out-btn">Purge Session</button>
         </div>
 
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
@@ -100,8 +94,9 @@
             </div>
         </div>
         <div id="v-admin" class="view" style="padding:30px; color:#fff;">
-            <h2>Admin Monitor</h2><br>
-            <div id="online-list">Scanning nodes...</div>
+            <h2>Admin Node Monitor</h2>
+            <p style="font-size:11px; color:var(--muted); margin-bottom:20px;">Tap 'Remove' to force logout a user.</p>
+            <div id="online-list"></div>
         </div>
     </div>
 
@@ -122,23 +117,16 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADM = "hjass2865@gmail.com";
+        const ADM_EMAIL = "hjass2865@gmail.com";
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- IDLE LOGIC ---
-        let idleTimer;
-        let warningTimer;
-
+        let idleTimer, warningTimer;
         window.resetIdleTimer = (manual = false) => {
             if(manual) document.getElementById('idle-modal').style.display = 'none';
-            clearTimeout(idleTimer);
-            clearTimeout(warningTimer);
-            
-            // 28 minutes until warning
+            clearTimeout(idleTimer); clearTimeout(warningTimer);
             idleTimer = setTimeout(() => {
                 if(auth.currentUser) document.getElementById('idle-modal').style.display = 'flex';
-                // 2 minutes more until deletion
                 warningTimer = setTimeout(forceLogoutAndPurge, 120000); 
             }, 1680000); 
         };
@@ -146,8 +134,15 @@
         const forceLogoutAndPurge = async () => {
             if(auth.currentUser) {
                 await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
-                await signOut(auth);
-                location.reload();
+                await signOut(auth); location.reload();
+            }
+        };
+
+        // ADMIN REMOVAL TOOL
+        window.removeUser = async (uid) => {
+            if(confirm("Force disconnect this user?")) {
+                await deleteDoc(doc(db, "active_sessions", uid));
+                alert("Node Terminated.");
             }
         };
 
@@ -155,73 +150,89 @@
             const chatIn = document.getElementById('chat-in');
             const menu = document.getElementById('cmd-menu');
 
-            // --- LISTENERS ---
-            ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(e => {
-                document.addEventListener(e, () => resetIdleTimer());
-            });
+            ['mousedown', 'mousemove', 'keypress'].forEach(e => document.addEventListener(e, () => resetIdleTimer()));
 
-            window.fillCmd = (c) => { chatIn.value = c; menu.style.display = 'none'; chatIn.focus(); };
-
-            document.getElementById('send-btn').onclick = async () => {
-                const val = chatIn.value;
-                if(!val) return;
-                if(val === '/clear' && auth.currentUser.email === ADM) {
+            const execCmd = async (val) => {
+                const isAdmin = auth.currentUser.email === ADM_EMAIL;
+                const frame = document.querySelector('.view.active iframe');
+                
+                if(val === '/clear' && isAdmin) {
                     const docs = await getDocs(collection(db, "messages"));
                     docs.forEach(async d => await deleteDoc(doc(db, "messages", d.id)));
                 } else if(val === '/blur') {
-                    document.querySelector('.view.active iframe').style.filter = 'blur(5px)';
+                    if(frame) frame.style.filter = 'blur(8px)';
+                } else if(val === '/shake') {
+                    if(frame) frame.style.animation = 'shake 0.2s infinite';
+                } else if(val === '/reset') {
+                    if(frame) { frame.style.filter = 'none'; frame.style.animation = 'none'; }
                 } else {
                     await addDoc(collection(db, "messages"), { text: val, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, timestamp: serverTimestamp() });
                 }
+            };
+
+            document.getElementById('send-btn').onclick = () => {
+                if(!chatIn.value) return;
+                execCmd(chatIn.value);
                 chatIn.value = ""; menu.style.display = 'none';
             };
 
             document.getElementById('login-btn').onclick = async () => {
+                const email = document.getElementById('email').value;
                 try {
-                    const res = await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
+                    const res = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
                     document.getElementById('auth-overlay').style.display = 'none';
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                     resetIdleTimer();
                     
-                    if(res.user.email === ADM) {
+                    if(email === ADM_EMAIL) {
                         document.getElementById('adm-nav').style.display = 'block';
                         onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (s) => {
                             const list = document.getElementById('online-list');
                             list.innerHTML = "";
-                            s.forEach(u => list.innerHTML += `<p>🟢 ${u.data().username}</p>`);
+                            s.forEach(u => {
+                                const data = u.data();
+                                // Filter out admin from the list
+                                if(data.email !== ADM_EMAIL) {
+                                    list.innerHTML += `
+                                        <div class="user-node">
+                                            <span>🟢 ${data.username}</span>
+                                            <button class="kick-btn" onclick="window.removeUser('${u.id}')">REMOVE</button>
+                                        </div>`;
+                                }
+                            });
                         });
                     }
-                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: res.user.email.split('@')[0] }, { merge: true });
+                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: email.split('@')[0], email: email }, { merge: true });
                     
-                    // Start Chat Stream
-                    const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
-                    onSnapshot(q, (snap) => {
+                    onSnapshot(query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50)), (snap) => {
                         const box = document.getElementById('chat-box');
                         box.innerHTML = "";
                         snap.forEach(d => {
                             const m = d.data();
-                            box.innerHTML += `<div class="msg ${auth.currentUser && m.uid === auth.currentUser.uid ? 'me' : ''}"><small>${m.user}</small><br>${m.text}</div>`;
+                            box.innerHTML += `<div class="msg ${auth.currentUser && m.uid === auth.currentUser.uid ? 'me' : ''}"><small style="color:var(--accent)">${m.user}</small><br>${m.text}</div>`;
                         });
                         box.scrollTop = box.scrollHeight;
                     });
-                } catch { alert("Failed Initialization"); }
+                } catch { alert("Node Access Denied."); }
             };
 
             document.getElementById('out-btn').onclick = async () => {
                 if(auth.currentUser) await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
                 await signOut(auth); location.reload();
             };
+
+            chatIn.addEventListener('input', (e) => {
+                if (e.target.value.startsWith('/')) {
+                    menu.style.display = 'block';
+                    menu.innerHTML = ['/clear', '/blur', '/shake', '/reset'].map(c => `<div class="cmd-item" onclick="document.getElementById('chat-in').value='${c}'; document.getElementById('cmd-menu').style.display='none';">${c}</div>`).join('');
+                } else { menu.style.display = 'none'; }
+            });
         };
     </script>
 
     <script>
-        document.onkeydown = (e) => { 
-            if(e.ctrlKey && e.key === 'x') { 
-                document.getElementById('decoy').style.display = 'none'; 
-                document.getElementById('auth-overlay').style.display = 'flex'; 
-            } 
-        };
+        document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy').style.display = 'none'; document.getElementById('auth-overlay').style.display = 'flex'; } };
         function tab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
