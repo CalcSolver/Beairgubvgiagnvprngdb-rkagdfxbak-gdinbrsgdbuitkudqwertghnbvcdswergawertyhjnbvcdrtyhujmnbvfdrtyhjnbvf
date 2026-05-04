@@ -4,104 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not Found</title>
-    <link id="fav" rel="shortcut icon" type="image/png" href="https://www.google.com/favicon.ico">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
-            --theme-bg: #0b0b18;
-            --theme-accent: #7c3aed;
-            --theme-accent-2: #4f46e5;
-            --theme-muted: #8078a8;
-            --theme-accent-10: rgba(124,58,237,0.1);
-            --theme-accent-40: rgba(124,58,237,0.4);
+            --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5;
+            --muted: #8078a8; --glass: rgba(255, 255, 255, 0.03);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #fff; overflow: hidden; }
         
         /* DECOY */
-        #decoy-body { background: #fff; color: #000; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 10001; position: relative; }
-        
-        /* LOGIN & CARDS */
-        #login-overlay { display: none; position: fixed; inset: 0; z-index: 10000; background: var(--theme-bg); align-items: center; justify-content: center; }
-        .card { width: 90%; max-width: 420px; padding: 40px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; }
-        .btn:disabled { opacity: 0.5; }
+        #decoy { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 20px; color: #333; }
+
+        /* AUTH */
+        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
+        .card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; outline: none; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
         /* PORTAL */
-        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
-        #nav { height: 60px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; padding: 0 20px; gap: 10px; }
-        .nav-btn { padding: 8px 15px; border-radius: 8px; border: none; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 13px; }
-        .nav-btn.on { background: var(--theme-accent-10); color: var(--theme-accent); }
+        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
+        #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-item { color: var(--muted); cursor: pointer; font-size: 14px; font-weight: 600; padding: 8px 15px; border-radius: 8px; transition: 0.2s; }
+        .nav-item.active { background: rgba(124,58,237,0.1); color: var(--accent); }
 
         /* CHAT */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; position: relative; }
-        .msg.me { align-self: flex-end; background: var(--theme-accent-10); border: 1px solid var(--theme-accent-40); }
-        .del-btn { color: #ff4b4b; font-size: 10px; cursor: pointer; margin-left: 10px; display: none; }
+        #chat-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px; border-radius: 15px; background: rgba(255,255,255,0.05); color: #fff; max-width: 75%; align-self: flex-start; border: 1px solid rgba(255,255,255,0.05); }
+        .msg.me { align-self: flex-end; background: rgba(124,58,237,0.15); border-color: var(--accent); }
+        .msg-info { font-size: 10px; color: var(--accent); margin-bottom: 4px; font-weight: 800; display: flex; justify-content: space-between; }
         
         .view { display: none; width: 100%; height: 100%; }
-        .view.on { display: flex; flex-direction: column; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .view.active { display: flex; flex-direction: column; }
+        iframe { flex: 1; border: none; }
+
+        .admin-log { background: #000; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; color: #0f0; margin-bottom: 10px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <div id="decoy-body">
-        <div style="font-size:24px; font-weight:500;">404 Not Found</div>
-    </div>
+    <div id="decoy">404 Not Found</div>
 
-    <div id="login-overlay">
+    <div id="auth-overlay">
         <div class="card">
             <div id="login-form">
-                <h2>Authorization</h2><br>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Password">
-                <button class="btn" id="login-btn">Login</button>
-                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(true)">Request Access</p>
+                <h2 style="margin-bottom:20px;">M-TOOL Entry</h2>
+                <input type="email" id="email" placeholder="System Email">
+                <input type="password" id="pass" placeholder="Security Key">
+                <button class="btn" id="login-btn">Initialize</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
-            <div id="request-form" style="display:none;">
-                <h2>Request Profile</h2><br>
-                <input type="text" id="req-user" placeholder="Username">
-                <input type="email" id="req-email" placeholder="Email">
-                <input type="password" id="req-pass" placeholder="Password">
-                <button class="btn" id="req-btn">Send Request</button>
-                <p id="cooldown" style="color:#ff4b4b; font-size:11px; margin-top:5px;"></p>
-                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(false)">Back</p>
+            <div id="req-form" style="display:none;">
+                <h2 style="margin-bottom:20px;">Access Request</h2>
+                <input type="text" id="r-user" placeholder="Desired Username">
+                <input type="email" id="r-email" placeholder="Your Email">
+                <input type="password" id="r-pass" placeholder="Desired Password">
+                <button class="btn" id="req-btn">Submit Request</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back to Login</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--theme-accent)">M-TOOL</b>
-            <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
-            <button class="nav-btn" onclick="showTab('chat', this)">Chat</button>
-            <button id="admin-nav" class="nav-btn" style="display:none; color:gold;" onclick="showTab('admin', this)">Admin</button>
+            <span style="color:var(--accent); font-weight:900; letter-spacing:1px;">M-TOOL</span>
+            <div class="nav-item active" onclick="tab('home', this)">Home</div>
+            <div class="nav-item" onclick="tab('chat', this)">Chat</div>
+            <div class="nav-item" onclick="tab('games', this)">Games</div>
+            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-btn" style="color:#ff4b4b" id="logout-btn">Logout</button>
+            <div id="user-display" style="color:var(--muted); font-size:12px; font-weight:700;">GUEST</div>
+            <div class="nav-item" style="color:#ff4b4b;" id="out-btn">Exit</div>
         </div>
-        
-        <div id="v-home" class="view on"><iframe id="f-home"></iframe></div>
+
+        <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
         
         <div id="v-chat" class="view">
             <div id="chat-box"></div>
-            <div style="padding:20px; display:flex; gap:10px; background:rgba(0,0,0,0.2);">
-                <input type="text" id="chat-input" placeholder="Message..." style="margin:0">
-                <button class="btn" style="width:80px" id="send-btn">Send</button>
+            <div style="padding:20px; background:rgba(0,0,0,0.3); display:flex; gap:10px;">
+                <input type="text" id="chat-in" placeholder="Type a message or /command..." style="margin:0;">
+                <button class="btn" style="width:100px;" id="send-btn">Send</button>
             </div>
         </div>
 
+        <div id="v-games" class="view"><iframe id="f-games"></iframe></div>
+
         <div id="v-admin" class="view" style="padding:30px; color:#fff; overflow-y:auto;">
-            <h3>Active Users (Devices)</h3><hr><br>
+            <h2>Admin Command Center</h2><br>
+            <div class="admin-log" id="admin-stats">Checking active nodes...</div>
             <div id="online-list"></div>
+            <br>
+            <h3>Global System Commands</h3>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="width:auto; background:#ef4444;" onclick="adminAction('purge')">Purge Chat</button>
+                <button class="btn" style="width:auto; background:#4b5563;" onclick="adminAction('alert')">Broadcast Alert</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -115,115 +120,119 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const adminEmail = "hjass2865@gmail.com";
+        const ADM = "hjass2865@gmail.com";
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        const getDevice = () => {
-            const ua = navigator.userAgent;
-            if (/iPhone|iPad/i.test(ua)) return "iPhone";
-            if (/Android/i.test(ua)) return "Android";
-            if (/Windows/i.test(ua)) return "Windows";
-            return "PC";
+        // --- COMMAND LOGIC ---
+        const handleCommand = async (input) => {
+            const args = input.split(' ');
+            const cmd = args[0].toLowerCase();
+            const isAdmin = auth.currentUser.email === ADM;
+
+            if (cmd === '/clear' && isAdmin) {
+                const q = await getDocs(collection(db, "messages"));
+                q.forEach(async (m) => await deleteDoc(doc(db, "messages", m.id)));
+                return true;
+            }
+            if (cmd === '/alert' && isAdmin) {
+                alert("GLOBAL ADMIN ALERT: " + args.slice(1).join(' '));
+                return true;
+            }
+            return false;
         };
 
-        // --- CHAT LOGIC ---
+        // --- CHAT SYSTEM ---
         const startChat = () => {
-            const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
+            const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(60));
             onSnapshot(q, (snap) => {
                 const box = document.getElementById('chat-box');
                 box.innerHTML = "";
                 snap.forEach(d => {
-                    const data = d.data();
-                    const isMe = auth.currentUser && data.uid === auth.currentUser.uid;
-                    const isAdmin = auth.currentUser && auth.currentUser.email === adminEmail;
-                    
+                    const m = d.data();
+                    const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
                     const div = document.createElement('div');
                     div.className = `msg ${isMe ? 'me' : ''}`;
                     div.innerHTML = `
-                        <small style="color:var(--theme-accent)">${data.user}</small><br>${data.text}
-                        ${isAdmin ? `<span class="del-btn" onclick="window.deleteMsg('${d.id}')" style="display:inline">[Delete]</span>` : ''}
+                        <div class="msg-info">
+                            <span>${m.user}</span>
+                            ${auth.currentUser.email === ADM ? `<span style="cursor:pointer;color:red" onclick="window.del('${d.id}')">✕</span>` : ''}
+                        </div>
+                        ${m.text}
                     `;
                     box.appendChild(div);
                 });
                 box.scrollTop = box.scrollHeight;
-            });
+            }, (err) => { console.error("Chat Failed. Ensure Index is created!", err); });
         };
 
-        window.deleteMsg = async (id) => { await deleteDoc(doc(db, "messages", id)); };
+        window.del = async (id) => { if(auth.currentUser.email === ADM) await deleteDoc(doc(db, "messages", id)); };
 
         document.getElementById('send-btn').onclick = async () => {
-            const txt = document.getElementById('chat-input').value;
-            if(!txt) return;
+            const val = document.getElementById('chat-in').value;
+            if(!val) return;
+            if(val.startsWith('/')) {
+                const executed = await handleCommand(val);
+                if(executed) { document.getElementById('chat-in').value = ""; return; }
+            }
             await addDoc(collection(db, "messages"), {
-                text: txt,
-                user: auth.currentUser.email.split('@')[0],
-                uid: auth.currentUser.uid,
-                timestamp: serverTimestamp()
+                text: val, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, timestamp: serverTimestamp()
             });
-            document.getElementById('chat-input').value = "";
+            document.getElementById('chat-in').value = "";
         };
 
-        // --- LOGIN & ADMIN ---
+        // --- AUTH ---
         document.getElementById('login-btn').onclick = async () => {
-            const email = document.getElementById('email').value;
+            const e = document.getElementById('email').value;
             try {
-                const cred = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
-                await setDoc(doc(db, "active_sessions", cred.user.uid), { 
-                    username: email.split('@')[0], 
-                    isOnline: true, 
-                    device: getDevice() 
-                }, { merge: true });
-                
-                document.getElementById('login-overlay').style.display = 'none';
+                const res = await signInWithEmailAndPassword(auth, e, document.getElementById('pass').value);
+                document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
+                document.getElementById('user-display').innerText = e.split('@')[0].toUpperCase();
                 
                 startChat();
-                if(email === adminEmail) {
-                    document.getElementById('admin-nav').style.display = 'block';
-                    onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (snap) => {
+                if(e === ADM) {
+                    document.getElementById('adm-nav').style.display = 'block';
+                    onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (s) => {
                         const list = document.getElementById('online-list');
                         list.innerHTML = "";
-                        snap.forEach(u => {
-                            list.innerHTML += `<div style="margin-bottom:10px;">🟢 ${u.data().username} (${u.data().device})</div>`;
-                        });
+                        s.forEach(u => list.innerHTML += `<div class="admin-log">🟢 ${u.data().username} - Online</div>`);
                     });
                 }
-            } catch (e) { alert("Access Denied"); }
+                await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: e.split('@')[0] }, { merge: true });
+            } catch { alert("Invalid Credentials"); }
         };
 
-        // --- REQUEST WITH ANTI-SPAM ---
-        document.getElementById('req-btn').onclick = async () => {
-            const last = localStorage.getItem('last_req');
-            if(last && Date.now() - last < 60000) return alert("Wait 60s");
-            
-            const user = document.getElementById('req-user').value;
-            const email = document.getElementById('req-email').value;
-            const pass = document.getElementById('req-pass').value;
-            
-            await addDoc(collection(db, "requests"), { user, email, pass, device: getDevice() });
-            emailjs.send("service_06y4hgi", "template_56l2irz", { username: user, user_email: email, user_pass: pass, message: "Friend req enabled" });
-            
-            localStorage.setItem('last_req', Date.now());
-            alert("Sent!");
-        };
-
-        document.getElementById('logout-btn').onclick = async () => {
+        document.getElementById('out-btn').onclick = async () => {
             await setDoc(doc(db, "active_sessions", auth.currentUser.uid), { isOnline: false }, { merge: true });
             await signOut(auth); location.reload();
+        };
+
+        document.getElementById('req-btn').onclick = async () => {
+            const last = localStorage.getItem('last_r');
+            if(last && Date.now() - last < 60000) return alert("Anti-Spam active. Wait 60s.");
+            const u = document.getElementById('r-user').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+            await addDoc(collection(db, "requests"), { u, e, p, time: serverTimestamp() });
+            emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
+            localStorage.setItem('last_r', Date.now());
+            alert("Request sent to Admin.");
         };
     </script>
 
     <script>
-        document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy-body').style.display = 'none'; document.getElementById('login-overlay').style.display = 'flex'; } };
-        function toggleAuth(req) { document.getElementById('login-form').style.display = req ? 'none' : 'block'; document.getElementById('request-form').style.display = req ? 'block' : 'none'; }
-        function showTab(id, btn) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-            document.getElementById('v-' + id).classList.add('on');
-            btn.classList.add('on');
+        document.onkeydown = (e) => { if(e.ctrlKey && e.key === 'x') { document.getElementById('decoy').style.display = 'none'; document.getElementById('auth-overlay').style.display = 'flex'; } };
+        function toggleMode(req) { document.getElementById('login-form').style.display = req ? 'none' : 'block'; document.getElementById('req-form').style.display = req ? 'block' : 'none'; }
+        function tab(id, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            btn.classList.add('active');
+            if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
         }
+        window.adminAction = (type) => { alert("Execute " + type + " from chat using /clear or /alert [msg]"); }
     </script>
 </body>
 </html>
