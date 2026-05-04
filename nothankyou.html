@@ -19,17 +19,14 @@
             --theme-accent-40: rgba(124,58,237,0.4);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
         
         /* --- 404 DECOY --- */
-        #decoy-body { 
-            background: #fff; color: #000; height: 100vh; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        }
+        #decoy-body { background: #fff; color: #000; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10001; position: relative; }
         .n-text { font-size: 24px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 20px; margin-right: 20px; }
         .m-text { font-size: 14px; }
 
-        /* --- LOGIN OVERLAY --- */
+        /* --- LOGIN UI --- */
         #login-overlay {
             display: none; position: fixed; inset: 0; z-index: 10000;
             background: var(--theme-bg);
@@ -37,90 +34,72 @@
                               radial-gradient(circle at 80% 70%, var(--theme-glow-2) 0%, transparent 50%);
             align-items: center; justify-content: center;
         }
-
         .login-card {
-            width: 90%; max-width: 420px; padding: 45px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px var(--theme-accent-10);
-            backdrop-filter: blur(30px); text-align: center; color: #e5e3ff;
+            width: 90%; max-width: 420px; padding: 45px; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8); backdrop-filter: blur(30px); text-align: center; color: #e5e3ff;
         }
-
-        input, textarea {
-            width: 100%; padding: 15px; margin-bottom: 15px;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px; color: #fff; outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--theme-accent); background: rgba(124,58,237,0.08); }
-
-        .submit-btn {
-            width: 100%; padding: 15px; border: none; border-radius: 14px;
-            background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2));
-            color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
-        }
-        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,58,237,0.4); }
+        input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #fff; outline: none; }
+        .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
 
         /* --- PORTAL UI --- */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
         #nav { height: 65px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 25px; gap: 10px; }
         .nav-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 14px; font-weight: 600; }
         .nav-btn.on { background: var(--theme-accent-10); color: var(--theme-accent); border-color: var(--theme-accent-40); }
-
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.on { display: flex; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; }
-
-        #editor-split { display: flex; flex: 1; }
-        #code-in { width: 50%; background: #070714; color: #00ff88; padding: 25px; border: none; font-family: monospace; outline: none; resize: none; }
-        #code-out { width: 50%; background: #fff; border: none; }
+        
+        /* Monitor Badge */
+        .online-badge { padding: 8px 15px; background: rgba(124,58,237,0.1); border: 1px solid var(--theme-accent); border-radius: 10px; color: #fff; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+        .dot { width: 7px; height: 7px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
     </style>
 </head>
 <body>
 
     <div id="decoy-body">
         <div><span class="n-text">404</span><span class="m-text">Not Found</span></div>
-        <div style="position: fixed; bottom: 20px; font-family: serif; font-size: 13px; color: #333;">nginx/1.24.0</div>
     </div>
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1 style="margin-bottom:10px;">System Login</h1>
-            <p style="margin-bottom:25px; color:var(--theme-muted);">Authorization required for portal access.</p>
-            <div id="login-form">
+            <h1>System Login</h1>
+            <div id="login-form" style="margin-top:20px;">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
                 <button class="submit-btn" id="login-btn">Sign In</button>
-                <div style="font-size:12px; margin-top:20px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(true)">Request Access</div>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(true)">Request Access</p>
             </div>
-            <div id="request-form" style="display:none;">
+            <div id="request-form" style="display:none; margin-top:20px;">
                 <input type="text" id="req-user" placeholder="Username">
                 <input type="email" id="req-email" placeholder="Email">
-                <input type="password" id="req-pass" placeholder="Password">
-                <textarea id="req-note" rows="2" placeholder="Note to Admin..."></textarea>
-                <button class="submit-btn" id="req-btn">Send Profile Request</button>
-                <div style="font-size:12px; margin-top:20px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(false)">Back to Login</div>
+                <input type="password" id="req-pass" placeholder="Desired Password">
+                <textarea id="req-note" rows="2" placeholder="Note to Admin"></textarea>
+                <button class="submit-btn" id="req-btn">Send Request</button>
+                <p style="font-size:12px; margin-top:15px; cursor:pointer;" onclick="toggleAuth(false)">Back to Login</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <div style="font-weight: 900; color: var(--theme-accent); margin-right: 20px; letter-spacing:1px;">M-TOOL</div>
+            <div style="font-weight: 900; color: var(--theme-accent); margin-right: 20px;">M-TOOL</div>
             <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
+            <button class="nav-btn" onclick="showTab('monitor', this)">Monitor</button>
             <button class="nav-btn" onclick="showTab('games', this)">Games</button>
             <button class="nav-btn" onclick="showTab('ixl', this)">IXL</button>
-            <button class="nav-btn" onclick="showTab('editor', this)">Editor</button>
-            <button class="nav-btn" onclick="showTab('trans', this)">Translate</button>
             <div style="flex:1"></div>
-            <div id="profile-display" style="color: var(--theme-accent); font-size: 12px; margin-right: 15px; font-weight: 700;">GUEST</div>
+            <div id="profile-display" style="color: var(--theme-accent); font-size: 12px; font-weight: 700; margin-right: 15px;">GUEST</div>
             <div id="clock" style="font-family: monospace; color: var(--theme-muted-2); font-size: 12px;">00:00:00</div>
         </div>
 
         <div id="main" style="flex:1; overflow:hidden;">
             <div class="view on" id="v-home"><iframe id="f-home"></iframe></div>
-            <div class="view" id="v-editor"><div id="editor-split"><textarea id="code-in" oninput="runCode()"><h1>Editor</h1></textarea><iframe id="code-out"></iframe></div></div>
-            <div class="view" id="v-trans"><iframe src="https://translate.google.com/"></iframe></div>
+            <div class="view" id="v-monitor" style="padding:40px;">
+                <h2 style="color:#fff; margin-bottom:20px;">Live Users</h2>
+                <div id="online-list" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+            </div>
             <div class="view" id="v-games"><iframe id="f-games"></iframe></div>
             <div class="view" id="v-ixl"><iframe id="f-ixl"></iframe></div>
         </div>
@@ -129,7 +108,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -144,67 +123,62 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- EMAIL JS INIT ---
-        (function(){ emailjs.init("6iGADKihYbPC4ecb_"); })();
+        emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- LOGIN LOGIC ---
+        // --- MONITORING LOGIC ---
+        const startMonitor = () => {
+            const q = query(collection(db, "active_sessions"), where("isOnline", "==", true));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('online-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const el = document.createElement('div');
+                    el.className = "online-badge";
+                    el.innerHTML = `<div class="dot"></div> ${d.data().username || 'User'}`;
+                    list.appendChild(el);
+                });
+            });
+        };
+
+        // --- LOGIN ---
         document.getElementById('login-btn').onclick = async () => {
             const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-
             try {
-                const userCred = await signInWithEmailAndPassword(auth, email, pass);
+                const userCred = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
                 const uid = userCred.user.uid;
                 const sessionRef = doc(db, "active_sessions", uid);
                 
                 const snap = await getDoc(sessionRef);
                 if (snap.exists() && snap.data().isOnline === true) {
-                    alert("This account is already logged in on another device.");
-                    signOut(auth);
-                    return;
+                    alert("Account already in use."); signOut(auth); return;
                 }
 
-                await setDoc(sessionRef, { isOnline: true, lastActive: serverTimestamp() });
-
+                await setDoc(sessionRef, { isOnline: true, username: email.split('@')[0], lastActive: serverTimestamp() });
+                
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                 document.getElementById('profile-display').innerText = email.split('@')[0].toUpperCase();
-
-                window.addEventListener('beforeunload', () => { setDoc(sessionRef, { isOnline: false }); });
-            } catch (e) { alert("Access Denied: Invalid Credentials."); }
+                
+                startMonitor();
+                window.addEventListener('beforeunload', () => setDoc(sessionRef, { isOnline: false }));
+            } catch (e) { alert("Denied."); }
         };
 
-        // --- REQUEST LOGIC ---
+        // --- REQUEST ---
         document.getElementById('req-btn').onclick = async () => {
             const user = document.getElementById('req-user').value;
             const email = document.getElementById('req-email').value;
             const pass = document.getElementById('req-pass').value;
-            const note = document.getElementById('req-note').value;
+            if(!user || !email || !pass) return alert("Fill all fields.");
 
-            if(!user || !email || !pass) return alert("All fields are required.");
-
-            // 1. Save to Firebase
-            await addDoc(collection(db, "requests"), { username: user, email, password: pass, note, time: new Date() });
-
-            // 2. Send to Outlook via EmailJS
-            emailjs.send("service_06y4hgi", "template_425sz3c", {
-                username: user,
-                user_email: email,
-                user_pass: pass,
-                message: note
-            }).then(() => {
-                alert("Request sent successfully!");
-                location.reload();
-            }).catch((err) => {
-                alert("Error sending request to inbox, but it's saved in the system.");
-                console.log(err);
-            });
+            await addDoc(collection(db, "requests"), { username: user, email, password: pass, time: new Date() });
+            emailjs.send("service_06y4hgi", "template_425sz3c", { username: user, user_email: email, user_pass: pass, message: document.getElementById('req-note').value })
+            .then(() => { alert("Sent!"); location.reload(); });
         };
     </script>
 
     <script>
-        // Secret Switch (CTRL + X)
         document.onkeydown = (e) => {
             if(e.ctrlKey && e.key === 'x') {
                 e.preventDefault();
@@ -212,12 +186,10 @@
                 document.getElementById('login-overlay').style.display = 'flex';
             }
         };
-
         function toggleAuth(req) {
             document.getElementById('login-form').style.display = req ? 'none' : 'block';
             document.getElementById('request-form').style.display = req ? 'block' : 'none';
         }
-
         function showTab(id, b) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('on'));
@@ -226,13 +198,6 @@
             if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
             if(id === 'ixl') document.getElementById('f-ixl').src = "https://ixlmath.nwpa.com.au/";
         }
-
-        function runCode() {
-            const html = document.getElementById('code-in').value;
-            const out = document.getElementById('code-out').contentWindow.document;
-            out.open(); out.write(html); out.close();
-        }
-
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
