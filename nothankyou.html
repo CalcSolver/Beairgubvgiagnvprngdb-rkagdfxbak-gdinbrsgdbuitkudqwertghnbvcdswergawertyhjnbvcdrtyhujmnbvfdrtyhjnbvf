@@ -26,13 +26,14 @@
         .n-text { font-size: 24px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 20px; margin-right: 20px; }
         .m-text { font-size: 14px; }
 
-        /* LOGIN */
+        /* LOGIN & REQUEST CARDS */
         #login-overlay { display: none; position: fixed; inset: 0; z-index: 10000; background: var(--theme-bg); align-items: center; justify-content: center; }
-        .login-card { width: 90%; max-width: 420px; padding: 45px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; backdrop-filter: blur(30px); text-align: center; color: #e5e3ff; }
+        .login-card { width: 90%; max-width: 420px; padding: 45px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; backdrop-filter: blur(30px); text-align: center; color: #e5e3ff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; color: #fff; outline: none; }
-        .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .submit-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent-2)); color: white; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+        .submit-btn:active { transform: scale(0.98); }
 
-        /* PORTAL */
+        /* PORTAL UI */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--theme-bg); z-index: 999; }
         #nav { height: 65px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 25px; gap: 10px; }
         .nav-btn { padding: 9px 16px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--theme-muted); cursor: pointer; font-size: 13px; font-weight: 600; }
@@ -42,14 +43,14 @@
         .view.on { display: flex; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* MESSAGES */
+        /* CHAT UI */
         #chat-container { flex: 1; display: flex; flex-direction: column; padding: 20px; background: rgba(0,0,0,0.2); }
         #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 10px; }
         .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 70%; align-self: flex-start; }
         .msg.me { align-self: flex-end; background: var(--theme-accent-10); border: 1px solid var(--theme-accent-40); }
         .msg-user { font-size: 10px; color: var(--theme-accent); font-weight: 800; display: block; margin-bottom: 2px; }
 
-        /* ADMIN */
+        /* ADMIN PANEL */
         .admin-section { padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
@@ -61,19 +62,19 @@
 
     <div id="login-overlay">
         <div class="login-card">
-            <h1>Authorization</h1>
-            <div id="login-form" style="margin-top:20px;">
+            <h1 style="margin-bottom:10px;">Authorization</h1>
+            <div id="login-form">
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
-                <button class="submit-btn" id="login-btn">Sign In</button>
+                <button class="submit-btn" id="login-btn">Secure Login</button>
                 <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(true)">Request Access</p>
             </div>
-            <div id="request-form" style="display:none; margin-top:20px;">
+            <div id="request-form" style="display:none;">
                 <input type="text" id="req-user" placeholder="Username">
                 <input type="email" id="req-email" placeholder="Email">
                 <input type="password" id="req-pass" placeholder="Desired Password">
-                <textarea id="req-note" rows="2" placeholder="Note to Admin"></textarea>
-                <button class="submit-btn" id="req-btn">Send Profile Request</button>
+                <textarea id="req-note" rows="2" placeholder="Note to Admin (Optional)"></textarea>
+                <button class="submit-btn" id="req-btn">Send Access Request</button>
                 <p style="font-size:12px; margin-top:15px; cursor:pointer; color:var(--theme-muted);" onclick="toggleAuth(false)">Back to Login</p>
             </div>
         </div>
@@ -85,7 +86,7 @@
             <button class="nav-btn on" onclick="showTab('home', this)">Home</button>
             <button class="nav-btn" onclick="showTab('chat', this)">Messages</button>
             <button class="nav-btn" onclick="showTab('games', this)">Games</button>
-            <button id="admin-nav-btn" class="nav-btn" style="display:none; color:#fbbf24;" onclick="showTab('admin', this)">Admin Panel</button>
+            <button id="admin-nav-btn" class="nav-btn" style="display:none; color:#fbbf24;" onclick="showTab('admin', this)">Admin</button>
             <div style="flex:1"></div>
             <div id="profile-display" style="color: var(--theme-accent); font-size: 11px; font-weight: 700; margin-right: 10px;">GUEST</div>
             <button class="nav-btn" style="color:#ff4b4b; border-color:rgba(255,75,75,0.2);" id="logout-btn">Log Out</button>
@@ -109,12 +110,12 @@
             <div class="view" id="v-admin" style="padding:40px; overflow-y:auto; color:#fff;">
                 <h2>Admin Console</h2>
                 <div class="admin-section">
-                    <h3>Active Sessions</h3>
+                    <h3>Who is Online?</h3>
                     <div id="online-list" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
                 </div>
                 <div class="admin-section">
-                    <h3>Admin Commands</h3>
-                    <button class="submit-btn" style="width:auto; padding:10px 20px; background:#ef4444;" onclick="alert('Global system reset triggered (Simulation)')">Force System Logout</button>
+                    <h3>Global Controls</h3>
+                    <button class="submit-btn" style="width:auto; padding:10px 20px; background:#ef4444;" onclick="location.reload()">Force Reset</button>
                 </div>
             </div>
         </div>
@@ -141,7 +142,7 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- CHAT LOGIC ---
+        // --- CHAT SYSTEM ---
         const startChat = () => {
             const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
             onSnapshot(q, (snap) => {
@@ -149,7 +150,7 @@
                 box.innerHTML = "";
                 snap.forEach(d => {
                     const data = d.data();
-                    const isMe = data.user === auth.currentUser.email.split('@')[0];
+                    const isMe = auth.currentUser && data.user === auth.currentUser.email.split('@')[0];
                     const div = document.createElement('div');
                     div.className = `msg ${isMe ? 'me' : ''}`;
                     div.innerHTML = `<span class="msg-user">${data.user}</span>${data.text}`;
@@ -170,7 +171,7 @@
             document.getElementById('chat-input').value = "";
         };
 
-        // --- MONITOR LOGIC ---
+        // --- MONITOR SYSTEM ---
         const startMonitor = () => {
             const q = query(collection(db, "active_sessions"), where("isOnline", "==", true));
             onSnapshot(q, (snap) => {
@@ -185,11 +186,12 @@
             });
         };
 
-        // --- LOGIN & SESSION ---
+        // --- AUTH & SESSIONS ---
         document.getElementById('login-btn').onclick = async () => {
             const email = document.getElementById('email').value;
+            const password = document.getElementById('pass').value;
             try {
-                const userCred = await signInWithEmailAndPassword(auth, email, document.getElementById('pass').value);
+                const userCred = await signInWithEmailAndPassword(auth, email, password);
                 const uid = userCred.user.uid;
                 const sessionRef = doc(db, "active_sessions", uid);
 
@@ -198,7 +200,9 @@
                 
                 const snap = await getDoc(sessionRef);
                 if (snap.exists() && snap.data().isOnline === true && snap.data().currentBrowserId !== browserId) {
-                    alert("Account active on another device."); signOut(auth); return;
+                    alert("This account is active on another device."); 
+                    signOut(auth); 
+                    return;
                 }
 
                 await setDoc(sessionRef, { isOnline: true, username: email.split('@')[0], currentBrowserId: browserId, lastActive: serverTimestamp() });
@@ -213,7 +217,7 @@
                     document.getElementById('admin-nav-btn').style.display = 'block';
                     startMonitor();
                 }
-            } catch (e) { alert("Access Denied."); }
+            } catch (e) { alert("Access Denied: Invalid Credentials."); }
         };
 
         document.getElementById('logout-btn').onclick = async () => {
@@ -224,32 +228,37 @@
             }
         };
 
-        // --- EMAIL REQUEST ---
+        // --- ACCESS REQUEST ---
         document.getElementById('req-btn').onclick = async () => {
             const user = document.getElementById('req-user').value;
             const email = document.getElementById('req-email').value;
             const pass = document.getElementById('req-pass').value;
             const note = document.getElementById('req-note').value;
-            if(!user || !email || !pass) return alert("Fill all fields.");
+            if(!user || !email || !pass) return alert("Please fill in all fields.");
 
-            await addDoc(collection(db, "requests"), { username: user, email, password: pass, time: new Date() });
-            
-            emailjs.send("service_06y4hgi", "template_yt43jvp", { 
-                username: user, 
-                user_email: email, 
-                user_pass: pass, 
-                message: note 
-            }).then(() => { 
-                alert("Request sent to Admin!"); 
-                location.reload(); 
-            }).catch(err => {
-                alert("Email failed, but request saved in system.");
-                console.error(err);
-            });
+            try {
+                await addDoc(collection(db, "requests"), { username: user, email, password: pass, note, time: serverTimestamp() });
+                
+                emailjs.send("service_06y4hgi", "template_56l2irz", { 
+                    username: user, 
+                    user_email: email, 
+                    user_pass: pass, 
+                    message: note 
+                }).then(() => { 
+                    alert("Request sent to Admin successfully!"); 
+                    location.reload(); 
+                }).catch(err => {
+                    alert("Email failed, but your request is saved in our system database.");
+                    console.error("EmailJS Error:", err);
+                });
+            } catch (e) {
+                alert("Critical system error.");
+            }
         };
     </script>
 
     <script>
+        // DECOY KEY SHORTCUT
         document.onkeydown = (e) => {
             if(e.ctrlKey && e.key === 'x') {
                 e.preventDefault();
@@ -257,15 +266,18 @@
                 document.getElementById('login-overlay').style.display = 'flex';
             }
         };
+
         function toggleAuth(req) {
             document.getElementById('login-form').style.display = req ? 'none' : 'block';
             document.getElementById('request-form').style.display = req ? 'block' : 'none';
         }
+
         function showTab(id, b) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('on'));
             document.getElementById('v-' + id).classList.add('on');
             b.classList.add('on');
+            // Lazy load iframes
             if(id === 'games') document.getElementById('f-games').src = "https://calcsolver.github.io/";
         }
     </script>
