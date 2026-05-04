@@ -4,24 +4,24 @@
 <title>404 Not Found</title>
 <link id="fav" rel="shortcut icon" type="image/png" href="https://www.google.com/favicon.ico">
 <style>
-/* CORE STYLES */
+/* RESTORING FULL ORIGINAL STYLES */
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#fff;font-family:sans-serif;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden}
+body{background:#fff;font-family:sans-serif;color:#555;display:flex;align-items:center;justify-content:center;height:100vh}
 .n{font-size:90px;font-weight:700;color:#e0e0e0}
 p{font-size:14px;color:#999;margin-top:6px}
 small{font-size:11px;color:#ccc;font-family:monospace;display:block;margin-top:20px}
 
-/* WARNING MODAL */
-#warning-modal{position:fixed;inset:0;z-index:10000;background:rgba(7,9,15,0.98);display:none;align-items:center;justify-content:center;padding:20px}
-.w-card{background:#0d1117;border:1px solid #ff4757;padding:30px;border-radius:12px;max-width:500px;text-align:center;box-shadow:0 0 40px rgba(255,71,87,0.15)}
+/* WARNING MODAL - INTEGRATED */
+#warning-modal{position:fixed;inset:0;z-index:10005;background:rgba(7,9,15,0.98);display:none;align-items:center;justify-content:center;padding:20px}
+.w-card{background:#0d1117;border:1px solid #ff4757;padding:30px;border-radius:12px;max-width:500px;text-align:center;box-shadow:0 0 40px rgba(255,71,87,0.15);font-family:sans-serif}
 .w-card h2{color:#ff4757;margin-bottom:15px;font-size:22px}
 .w-card p{color:#8899bb;line-height:1.6;margin-bottom:25px;font-size:14px}
 .w-btns{display:flex;gap:10px}
 .w-btn{flex:1;padding:12px;border-radius:8px;border:none;font-weight:700;cursor:pointer;transition:0.2s}
-.w-ok{background:#00ff88;color:#000}
+.w-ok{background:#00ff88;color:#000}.w-ok:hover{background:#00d477}
 .w-no{background:#253044;color:#fff}
 
-/* PORTAL ENGINE */
+/* FULL PORTAL UI */
 #portal{display:none;position:fixed;inset:0;z-index:999;flex-direction:column;background:#07090f;color:#e8eef8;font-family:'Segoe UI',sans-serif}
 #nav{height:50px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 12px;gap:4px;flex-shrink:0}
 .brand{font-family:monospace;font-size:13px;font-weight:700;color:#00d4ff;letter-spacing:2px;margin-right:6px}
@@ -39,10 +39,21 @@ small{font-size:11px;color:#ccc;font-family:monospace;display:block;margin-top:2
 .pn{display:none;flex:1;flex-direction:column;overflow:hidden}
 .pn.on{display:flex}
 
-.iframe-bar{height:40px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0}
+.iframe-bar{height:40px;background:#0d1117;border-bottom:1px solid #1e2736;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;flex-wrap:wrap}
 .iurl{font-family:monospace;font-size:11px;color:#4a5568;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-iframe.full{flex:1;border:none;width:100%;height:100%}
 .blob-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:#00d4ff;cursor:pointer}
+.ab-btn{font-size:11px;font-weight:700;padding:0 12px;height:24px;border-radius:5px;border:1px solid rgba(0,255,136,.3);background:rgba(0,255,136,.08);color:#00ff88;cursor:pointer}
+iframe.full{flex:1;border:none;width:100%;height:100%}
+
+/* HERO & GRID STYLES */
+#home-scroll{flex:1;overflow-y:auto;padding:40px}
+.hero{text-align:center;margin-bottom:36px}
+.hero h1{font-size:48px;font-weight:900;background:linear-gradient(135deg,#e8eef8,#00d4ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1}
+.hero p{color:#8899bb;margin-top:8px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:32px}
+.card{background:#0e1117;border:1px solid #1e2736;border-radius:12px;padding:20px;cursor:pointer;transition:.2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.ci{font-size:28px;margin-bottom:8px}.ct{font-size:14px;font-weight:700}.cd{font-size:11px;color:#8899bb;margin-top:4px}
 
 /* SETTINGS PANEL */
 #sbg{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.25s}
@@ -51,8 +62,14 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
 #settings.open{right:0}
 #shead{padding:16px 18px;border-bottom:1px solid #1e2736;display:flex;justify-content:space-between;align-items:center}
 #sbody{flex:1;overflow-y:auto;padding:18px}
-.si{width:100%;background:#0e1117;border:1px solid #253044;color:#e8eef8;padding:8px 11px;border-radius:7px;margin-bottom:10px;outline:none}
+.sg{margin-bottom:18px}.sl2{display:block;font-size:10px;font-weight:700;color:#8899bb;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+.si{width:100%;background:#0e1117;border:1px solid #253044;color:#e8eef8;padding:8px 11px;border-radius:7px;font-family:monospace;font-size:12px;outline:none}
+textarea.si{resize:none;height:90px}
 .btn{width:100%;padding:9px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:.15s;margin-bottom:7px;background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2);color:#00d4ff}
+
+/* BACKGROUNDS */
+#bg{position:fixed;inset:0;z-index:-1;background:#07090f}
+#bg::after{content:'';position:absolute;inset:0;background:rgba(7,9,15,.75);transition:opacity .3s}
 </style>
 </head>
 <body>
@@ -75,6 +92,7 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
 </div>
 
 <div id="portal">
+  <div id="bg"></div>
   <div id="nav">
     <span class="brand">WS://</span>
     <div class="sep"></div>
@@ -82,6 +100,7 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
     <button class="nb or" id="nb-yt" onclick="go('yt')">📺 YouTube</button>
     <button class="nb gr" id="nb-unblocker" onclick="go('unblocker')">🔓 Unblocker</button>
     <button class="nb" id="nb-games" onclick="go('games')">🎮 Games</button>
+    <button class="nb" id="nb-sound" onclick="go('sound')">🎵 Sounds</button>
     <button class="nb pu" id="nb-editor" onclick="go('editor')">⌨ HTML</button>
     <div class="sp"></div>
     <button class="nb" onclick="openS()">⚙ Settings</button>
@@ -89,14 +108,27 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
   </div>
 
   <div id="body">
-    <div class="pn on" id="pn-home" style="padding:40px; text-align:center">
-      <h1 style="font-size:40px; margin-bottom:10px">Private Portal</h1>
-      <p style="color:#8899bb">Everything hidden. Press <b>Ctrl + X</b> to toggle.</p>
+    <div class="pn on" id="pn-home">
+      <div id="home-scroll">
+        <div class="hero">
+          <h1>Private Portal</h1>
+          <p>Hidden behind a 404. Press <b>Ctrl + X</b> to access.</p>
+        </div>
+        <div class="grid">
+          <div class="card" onclick="go('yt')"><div class="ci">📺</div><div class="ct">YouTube</div><div class="cd">Proxy Stream</div></div>
+          <div class="card" onclick="go('unblocker')"><div class="ci">🔓</div><div class="ct">Unblocker</div><div class="cd">ixlmath site</div></div>
+          <div class="card" onclick="go('games')"><div class="ci">🎮</div><div class="ct">Games</div><div class="cd">calcsolver lib</div></div>
+          <div class="card" onclick="go('editor')"><div class="ci">⌨</div><div class="ct">HTML</div><div class="cd">Built-in JS runner</div></div>
+        </div>
+      </div>
     </div>
 
     <div class="pn" id="pn-yt">
-        <div class="iframe-bar"><span class="iurl">YouTube Proxy</span><button class="blob-btn" onclick="openBlob('https://yt.chocolatemoo53.com/watch?v=E7KBZzMrj5I')">🌐 Blob Tab</button></div>
-        <iframe class="full" id="yt-f" allow="autoplay; fullscreen"></iframe>
+      <div class="iframe-bar">
+        <span class="iurl">YouTube Proxy</span>
+        <button class="blob-btn" onclick="openBlob('https://yt.chocolatemoo53.com/watch?v=E7KBZzMrj5I')">🌐 Blob Tab</button>
+      </div>
+      <iframe class="full" id="yt-f" allow="autoplay; fullscreen"></iframe>
     </div>
 
     <div class="pn" id="pn-unblocker">
@@ -105,84 +137,121 @@ iframe.full{flex:1;border:none;width:100%;height:100%}
     </div>
 
     <div class="pn" id="pn-games">
-      <div class="iframe-bar"><span class="iurl">Games Console</span></div>
+      <div class="iframe-bar"><span class="iurl">https://calcsolver.github.io/</span></div>
       <iframe class="full" id="games-f"></iframe>
     </div>
 
+    <div class="pn" id="pn-sound">
+      <div class="iframe-bar"><span class="iurl">Soundboard</span></div>
+      <iframe class="full" id="sound-f"></iframe>
+    </div>
+
     <div class="pn" id="pn-editor">
-        <div class="iframe-bar"><button class="blob-btn" onclick="runCode()">▶ Run Code</button></div>
-        <div style="display:flex; flex:1">
-            <textarea id="code" style="flex:1; background:#060810; color:#fff; border:none; padding:15px; font-family:monospace; outline:none; resize:none"><!DOCTYPE html><html><body><h1>Test</h1></body></html></textarea>
-            <iframe id="preview" style="flex:1; background:#fff; border:none"></iframe>
-        </div>
+      <div class="iframe-bar">
+        <button class="nb gr" onclick="runCode()" style="height:27px">▶ Run</button>
+        <div class="sp"></div>
+        <button class="blob-btn" onclick="openBlobHTML()">🌐 Blob Tab</button>
+      </div>
+      <div style="display:flex; flex:1; overflow:hidden">
+        <textarea id="code" style="flex:1; background:#060810; color:#e2e8f0; border:none; outline:none; padding:15px; font-family:monospace; line-height:1.6; resize:none"><!DOCTYPE html>
+<html>
+<head><style>body{background:#111; color:cyan; font-family:sans-serif; padding:20px;}</style></head>
+<body>
+  <h1>Live JavaScript Test</h1>
+  <script>console.log("Portal Script Active");</script>
+</body>
+</html></textarea>
+        <iframe id="preview" style="flex:1; background:#fff; border:none"></iframe>
+      </div>
     </div>
   </div>
 </div>
 
 <div id="sbg" onclick="closeS()"></div>
 <div id="settings">
-  <div id="shead"><h3>⚙ Settings</h3><button onclick="closeS()" style="background:none; border:none; color:#8899bb; cursor:pointer; font-size:20px">×</button></div>
+  <div id="shead"><h3>⚙ Settings</h3><button onclick="closeS()" style="background:none; border:none; color:#8899bb; font-size:24px; cursor:pointer">×</button></div>
   <div id="sbody">
-    <label style="font-size:10px; color:#8899bb; text-transform:uppercase">Tab Cloak</label>
-    <input class="si" id="cfg-title" placeholder="New Tab Title">
-    <button class="btn" onclick="document.title = document.getElementById('cfg-title').value">Apply Title</button>
-    <div style="height:1px; background:#1e2736; margin:15px 0"></div>
-    <p style="font-size:11px; color:#4a5568">Portal is active. Shortcuts are saved to local storage.</p>
+    <div class="sg">
+      <label class="sl2">Tab Cloak</label>
+      <input class="si" id="cfg-title" placeholder="New Page Title">
+      <button class="btn" onclick="document.title=document.getElementById('cfg-title').value">Apply Title</button>
+    </div>
+    <div class="sg">
+      <label class="sl2">Scratchpad</label>
+      <textarea class="si" id="notes" placeholder="Notes auto-save to browser..."></textarea>
+    </div>
+    <button class="btn" style="background:rgba(255,71,87,0.1); border-color:#ff4757; color:#ff4757" onclick="localStorage.clear(); location.reload()">Reset All Data</button>
   </div>
 </div>
 
 <script>
 var framesReady = false;
 
-// 1. KEYBOARD LISTENER (CTRL + X)
+// 1. UPDATED KEYBOARD LISTENER: CTRL + X
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key.toLowerCase() === 'x') {
         e.preventDefault();
         const portal = document.getElementById('portal');
+        
         if (portal.style.display === 'flex') {
             portal.style.display = 'none';
             document.getElementById('decoy').style.display = 'block';
         } else {
+            // Show Terms of Use first
             document.getElementById('warning-modal').style.display = 'flex';
         }
     }
 });
 
-// 2. WARNING LOGIC
+// 2. WARNING ACCEPTANCE
 function acceptWarning() {
     document.getElementById('warning-modal').style.display = 'none';
     document.getElementById('decoy').style.display = 'none';
     document.getElementById('portal').style.display = 'flex';
+    
     if (!framesReady) {
         framesReady = true;
         document.getElementById('yt-f').src = 'https://yt.chocolatemoo53.com/watch?v=E7KBZzMrj5I';
         document.getElementById('unblocker-f').src = 'https://ixlmath.nwpa.com.au';
         document.getElementById('games-f').src = 'https://calcsolver.github.io/';
+        document.getElementById('sound-f').src = 'https://calcsolver.github.io/ChatGPT.github.io/';
     }
 }
 
-// 3. NAVIGATION
+// 3. CORE NAVIGATION
 function go(id) {
     document.querySelectorAll('.pn').forEach(p => p.classList.remove('on'));
     document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
     document.getElementById('pn-' + id).classList.add('on');
-    if(document.getElementById('nb-'+id)) document.getElementById('nb-'+id).classList.add('on');
+    const nb = document.getElementById('nb-' + id); if(nb) nb.classList.add('on');
 }
 
-// 4. SETTINGS MODAL
+// 4. SETTINGS
 function openS() { document.getElementById('settings').classList.add('open'); document.getElementById('sbg').classList.add('open'); }
 function closeS() { document.getElementById('settings').classList.remove('open'); document.getElementById('sbg').classList.remove('open'); }
 
-// 5. TOOLS
-function runCode() { document.getElementById('preview').srcdoc = document.getElementById('code').value; }
+// 5. BLOB HELPERS
 function openBlob(url) {
-    const html = `<html><body style="margin:0"><iframe src="${url}" style="width:100%;height:100vh;border:none"></iframe></body></html>`;
-    const blob = new Blob([html], {type: 'text/html'});
-    window.open(URL.createObjectURL(blob), '_blank');
+    var html = `<!DOCTYPE html><html><head><title>Google</title><style>body,html{margin:0;padding:0;height:100vh;overflow:hidden}iframe{width:100%;height:100%;border:none}</style></head><body><iframe src="${url}" allowfullscreen></iframe></body></html>`;
+    window.open(URL.createObjectURL(new Blob([html],{type:'text/html'})), '_blank');
 }
 
-// 6. CLOCK
-setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString(); }, 1000);
+function openBlobHTML() {
+    const src = document.getElementById('code').value;
+    window.open(URL.createObjectURL(new Blob([src],{type:'text/html'})), '_blank');
+}
+
+function runCode() {
+    document.getElementById('preview').srcdoc = document.getElementById('code').value;
+}
+
+// 6. CLOCK & SAVING
+setInterval(() => {
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+}, 1000);
+
+document.getElementById('notes').value = localStorage.getItem('notes') || '';
+document.getElementById('notes').oninput = (e) => localStorage.setItem('notes', e.target.value);
 </script>
 
 </body>
