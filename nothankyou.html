@@ -12,72 +12,92 @@
             --border: rgba(255, 255, 255, 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; }
         
         #decoy { position: fixed; inset: 0; background: #000 url('IMG_0140.png') no-repeat center center; background-size: cover; z-index: 9999; }
-        
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        
+        .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
-        #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 15px; border-bottom: 1px solid var(--border); }
+        #nav { height: 65px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 25px; gap: 15px; border-bottom: 1px solid var(--border); backdrop-filter: blur(10px); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); }
 
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.active { display: flex; flex-direction: column; }
         
-        .user-node { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
-        
-        iframe { flex: 1; border: none; transition: 0.6s filter; }
+        iframe { flex: 1; border: none; transition: 0.6s filter; z-index: 1; }
+
+        /* ADMIN CONSOLE */
+        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; }
+        .user-node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .node-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; }
+        .c-btn { padding: 6px; font-size: 10px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
+        .c-btn.kill { background: #ef4444; border: none; }
+        .c-btn:hover { background: var(--accent); }
+
+        /* EFFECTS */
+        #matrix-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 999; display: none; }
+        .rainbow-mode { animation: rainbow-bg 5s linear infinite; }
+        @keyframes rainbow-bg {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
     <div id="decoy"></div>
+    <canvas id="matrix-canvas"></canvas>
 
     <div id="auth-overlay">
         <div class="card">
             <div id="login-form">
-                <h2>M-TOOL ACCESS</h2><br>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Key">
-                <button class="btn" id="login-btn">Initialize</button>
-                <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Credentials</p>
+                <h2 style="letter-spacing:2px;">M-TOOL OS</h2><br>
+                <input type="email" id="email" placeholder="System Email">
+                <input type="password" id="pass" placeholder="Security Key">
+                <button class="btn" id="login-btn">Verify Identity</button>
+                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
             <div id="req-form" style="display:none;">
                 <h2>REGISTER NODE</h2><br>
                 <input type="text" id="r-user" placeholder="Username">
                 <input type="email" id="r-email" placeholder="Email">
-                <input type="password" id="r-pass" placeholder="Password">
-                <button class="btn" id="req-btn">Submit</button>
-                <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
+                <input type="password" id="r-pass" placeholder="Desired Password">
+                <button class="btn" id="req-btn">Submit to Admin</button>
+                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent); font-size: 18px;">M-TOOL</b>
+            <b style="color:var(--accent); font-size: 20px;">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
-            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
+            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">System Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-item" id="out-btn" style="color:#ff4b4b; background:none; border:none;">Purge</button>
+            <button class="nav-item" id="out-btn" style="color:#ef4444; background:none; border:none;">Purge</button>
         </div>
 
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
-        <div id="v-admin" class="view" style="padding:40px; color:#fff; overflow-y:auto;">
-            <h2>Live Network Monitor</h2><br>
-            <div id="online-list" style="max-width:500px;"></div>
+        
+        <div id="v-admin" class="view" style="overflow-y:auto;">
+            <div class="admin-wrap">
+                <h2 style="margin-bottom:10px;">Node Monitor</h2>
+                <div id="online-list"></div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, query, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -95,17 +115,39 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        window.removeUser = async (uid) => {
-            await deleteDoc(doc(db, "active_sessions", uid));
+        // --- GLOBAL ADMIN COMMANDS ---
+        window.sendCmd = async (uid, effect) => {
+            await updateDoc(doc(db, "active_sessions", uid), { effect: effect });
         };
 
-        const startHeartbeat = (uid) => {
-            setInterval(async () => {
-                if (auth.currentUser) {
-                    await updateDoc(doc(db, "active_sessions", uid), { lastSeen: Date.now() });
-                }
-            }, 60000); // Pulse every 60s
+        window.killNode = async (uid) => {
+            if(confirm("Terminate this node?")) await deleteDoc(doc(db, "active_sessions", uid));
         };
+
+        // --- MATRIX EFFECT CODE ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let matrixInterval;
+        function startMatrix() {
+            canvas.style.display = 'block';
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%";
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+            matrixInterval = setInterval(() => {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
+                for(let i=0; i<drops.length; i++) {
+                    const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                    if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            }, 33);
+        }
+        function stopMatrix() { clearInterval(matrixInterval); ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
 
         window.onload = () => {
             document.getElementById('login-btn').onclick = async () => {
@@ -116,27 +158,57 @@
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                     
-                    startHeartbeat(res.user.uid);
+                    // --- THE KILL SWITCH & COMMAND LISTENER ---
+                    onSnapshot(doc(db, "active_sessions", res.user.uid), (snap) => {
+                        if (!snap.exists()) {
+                            alert("SESSION TERMINATED BY ADMIN");
+                            location.reload(); return;
+                        }
+                        const data = snap.data();
+                        const frame = document.getElementById('f-home');
+                        // Reset effects first
+                        frame.style.filter = "none"; document.body.classList.remove('rainbow-mode'); stopMatrix();
+                        
+                        if(data.effect === 'blur') frame.style.filter = "blur(15px)";
+                        if(data.effect === 'rainbow') document.body.classList.add('rainbow-mode');
+                        if(data.effect === 'matrix') startMatrix();
+                        if(data.effect === 'shake') frame.style.animation = "shake 0.2s infinite";
+                    });
 
                     if(email === ADM_EMAIL) {
                         document.getElementById('adm-nav').style.display = 'block';
-                        onSnapshot(collection(db, "active_sessions"), async (s) => {
+                        onSnapshot(collection(db, "active_sessions"), (s) => {
                             const list = document.getElementById('online-list');
-                            const now = Date.now();
                             list.innerHTML = "";
-                            s.forEach(async u => {
-                                const data = u.data();
-                                // Anti-Ghost Logic: If not seen in 2 mins, auto-purge
-                                if (data.lastSeen && (now - data.lastSeen > 120000)) {
-                                    await deleteDoc(doc(db, "active_sessions", u.id));
-                                } else if (data.email !== ADM_EMAIL) {
-                                    list.innerHTML += `<div class="user-node"><span>🟢 ${data.username}</span><button style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;" onclick="window.removeUser('${u.id}')">REMOVE</button></div>`;
+                            s.forEach(u => {
+                                const d = u.data();
+                                if(d.email !== ADM_EMAIL) {
+                                    list.innerHTML += `
+                                        <div class="user-node">
+                                            <div class="node-header">
+                                                <b>🟢 ${d.username}</b>
+                                                <button class="c-btn kill" onclick="window.killNode('${u.id}')">KILL SESSION</button>
+                                            </div>
+                                            <div class="controls">
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'blur')">Blur</button>
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'matrix')">Matrix</button>
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'rainbow')">Rainbow</button>
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'none')">Reset</button>
+                                            </div>
+                                        </div>`;
                                 }
                             });
                         });
                     }
 
-                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: email.split('@')[0], email: email, lastSeen: Date.now() }, { merge: true });
+                    await setDoc(doc(db, "active_sessions", res.user.uid), { 
+                        isOnline: true, username: email.split('@')[0], email: email, 
+                        lastSeen: Date.now(), effect: 'none' 
+                    }, { merge: true });
+
+                    setInterval(async () => {
+                        if(auth.currentUser) await updateDoc(doc(db, "active_sessions", res.user.uid), { lastSeen: Date.now() });
+                    }, 30000);
 
                 } catch { alert("Access Denied."); }
             };
@@ -147,8 +219,7 @@
                 const p = document.getElementById('r-pass').value;
                 await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
                 emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-                alert("Request Sent.");
-                toggleMode(false);
+                alert("Request Sent."); toggleMode(false);
             };
 
             document.getElementById('out-btn').onclick = async () => {
