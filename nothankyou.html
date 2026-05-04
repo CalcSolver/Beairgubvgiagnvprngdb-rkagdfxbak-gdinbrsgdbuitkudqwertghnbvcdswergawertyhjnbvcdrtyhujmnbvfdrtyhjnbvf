@@ -8,57 +8,57 @@
     <style>
         :root {
             --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5;
-            --muted: #8078a8; --glass: rgba(255, 255, 255, 0.03);
+            --muted: #8078a8; --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
         
-        /* DECOY SYSTEM */
+        /* DECOY IMAGE PAGE */
         #decoy { 
             position: fixed; inset: 0; 
-            background: black url('IMG_0140.png') no-repeat center center; 
+            background: #000 url('IMG_0140.png') no-repeat center center; 
             background-size: cover; 
             z-index: 9999; 
-            display: flex; align-items: center; justify-content: center;
-        }
-        /* Fallback text in case image fails */
-        #decoy::after {
-            content: "404 Not Found";
-            color: rgba(255,255,255,0.1);
-            font-size: 14px;
         }
 
+        /* AUTH OVERLAY */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(25px); text-align: center; color: #fff; }
+        .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
+        /* PORTAL UI */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
-        #nav { height: 60px; background: rgba(0,0,0,0.5); display: flex; align-items: center; padding: 0 20px; gap: 10px; border-bottom: 1px solid var(--border); }
+        #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; gap: 10px; border-bottom: 1px solid var(--border); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.1); color: var(--accent); }
 
-        .view { display: none; width: 100%; height: 100%; overflow: hidden; }
-        .view.active { display: flex; flex-direction: column; }
-        
+        /* CHAT & CMD */
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; align-self: flex-start; }
+        .msg { padding: 10px 15px; border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; max-width: 80%; align-self: flex-start; border: 1px solid var(--border); }
         .msg.me { align-self: flex-end; background: var(--accent); }
-
-        #cmd-menu {
-            display: none; position: absolute; bottom: 80px; left: 20px; width: 220px;
-            background: #121225; border: 1px solid var(--accent); border-radius: 10px; z-index: 1001;
-        }
+        #cmd-menu { display: none; position: absolute; bottom: 80px; left: 20px; width: 220px; background: #121225; border: 1px solid var(--accent); border-radius: 10px; z-index: 1001; }
         .cmd-item { padding: 10px; color: #fff; font-size: 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .cmd-item:hover { background: var(--accent); }
+
+        /* IDLE WARNING POPUP */
+        #idle-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 20000; align-items: center; justify-content: center; }
         
         iframe { flex: 1; border: none; }
+        @keyframes shake { 0% {transform: translate(1px, 1px);} 50% {transform: translate(-1px, -2px);} 100% {transform: translate(1px, 1px);} }
     </style>
 </head>
 <body>
 
     <div id="decoy"></div>
+
+    <div id="idle-modal">
+        <div class="card" style="border-color: red;">
+            <h2>Inactivity Detected</h2><br>
+            <p>Are you still doing something? You will be purged in 2 minutes.</p><br>
+            <button class="btn" onclick="resetIdleTimer(true)">I'm Still Here</button>
+        </div>
+    </div>
 
     <div id="auth-overlay">
         <div class="card">
@@ -66,7 +66,7 @@
                 <h2>M-TOOL OS</h2><br>
                 <input type="email" id="email" placeholder="Email">
                 <input type="password" id="pass" placeholder="Password">
-                <button class="btn" id="login-btn">Login</button>
+                <button class="btn" id="login-btn">Initialize</button>
                 <p style="font-size:11px; margin-top:15px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
             </div>
             <div id="req-form" style="display:none;">
@@ -85,14 +85,12 @@
             <b style="color:var(--accent)">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
             <div class="nav-item" onclick="tab('chat', this)">Chat</div>
-            <div class="nav-item" onclick="tab('profile', this)">Profile</div>
             <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-item" style="color:red; background:none; border:none;" id="out-btn">Exit</button>
+            <button class="nav-item" style="color:red; background:none; border:none;" id="out-btn">Logout</button>
         </div>
 
         <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
-        
         <div id="v-chat" class="view">
             <div id="chat-box"></div>
             <div id="cmd-menu"></div>
@@ -101,18 +99,9 @@
                 <button class="btn" style="width:70px;" id="send-btn">Send</button>
             </div>
         </div>
-
-        <div id="v-profile" class="view" style="padding:40px; color:#fff;">
-            <h1 id="prof-user">User</h1>
-            <div style="background:var(--glass); padding:20px; border-radius:15px; margin-top:20px;">
-                <h3>Friend Requests</h3>
-                <p style="font-size:13px; color:var(--muted);">All requests to hjass2865 are auto-sent.</p>
-            </div>
-        </div>
-
-        <div id="v-admin" class="view" style="padding:30px; color:#fff; overflow-y:auto;">
-            <h2>Admin Terminal</h2><br>
-            <div id="online-list">Scanning...</div>
+        <div id="v-admin" class="view" style="padding:30px; color:#fff;">
+            <h2>Admin Monitor</h2><br>
+            <div id="online-list">Scanning nodes...</div>
         </div>
     </div>
 
@@ -137,115 +126,111 @@
 
         emailjs.init("6iGADKihYbPC4ecb_");
 
+        // --- IDLE LOGIC ---
+        let idleTimer;
+        let warningTimer;
+
+        window.resetIdleTimer = (manual = false) => {
+            if(manual) document.getElementById('idle-modal').style.display = 'none';
+            clearTimeout(idleTimer);
+            clearTimeout(warningTimer);
+            
+            // 28 minutes until warning
+            idleTimer = setTimeout(() => {
+                if(auth.currentUser) document.getElementById('idle-modal').style.display = 'flex';
+                // 2 minutes more until deletion
+                warningTimer = setTimeout(forceLogoutAndPurge, 120000); 
+            }, 1680000); 
+        };
+
+        const forceLogoutAndPurge = async () => {
+            if(auth.currentUser) {
+                await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
+                await signOut(auth);
+                location.reload();
+            }
+        };
+
         window.onload = () => {
-            const chatInput = document.getElementById('chat-in');
+            const chatIn = document.getElementById('chat-in');
             const menu = document.getElementById('cmd-menu');
 
-            // --- COMMAND MENU ---
-            const commands = [
-                { cmd: '/clear', desc: 'Wipe Chat (Admin Only)' },
-                { cmd: '/shrug', desc: 'Type ¯\\_(ツ)_/¯' },
-                { cmd: '/help', desc: 'Get support' }
-            ];
-
-            chatInput.addEventListener('input', (e) => {
-                if (e.target.value.startsWith('/')) {
-                    menu.style.display = 'block';
-                    menu.innerHTML = commands.map(c => `<div class="cmd-item" onclick="window.fillCmd('${c.cmd}')"><b>${c.cmd}</b> - ${c.desc}</div>`).join('');
-                } else { menu.style.display = 'none'; }
+            // --- LISTENERS ---
+            ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(e => {
+                document.addEventListener(e, () => resetIdleTimer());
             });
 
-            window.fillCmd = (c) => { chatInput.value = c; menu.style.display = 'none'; chatInput.focus(); };
+            window.fillCmd = (c) => { chatIn.value = c; menu.style.display = 'none'; chatIn.focus(); };
 
-            // --- CHAT ---
-            const startChat = () => {
-                const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
-                onSnapshot(q, (snap) => {
-                    const box = document.getElementById('chat-box');
-                    box.innerHTML = "";
-                    snap.forEach(d => {
-                        const m = d.data();
-                        const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
-                        box.innerHTML += `<div class="msg ${isMe ? 'me' : ''}"><small>${m.user}</small><br>${m.text}</div>`;
-                    });
-                    box.scrollTop = box.scrollHeight;
-                });
-            };
-
-            // --- BUTTON EVENTS ---
             document.getElementById('send-btn').onclick = async () => {
-                const val = chatInput.value;
+                const val = chatIn.value;
                 if(!val) return;
                 if(val === '/clear' && auth.currentUser.email === ADM) {
                     const docs = await getDocs(collection(db, "messages"));
                     docs.forEach(async d => await deleteDoc(doc(db, "messages", d.id)));
+                } else if(val === '/blur') {
+                    document.querySelector('.view.active iframe').style.filter = 'blur(5px)';
                 } else {
                     await addDoc(collection(db, "messages"), { text: val, user: auth.currentUser.email.split('@')[0], uid: auth.currentUser.uid, timestamp: serverTimestamp() });
                 }
-                chatInput.value = ""; menu.style.display = 'none';
+                chatIn.value = ""; menu.style.display = 'none';
             };
 
             document.getElementById('login-btn').onclick = async () => {
-                const e = document.getElementById('email').value;
-                const p = document.getElementById('pass').value;
                 try {
-                    const res = await signInWithEmailAndPassword(auth, e, p);
+                    const res = await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
                     document.getElementById('auth-overlay').style.display = 'none';
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
-                    document.getElementById('prof-user').innerText = e.split('@')[0].toUpperCase();
-                    startChat();
-                    if(e === ADM) {
+                    resetIdleTimer();
+                    
+                    if(res.user.email === ADM) {
                         document.getElementById('adm-nav').style.display = 'block';
                         onSnapshot(query(collection(db, "active_sessions"), where("isOnline", "==", true)), (s) => {
                             const list = document.getElementById('online-list');
-                            list.innerHTML = "<h4>Users Online:</h4>";
+                            list.innerHTML = "";
                             s.forEach(u => list.innerHTML += `<p>🟢 ${u.data().username}</p>`);
                         });
                     }
-                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: e.split('@')[0] }, { merge: true });
-                } catch { alert("Error: Check credentials."); }
+                    await setDoc(doc(db, "active_sessions", res.user.uid), { isOnline: true, username: res.user.email.split('@')[0] }, { merge: true });
+                    
+                    // Start Chat Stream
+                    const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50));
+                    onSnapshot(q, (snap) => {
+                        const box = document.getElementById('chat-box');
+                        box.innerHTML = "";
+                        snap.forEach(d => {
+                            const m = d.data();
+                            box.innerHTML += `<div class="msg ${auth.currentUser && m.uid === auth.currentUser.uid ? 'me' : ''}"><small>${m.user}</small><br>${m.text}</div>`;
+                        });
+                        box.scrollTop = box.scrollHeight;
+                    });
+                } catch { alert("Failed Initialization"); }
             };
 
-            document.getElementById('req-btn').onclick = async () => {
-                const u = document.getElementById('r-user').value;
-                const e = document.getElementById('r-email').value;
-                const p = document.getElementById('r-pass').value;
-                await addDoc(collection(db, "requests"), { u, e, p, time: serverTimestamp() });
-                emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-                alert("Request Sent.");
+            document.getElementById('out-btn').onclick = async () => {
+                if(auth.currentUser) await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
+                await signOut(auth); location.reload();
             };
-
-            document.getElementById('out-btn').onclick = () => { signOut(auth); location.reload(); };
         };
     </script>
 
     <script>
-        // Use Ctrl + X to open
         document.onkeydown = (e) => { 
             if(e.ctrlKey && e.key === 'x') { 
                 document.getElementById('decoy').style.display = 'none'; 
                 document.getElementById('auth-overlay').style.display = 'flex'; 
             } 
         };
-        // Also allow Ctrl + Click
-        document.getElementById('decoy').onclick = (e) => {
-            if(e.ctrlKey) {
-                document.getElementById('decoy').style.display = 'none'; 
-                document.getElementById('auth-overlay').style.display = 'flex'; 
-            }
-        };
-
-        function toggleMode(req) {
-            document.getElementById('login-form').style.display = req ? 'none' : 'block';
-            document.getElementById('req-form').style.display = req ? 'block' : 'none';
-        }
-
         function tab(id, btn) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             btn.classList.add('active');
+        }
+        function toggleMode(req) {
+            document.getElementById('login-form').style.display = req ? 'none' : 'block';
+            document.getElementById('req-form').style.display = req ? 'block' : 'none';
         }
     </script>
 </body>
