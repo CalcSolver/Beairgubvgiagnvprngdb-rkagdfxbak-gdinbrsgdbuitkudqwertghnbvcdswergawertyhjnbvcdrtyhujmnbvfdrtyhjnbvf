@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not Found</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
             --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5;
@@ -13,72 +12,71 @@
             --error: #ff4b4b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; color: #fff; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background: #fff; color: #222; }
         
-        #decoy { position: fixed; inset: 0; background: #000 url('IMG_0140.png') no-repeat center center; background-size: cover; z-index: 9999; }
+        /* GOOGLE 404 DECOY */
+        #decoy { 
+            position: fixed; inset: 0; background: #fff; z-index: 9999; 
+            display: flex; align-items: center; justify-content: center;
+            user-select: none; -webkit-touch-callout: none;
+        }
+        .error-container { max-width: 400px; padding: 20px; font-family: arial, sans-serif; }
+        .logo { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .logo span { font-family: 'Product Sans', arial, sans-serif; }
+        .robot-icon { 
+            margin-top: 30px; width: 100px; height: 100px; 
+            background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
+            background-size: contain; opacity: 0.8;
+        }
+
+        /* AUTH OVERLAY */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        
-        .card { width: 380px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; }
+        .card { width: 340px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
-        .btn:disabled { background: #333; cursor: not-allowed; opacity: 0.5; }
 
-        #filter-msg { color: var(--error); font-size: 11px; margin-bottom: 10px; display: none; font-weight: bold; }
-
-        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; }
+        /* PORTAL & VIEWS */
+        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; color: #fff; }
         #nav { height: 65px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 25px; gap: 15px; border-bottom: 1px solid var(--border); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); }
-
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.active { display: flex; flex-direction: column; }
-        
-        iframe { flex: 1; border: none; transition: 0.5s filter; background: #fff; }
+        iframe { flex: 1; border: none; background: #fff; }
 
-        #scare-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 1001; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        #scare-text { color: #ff0000; font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 5px; animation: glitch 0.1s infinite; }
-
+        /* ADMIN STYLES */
         .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; }
         .user-node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
         .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
         .c-btn { padding: 8px; font-size: 11px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
-        .c-btn.kill { background: #ef4444; border: none; grid-column: span 3; margin-top: 5px; }
-        
-        @keyframes glitch { 0% { transform: translate(0); } 50% { transform: translate(-3px, 3px); } 100% { transform: translate(0); } }
     </style>
 </head>
 <body>
 
-    <div id="decoy"></div>
-    <div id="scare-overlay"><h1 id="scare-text"></h1></div>
+    <div id="decoy">
+        <div class="error-container">
+            <div class="logo">
+                <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+            </div>
+            <p><b>404.</b> <span style="color:#777">That’s an error.</span></p>
+            <p>The requested URL was not found on this server. <span style="color:#777">That’s all we know.</span></p>
+            <div class="robot-icon"></div>
+        </div>
+    </div>
 
     <div id="auth-overlay">
         <div class="card">
-            <div id="login-form">
-                <h2>M-TOOL OS</h2><br>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Password">
-                <button class="btn" id="login-btn">Connect</button>
-                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Credentials</p>
-            </div>
-            
-            <div id="req-form" style="display:none;">
-                <h2>REGISTER</h2>
-                <p style="font-size:10px; color:var(--muted); margin-bottom:15px;">DO NOT USE SCHOOL PASSWORDS</p>
-                <div id="filter-msg">PRIVACY ALERT: School ID detected.</div>
-                <input type="text" id="r-user" placeholder="Username">
-                <input type="email" id="r-email" placeholder="Personal Email">
-                <input type="password" id="r-pass" placeholder="Unique Password">
-                <button class="btn" id="req-btn">Submit Request</button>
-                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
-            </div>
+            <h2 style="color:#fff; margin-bottom:20px;">SYSTEM ACCESS</h2>
+            <input type="email" id="email" placeholder="Identifier">
+            <input type="password" id="pass" placeholder="Keyphrase">
+            <button class="btn" id="login-btn">Initialize</button>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
             <b style="color:var(--accent); font-size: 20px;">M-TOOL</b>
-            <div class="nav-item active" onclick="tab('home', this)">Home</div>
+            <div class="nav-item active" onclick="tab('home', this)">Terminal</div>
             <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
             <button class="nav-item" id="out-btn" style="color:#ef4444; background:none; border:none;">Purge</button>
@@ -87,18 +85,14 @@
             <iframe id="f-home" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"></iframe>
         </div>
         <div id="v-admin" class="view" style="overflow-y:auto;">
-            <div class="admin-wrap">
-                <div id="request-list"></div>
-                <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-                <div id="online-list"></div>
-            </div>
+            <div class="admin-wrap" id="online-list"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -114,119 +108,57 @@
         const db = getFirestore(app);
         const ADM_EMAIL = "hjass2865@gmail.com";
 
-        emailjs.init("6iGADKihYbPC4ecb_");
+        // --- DECOY LOGIC (5 SECOND HOLD) ---
+        let holdTimer;
+        const decoy = document.getElementById('decoy');
+        const startHold = () => holdTimer = setTimeout(() => {
+            decoy.style.display = 'none';
+            document.getElementById('auth-overlay').style.display = 'flex';
+        }, 5000);
+        const cancelHold = () => clearTimeout(holdTimer);
 
-        // --- GLOBAL ADMIN FUNCTIONS ---
+        decoy.addEventListener('mousedown', startHold);
+        decoy.addEventListener('mouseup', cancelHold);
+        decoy.addEventListener('touchstart', startHold);
+        decoy.addEventListener('touchend', cancelHold);
+
+        // --- CORE FUNCTIONS ---
+        window.tab = (id, btn) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            btn.classList.add('active');
+        };
+
         window.sendCmd = async (uid, type, val = '') => {
             await updateDoc(doc(db, "active_sessions", uid), { effect: type, msg: val });
         };
 
-        window.killNode = async (uid) => {
-            if(confirm("Kill session?")) await deleteDoc(doc(db, "active_sessions", uid));
-        };
-
-        window.acceptUser = async (reqId, u, e, p) => {
-            try {
-                await setDoc(doc(db, "users", e), { username: u, email: e, password: p, role: 'user' });
-                await deleteDoc(doc(db, "requests", reqId));
-                alert("User data moved. Now manually add them in Firebase Auth Console!");
-            } catch (err) { alert("Error: " + err.message); }
-        };
-
-        window.denyUser = async (reqId) => {
-            if(confirm("Delete this request?")) await deleteDoc(doc(db, "requests", reqId));
-        };
-
-        // --- PRIVACY FILTER ---
-        const validateInput = () => {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            const msg = document.getElementById('filter-msg');
-            const btn = document.getElementById('req-btn');
-
-            const schoolPattern = /s\d{6,8}/i;
-            const schoolDomain = /@.*\.edu|@.*schools\..*/i;
-
-            if (schoolPattern.test(u) || schoolPattern.test(p) || schoolDomain.test(e)) {
-                msg.style.display = 'block';
-                btn.disabled = true;
-            } else {
-                msg.style.display = 'none';
-                btn.disabled = false;
-            }
-        };
-
-        document.getElementById('r-user').oninput = validateInput;
-        document.getElementById('r-email').oninput = validateInput;
-        document.getElementById('r-pass').oninput = validateInput;
-
-        // --- AUTH LOGIC ---
+        // --- AUTH ---
         document.getElementById('login-btn').onclick = async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
             try {
-                const res = await signInWithEmailAndPassword(auth, email, pass);
+                const res = await signInWithEmailAndPassword(auth, e, p);
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
-                
-                // Session Listener
-                onSnapshot(doc(db, "active_sessions", res.user.uid), (snap) => {
-                    if (!snap.exists()) { location.reload(); return; }
-                    const d = snap.data();
-                    const sOverlay = document.getElementById('scare-overlay');
-                    const sText = document.getElementById('scare-text');
-                    
-                    if(d.effect === 'msg') {
-                        sOverlay.style.display = 'flex';
-                        sText.innerText = d.msg || "I SEE YOU";
-                    } else {
-                        sOverlay.style.display = 'none';
-                    }
-                    const frame = document.getElementById('f-home');
-                    frame.style.filter = d.effect === 'blur' ? 'blur(20px)' : 'none';
-                    frame.style.animation = d.effect === 'shake' ? 'glitch 0.2s infinite' : 'none';
-                });
 
-                // Admin Monitor
-                if(email === ADM_EMAIL) {
+                if(e === ADM_EMAIL) {
                     document.getElementById('adm-nav').style.display = 'block';
-                    
-                    // Watch Requests
-                    onSnapshot(collection(db, "requests"), (snap) => {
-                        const rList = document.getElementById('request-list');
-                        rList.innerHTML = "<h2>Pending Requests</h2>";
-                        snap.forEach(req => {
-                            const rd = req.data();
-                            rList.innerHTML += `
-                                <div class="user-node" style="border-left:4px solid gold;">
-                                    <b>${rd.username}</b> (${rd.email})<br>
-                                    <small>Pass: ${rd.password}</small>
-                                    <div class="controls">
-                                        <button class="c-btn" style="background:#22c55e;" onclick="window.acceptUser('${req.id}', '${rd.username}', '${rd.email}', '${rd.password}')">ACCEPT</button>
-                                        <button class="c-btn" style="background:#ef4444;" onclick="window.denyUser('${req.id}')">DENY</button>
-                                    </div>
-                                </div>`;
-                        });
-                    });
-
-                    // Watch Active Nodes
                     onSnapshot(collection(db, "active_sessions"), (s) => {
                         const list = document.getElementById('online-list');
-                        list.innerHTML = "<h2>Live Nodes</h2>";
+                        list.innerHTML = "<h2>Active Nodes</h2>";
                         s.forEach(u => {
                             const d = u.data();
                             if(d.email !== ADM_EMAIL) {
                                 list.innerHTML += `
                                     <div class="user-node">
                                         <b>🟢 ${d.username}</b>
-                                        <input type="text" style="width:100%; margin:10px 0; padding:5px; background:#111; color:#fff; border:1px solid #333;" id="in-${u.id}" placeholder="Message...">
                                         <div class="controls">
-                                            <button class="c-btn" onclick="window.sendCmd('${u.id}', 'msg', document.getElementById('in-${u.id}').value)">Phreak</button>
                                             <button class="c-btn" onclick="window.sendCmd('${u.id}', 'blur')">Blur</button>
                                             <button class="c-btn" onclick="window.sendCmd('${u.id}', 'none')">Reset</button>
-                                            <button class="c-btn kill" onclick="window.killNode('${u.id}')">KILL</button>
+                                            <button class="c-btn" style="background:#ef4444" onclick="deleteDoc(doc(db, 'active_sessions', '${u.id}'))">Kill</button>
                                         </div>
                                     </div>`;
                             }
@@ -235,48 +167,15 @@
                 }
 
                 await setDoc(doc(db, "active_sessions", res.user.uid), { 
-                    username: email.split('@')[0], email: email, lastSeen: Date.now(), effect: 'none' 
+                    username: e.split('@')[0], email: e, effect: 'none' 
                 }, { merge: true });
 
-            } catch { alert("Denied."); }
-        };
-
-        document.getElementById('req-btn').onclick = async () => {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            
-            await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
-            emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-            alert("Request Sent."); toggleMode(false);
+            } catch { alert("Authentication Failed."); }
         };
 
         document.getElementById('out-btn').onclick = async () => {
             if(auth.currentUser) await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
             await signOut(auth); location.reload();
-        };
-
-        // Navigation Functions
-        window.toggleMode = (req) => {
-            document.getElementById('login-form').style.display = req ? 'none' : 'block';
-            document.getElementById('req-form').style.display = req ? 'block' : 'none';
-        };
-
-        window.tab = (id, btn) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
-            btn.classList.add('active');
-        };
-    </script>
-
-    <script>
-        // Use Ctrl + X to bypass the decoy
-        document.onkeydown = (e) => { 
-            if(e.ctrlKey && e.key === 'x') { 
-                document.getElementById('decoy').style.display = 'none'; 
-                document.getElementById('auth-overlay').style.display = 'flex'; 
-            } 
         };
     </script>
 </body>
