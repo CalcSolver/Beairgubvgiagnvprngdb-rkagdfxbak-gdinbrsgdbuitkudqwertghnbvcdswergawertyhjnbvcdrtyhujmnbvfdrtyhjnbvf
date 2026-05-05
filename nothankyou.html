@@ -29,35 +29,26 @@
         .view { display: none; width: 100%; height: 100%; overflow: hidden; }
         .view.active { display: flex; flex-direction: column; }
         
-        iframe { flex: 1; border: none; transition: 0.5s filter; }
+        /* THE SANDBOXED IFRAME */
+        iframe { flex: 1; border: none; transition: 0.5s filter; background: #fff; }
 
-        /* SCARY OVERLAY */
         #scare-overlay { 
             display: none; position: fixed; inset: 0; background: #000; 
             z-index: 1001; align-items: center; justify-content: center; 
             text-align: center; padding: 20px;
         }
-        #scare-text { 
-            color: #ff0000; font-size: 3rem; font-weight: 900; 
-            text-transform: uppercase; letter-spacing: 5px;
-            text-shadow: 0 0 10px rgba(255,0,0,0.7);
-            animation: glitch 0.1s infinite;
-        }
+        #scare-text { color: #ff0000; font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 5px; animation: glitch 0.1s infinite; }
 
-        /* ADMIN STYLE */
-        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; overflow-y: auto; }
+        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; }
         .user-node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
         .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
         .c-btn { padding: 8px; font-size: 11px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
         .c-btn.kill { background: #ef4444; border: none; grid-column: span 3; margin-top: 5px; }
-        .msg-input { width: 100%; margin: 10px 0 5px 0; padding: 8px; font-size: 12px; border-radius: 5px; }
+        .msg-input { width: 100%; margin: 10px 0 5px 0; padding: 8px; font-size: 12px; border-radius: 5px; background: #111; color: #fff; border: 1px solid #333; }
 
         @keyframes glitch {
             0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
+            50% { transform: translate(-3px, 3px); }
             100% { transform: translate(0); }
         }
     </style>
@@ -70,11 +61,11 @@
     <div id="auth-overlay">
         <div class="card">
             <div id="login-form">
-                <h2 style="letter-spacing:2px;">M-TOOL OS</h2><br>
-                <input type="email" id="email" placeholder="System Email">
-                <input type="password" id="pass" placeholder="Security Key">
-                <button class="btn" id="login-btn">Verify Identity</button>
-                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Access</p>
+                <h2>M-TOOL OS</h2><br>
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="pass" placeholder="Password">
+                <button class="btn" id="login-btn">Connect</button>
+                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Credentials</p>
             </div>
             <div id="req-form" style="display:none;">
                 <h2>REGISTER</h2><br>
@@ -91,11 +82,13 @@
         <div id="nav">
             <b style="color:var(--accent); font-size: 20px;">M-TOOL</b>
             <div class="nav-item active" onclick="tab('home', this)">Home</div>
-            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin Monitor</div>
+            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
             <button class="nav-item" id="out-btn" style="color:#ef4444; background:none; border:none;">Purge</button>
         </div>
-        <div id="v-home" class="view active"><iframe id="f-home"></iframe></div>
+        <div id="v-home" class="view active">
+            <iframe id="f-home" sandbox="allow-forms allow-pointer-lock allow-same-origin"></iframe>
+        </div>
         <div id="v-admin" class="view" style="overflow-y:auto;"><div class="admin-wrap" id="online-list"></div></div>
     </div>
 
@@ -125,7 +118,7 @@
         };
 
         window.killNode = async (uid) => {
-            if(confirm("Terminate Node?")) await deleteDoc(doc(db, "active_sessions", uid));
+            if(confirm("Kill session?")) await deleteDoc(doc(db, "active_sessions", uid));
         };
 
         window.onload = () => {
@@ -137,6 +130,7 @@
                     document.getElementById('portal').style.display = 'flex';
                     document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
                     
+                    // SESSION LISTENER
                     onSnapshot(doc(db, "active_sessions", res.user.uid), (snap) => {
                         if (!snap.exists()) { location.reload(); return; }
                         const d = snap.data();
@@ -145,30 +139,31 @@
                         
                         if(d.effect === 'msg') {
                             sOverlay.style.display = 'flex';
-                            sText.innerText = d.msg || "SYSTEM BREACH";
+                            sText.innerText = d.msg || "I SEE YOU";
                         } else {
                             sOverlay.style.display = 'none';
                         }
 
                         const frame = document.getElementById('f-home');
-                        frame.style.filter = d.effect === 'blur' ? 'blur(15px)' : 'none';
+                        frame.style.filter = d.effect === 'blur' ? 'blur(20px)' : 'none';
                         frame.style.animation = d.effect === 'shake' ? 'glitch 0.2s infinite' : 'none';
                     });
 
+                    // ADMIN VIEW
                     if(email === ADM_EMAIL) {
                         document.getElementById('adm-nav').style.display = 'block';
                         onSnapshot(collection(db, "active_sessions"), (s) => {
                             const list = document.getElementById('online-list');
-                            list.innerHTML = "<h2>Active Nodes</h2>";
+                            list.innerHTML = "<h2>Node Monitor</h2>";
                             s.forEach(u => {
                                 const d = u.data();
                                 if(d.email !== ADM_EMAIL) {
                                     list.innerHTML += `
                                         <div class="user-node">
                                             <b>🟢 ${d.username}</b>
-                                            <input type="text" class="msg-input" id="in-${u.id}" placeholder="Enter scary message...">
+                                            <input type="text" class="msg-input" id="in-${u.id}" placeholder="Type message...">
                                             <div class="controls">
-                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'msg', document.getElementById('in-${u.id}').value)">Send Text</button>
+                                                <button class="c-btn" onclick="window.sendCmd('${u.id}', 'msg', document.getElementById('in-${u.id}').value)">Phreak</button>
                                                 <button class="c-btn" onclick="window.sendCmd('${u.id}', 'blur')">Blur</button>
                                                 <button class="c-btn" onclick="window.sendCmd('${u.id}', 'none')">Reset</button>
                                                 <button class="c-btn kill" onclick="window.killNode('${u.id}')">KILL NODE</button>
@@ -184,7 +179,7 @@
                     }, { merge: true });
 
                     setInterval(async () => { if(auth.currentUser) await updateDoc(doc(db, "active_sessions", res.user.uid), { lastSeen: Date.now() }); }, 30000);
-                } catch { alert("Failed."); }
+                } catch { alert("Denied."); }
             };
 
             document.getElementById('req-btn').onclick = async () => {
@@ -193,7 +188,7 @@
                 const p = document.getElementById('r-pass').value;
                 await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
                 emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-                alert("Sent."); toggleMode(false);
+                alert("Request Sent."); toggleMode(false);
             };
 
             document.getElementById('out-btn').onclick = async () => {
