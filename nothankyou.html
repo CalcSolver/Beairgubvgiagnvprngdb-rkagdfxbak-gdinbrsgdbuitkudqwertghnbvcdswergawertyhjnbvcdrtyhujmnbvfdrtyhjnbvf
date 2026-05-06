@@ -7,37 +7,64 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root { --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5; --muted: #8078a8; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #fff; color: #222; overflow: hidden; height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: arial, sans-serif; }
         
-        /* DECOY */
-        #decoy { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        
-        /* AUTH */
-        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
+        /* AUTH & PORTAL STYLES - Kept your original UI logic */
+        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
         .card { width: 360px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
-        
-        /* PORTAL */
-        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
+        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; }
         #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); gap: 10px; }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.2); color: var(--accent); }
         .view { display: none; flex: 1; overflow-y: auto; padding: 20px; }
         .view.active { display: block; }
-        
-        /* ADMIN UI */
         .node { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid var(--border); }
         .c-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; border: none; cursor: pointer; background: var(--accent); color: #fff; }
+
+        /* NEW GOOGLE 404 DECOY THEME */
+        #decoy { 
+            position: fixed; 
+            inset: 0; 
+            background: #fff; 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            cursor: default;
+            user-select: none;
+        }
+        .g-container { max-width: 650px; width: 100%; }
+        .g-robot { 
+            background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
+            width: 256px; height: 256px; 
+            float: right; 
+            margin: 0 0 0 20px; 
+        }
+        .g-text { text-align: left; }
+        .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
+        .g-text h1 span { color: #70757a; }
+        .g-text p { font-size: 14px; line-height: 1.6; color: #202124; margin: 15px 0; }
+        .g-text ins { color: #70757a; text-decoration: none; }
+
+        @media (max-width: 600px) {
+            .g-robot { float: none; margin: 0 auto 20px; display: block; }
+            .g-text { text-align: center; }
+        }
     </style>
 </head>
 <body>
 
     <div id="decoy">
-        <div style="font-family:arial; max-width:400px;">
-            <h1 style="color:#4285f4; font-size:24px;">Google</h1>
-            <p style="margin:20px 0;"><b>404.</b> That’s an error. The requested URL was not found.</p>
+        <div class="g-container">
+            <div class="g-robot"></div>
+            <div class="g-text">
+                <h1><b>404.</b> <span>That’s an error.</span></h1>
+                <p>The requested URL was not found on this server. <ins>That’s all we know.</ins></p>
+            </div>
         </div>
     </div>
 
@@ -106,7 +133,7 @@
         const db = getFirestore(app);
         const ADMIN_EMAIL = "hjass2865@gmail.com";
 
-        // 1. DECOY LOGIC (5s HOLD)
+        // DECOY LOGIC (5s HOLD triggers the login)
         let timer;
         const decoy = document.getElementById('decoy');
         decoy.onmousedown = () => timer = setTimeout(() => {
@@ -115,7 +142,6 @@
         }, 5000);
         decoy.onmouseup = () => clearTimeout(timer);
 
-        // 2. AUTH HELPERS
         window.toggleReg = (show) => {
             document.getElementById('login-view').style.display = show ? 'none' : 'block';
             document.getElementById('reg-view').style.display = show ? 'block' : 'none';
@@ -126,9 +152,7 @@
             document.getElementById('v-'+id).classList.add('active');
         };
 
-        // 3. LISTENERS (Remote Console & Global Alert)
         function startListeners(uid) {
-            // Watch for Individual Commands
             onSnapshot(doc(db, "active_sessions", uid), (snap) => {
                 const d = snap.data();
                 if (!d || !d.command) return;
@@ -136,15 +160,12 @@
                 if (d.command === "kick") { alert("Session Terminated."); location.reload(); }
                 setDoc(doc(db, "active_sessions", uid), { command: null }, { merge: true });
             });
-
-            // Watch for Global Broadcast
             onSnapshot(doc(db, "system", "broadcast"), (snap) => {
                 const d = snap.data();
                 if (d && d.message) alert("GLOBAL ANNOUNCEMENT: " + d.message);
             });
         }
 
-        // 4. ACTIONS
         document.getElementById('login-btn').onclick = async () => {
             const user = document.getElementById('l-user').value.toLowerCase();
             const pass = document.getElementById('l-pass').value;
@@ -179,21 +200,17 @@
             const u = document.getElementById('r-user').value;
             const p = document.getElementById('r-pass').value;
             const e = document.getElementById('r-email').value;
-            
-            // Masking & Filtering
             if(/s\d{6,}/i.test(u) || /s\d{6,}/i.test(p)) { alert("School IDs Prohibited"); return; }
-            
             await addDoc(collection(db, "requests"), {
                 username: u,
                 email: e,
-                password: btoa(p), // Base64 Masking
+                password: btoa(p),
                 timestamp: serverTimestamp()
             });
             alert("Request Sent! Wait for approval.");
             toggleReg(false);
         };
 
-        // ADMIN FUNCTIONS
         window.sendCommand = async (uid, cmd, msg = "") => {
             await setDoc(doc(db, "active_sessions", uid), { command: cmd, message: msg }, { merge: true });
         };
