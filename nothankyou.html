@@ -15,7 +15,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body, html { height: 100%; width: 100%; overflow: hidden; background: #fff; color: #222; }
         
-        /* DECOY */
+        /* GOOGLE 404 DECOY */
         #decoy { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; align-items: center; justify-content: center;
@@ -29,27 +29,26 @@
             background-size: contain; opacity: 0.8;
         }
 
-        /* OVERLAYS */
+        /* OVERLAYS (LOGIN & REGISTER) */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        .card { width: 380px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        .card { width: 360px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
-        /* PORTAL */
+        /* MAIN PORTAL UI */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 998; color: #fff; }
         #nav { height: 65px; background: rgba(0,0,0,0.6); display: flex; align-items: center; padding: 0 25px; gap: 15px; border-bottom: 1px solid var(--border); }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); }
-        .view { display: none; width: 100%; height: 100%; overflow: hidden; }
+        .view { display: none; width: 100%; height: 100%; }
         .view.active { display: flex; flex-direction: column; }
         iframe { flex: 1; border: none; background: #fff; }
 
-        /* ADMIN */
-        .admin-wrap { padding: 30px; max-width: 700px; margin: 0 auto; width: 100%; }
-        .user-node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-        .c-btn { padding: 8px; font-size: 11px; font-weight: bold; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; }
+        /* ADMIN PANEL */
+        .admin-wrap { padding: 30px; max-width: 600px; margin: 0 auto; width: 100%; overflow-y: auto; }
+        .node { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 15px; margin-bottom: 10px; border: 1px solid var(--border); text-align: left; }
+        .c-btn { padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -67,49 +66,49 @@
 
     <div id="auth-overlay">
         <div class="card">
-            <div id="login-form">
-                <h2>M-TOOL OS</h2><br>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Password">
+            <div id="login-view">
+                <h2 style="margin-bottom:20px">M-TOOL SECURE</h2>
+                <input type="email" id="l-email" placeholder="Email Address">
+                <input type="password" id="l-pass" placeholder="Password">
                 <button class="btn" id="login-btn">Connect</button>
-                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(true)">Request Credentials</p>
+                <p style="font-size:11px; margin-top:20px; color:var(--muted); cursor:pointer;" onclick="toggleView(true)">Request Credentials</p>
             </div>
 
-            <div id="req-form" style="display:none;">
-                <h2>REGISTER</h2>
-                <div style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; padding:8px; border-radius:8px; margin:10px 0; font-size:10px;">
-                    ⚠️ DO NOT USE SCHOOL PASSWORDS. ADMIN CAN SEE LOGS.
+            <div id="reg-view" style="display:none">
+                <h2>REGISTRATION</h2>
+                <div style="background:rgba(239,68,68,0.15); color:#ff4b4b; padding:10px; border-radius:10px; font-size:10px; margin:15px 0;">
+                    ⚠️ WARNING: DO NOT USE REAL SCHOOL PASSWORDS.<br>ADMINS CAN SEE SUBMITTED DATA.
                 </div>
-                <p id="filter-msg" style="color:var(--error); font-size:10px; display:none; font-weight:bold; margin-bottom:10px;">PROHIBITED PASSWORD PATTERN</p>
+                <p id="warn" style="color:red; font-size:10px; display:none; margin-bottom:10px;">PROHIBITED: SCHOOL ID PATTERN DETECTED</p>
                 
                 <input type="text" id="r-user" placeholder="Nickname">
                 <input type="email" id="r-email" placeholder="Personal Email">
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="r-pass" placeholder="Password" style="margin-bottom:10px;">
-                    <button class="c-btn" id="gen-btn" style="height:45px; background:var(--accent);">Gen</button>
+                <div style="display:flex; gap:5px; margin-bottom:15px;">
+                    <input type="text" id="r-pass" placeholder="Password" style="margin-bottom:0">
+                    <button class="c-btn" id="gen-btn" style="height:44px">Gen</button>
                 </div>
-                <button class="btn" id="req-btn" disabled>Submit Request</button>
-                <p style="font-size:11px; margin-top:20px; cursor:pointer; color:var(--muted);" onclick="toggleMode(false)">Back</p>
+                <button class="btn" id="submit-req" disabled>Submit Request</button>
+                <p style="font-size:11px; margin-top:20px; color:var(--muted); cursor:pointer;" onclick="toggleView(false)">Back to Login</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent); font-size: 20px;">M-TOOL</b>
-            <div class="nav-item active" onclick="tab('home', this)">Home</div>
-            <div id="adm-nav" class="nav-item" style="display:none; color:gold;" onclick="tab('admin', this)">Admin</div>
+            <b style="color:var(--accent)">M-TOOL</b>
+            <div class="nav-item active" onclick="tab('home', this)">Terminal</div>
+            <div id="admin-nav" class="nav-item" style="display:none; color:gold" onclick="tab('admin', this)">Admin</div>
             <div style="flex:1"></div>
-            <button class="nav-item" id="out-btn" style="color:#ef4444; background:none; border:none;">Purge</button>
+            <button class="nav-item" id="logout" style="color:red; border:none; background:none">Purge</button>
         </div>
         <div id="v-home" class="view active">
-            <iframe id="f-home"></iframe>
+            <iframe id="frame"></iframe>
         </div>
-        <div id="v-admin" class="view" style="overflow-y:auto;">
+        <div id="v-admin" class="view">
             <div class="admin-wrap">
-                <div id="request-list"></div>
+                <div id="req-list"><h3>Pending Requests</h3></div>
                 <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-                <div id="online-list"></div>
+                <div id="live-list"><h3>Active Sessions</h3></div>
             </div>
         </div>
     </div>
@@ -117,7 +116,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -131,121 +130,87 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADM_EMAIL = "hjass2865@gmail.com";
+        const ADMIN = "hjass2865@gmail.com";
         emailjs.init("6iGADKihYbPC4ecb_");
 
-        // --- DECOY HOLD LOGIC ---
-        let holdTimer;
+        // DECOY LOGIC (5s HOLD)
+        let timer;
         const decoy = document.getElementById('decoy');
-        const startHold = () => holdTimer = setTimeout(() => {
+        decoy.onmousedown = decoy.ontouchstart = () => timer = setTimeout(() => {
             decoy.style.display = 'none';
             document.getElementById('auth-overlay').style.display = 'flex';
         }, 5000);
-        const stopHold = () => clearTimeout(holdTimer);
+        decoy.onmouseup = decoy.ontouchend = () => clearTimeout(timer);
 
-        decoy.addEventListener('mousedown', startHold);
-        decoy.addEventListener('mouseup', stopHold);
-        decoy.addEventListener('touchstart', startHold);
-        decoy.addEventListener('touchend', stopHold);
-
-        // --- GEN & FILTER ---
-        window.validateInput = () => {
+        // PASSWORD FILTER
+        const validate = () => {
             const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
-            const btn = document.getElementById('req-btn');
-            const msg = document.getElementById('filter-msg');
-
-            const isSchool = /s\d{6,8}/i.test(u) || /s\d{6,8}/i.test(p) || /@.*\.edu|@.*schools\..*/i.test(e) || /^[a-z]+[0-9]{2,3}$/i.test(p);
-            msg.style.display = isSchool ? 'block' : 'none';
-            btn.disabled = isSchool || u.length < 3 || p.length < 6;
+            const e = document.getElementById('r-email').value;
+            const isSchool = /s\d{6,}/i.test(u) || /s\d{6,}/i.test(p) || /edu|school/i.test(e);
+            document.getElementById('warn').style.display = isSchool ? 'block' : 'none';
+            document.getElementById('submit-req').disabled = isSchool || u.length < 3 || p.length < 6;
         };
-
-        document.getElementById('r-user').oninput = validateInput;
-        document.getElementById('r-email').oninput = validateInput;
-        document.getElementById('r-pass').oninput = validateInput;
+        ['r-user','r-pass','r-email'].forEach(id => document.getElementById(id).oninput = validate);
 
         document.getElementById('gen-btn').onclick = () => {
-            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
-            let pass = "";
-            for(let i=0; i<12; i++) pass += chars.charAt(Math.floor(Math.random()*chars.length));
-            document.getElementById('r-pass').value = pass;
-            validateInput();
+            const c = "abcdefghijklmnopqrstuvwxyz123456789!@#$";
+            let pass = ""; for(let i=0; i<10; i++) pass += c[Math.floor(Math.random()*c.length)];
+            document.getElementById('r-pass').value = pass; validate();
         };
 
-        // --- AUTH & ADMIN ---
-        document.getElementById('login-btn').onclick = async () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            try {
-                const res = await signInWithEmailAndPassword(auth, e, p);
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('portal').style.display = 'flex';
-                document.getElementById('f-home').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
-
-                if(e === ADM_EMAIL) {
-                    document.getElementById('adm-nav').style.display = 'block';
-                    // Monitor Requests
-                    onSnapshot(collection(db, "requests"), (snap) => {
-                        const rList = document.getElementById('request-list');
-                        rList.innerHTML = "<h3>Pending Requests</h3>";
-                        snap.forEach(r => {
-                            const d = r.data();
-                            rList.innerHTML += `
-                                <div class="user-node" style="border-left:4px solid gold;">
-                                    <b>${d.username}</b> (${d.email})<br><small>Pass: ${d.password}</small>
-                                    <div class="controls">
-                                        <button class="c-btn" style="background:green" onclick="window.accept('${r.id}','${d.username}','${d.email}','${d.password}')">Accept</button>
-                                        <button class="c-btn" style="background:red" onclick="window.deny('${r.id}')">Deny</button>
-                                    </div>
-                                </div>`;
-                        });
-                    });
-                    // Monitor Live Sessions
-                    onSnapshot(collection(db, "active_sessions"), (s) => {
-                        const oList = document.getElementById('online-list');
-                        oList.innerHTML = "<h3>Live Nodes</h3>";
-                        s.forEach(u => {
-                            const d = u.data();
-                            if(d.email !== ADM_EMAIL) {
-                                oList.innerHTML += `<div class="user-node"><b>🟢 ${d.username}</b><div class="controls"><button class="c-btn" onclick="window.kill('${u.id}')">Kill</button></div></div>`;
-                            }
-                        });
-                    });
-                }
-                await setDoc(doc(db, "active_sessions", res.user.uid), { username: e.split('@')[0], email: e, effect: 'none' }, { merge: true });
-            } catch { alert("Denied."); }
-        };
-
-        document.getElementById('req-btn').onclick = async () => {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            await addDoc(collection(db, "requests"), { username: u, email: e, password: p, time: serverTimestamp() });
-            emailjs.send("service_06y4hgi", "template_56l2irz", { username: u, user_email: e, user_pass: p });
-            alert("Sent."); toggleMode(false);
-        };
-
-        window.accept = async (id, u, e, p) => {
-            await setDoc(doc(db, "users", e), { username: u, email: e, password: p });
-            await deleteDoc(doc(db, "requests", id));
-            alert("Accepted. Now add them to Firebase Auth manually.");
-        };
-        window.deny = async (id) => { await deleteDoc(doc(db, "requests", id)); };
-        window.kill = async (id) => { await deleteDoc(doc(db, "active_sessions", id)); };
-
-        window.toggleMode = (req) => {
-            document.getElementById('login-form').style.display = req ? 'none' : 'block';
-            document.getElementById('req-form').style.display = req ? 'block' : 'none';
+        // UI ACTIONS
+        window.toggleView = (reg) => {
+            document.getElementById('login-view').style.display = reg ? 'none' : 'block';
+            document.getElementById('reg-view').style.display = reg ? 'block' : 'none';
         };
         window.tab = (id, btn) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
+            document.getElementById('v-'+id).classList.add('active');
             btn.classList.add('active');
         };
-        document.getElementById('out-btn').onclick = async () => {
-            if(auth.currentUser) await deleteDoc(doc(db, "active_sessions", auth.currentUser.uid));
+
+        // FIREBASE ACTIONS
+        document.getElementById('login-btn').onclick = async () => {
+            const e = document.getElementById('l-email').value;
+            const p = document.getElementById('l-pass').value;
+            try {
+                const res = await signInWithEmailAndPassword(auth, e, p);
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('portal').style.display = 'flex';
+                document.getElementById('frame').src = "https://calcsolver.github.io/Beairgubvgiagnvprngdb-rkagdfxbak-gdinbrsgdbuitkud/";
+                
+                if(e === ADMIN) {
+                    document.getElementById('admin-nav').style.display = 'block';
+                    onSnapshot(collection(db, "requests"), s => {
+                        const div = document.getElementById('req-list');
+                        div.innerHTML = "<h3>Pending Requests</h3>";
+                        s.forEach(r => {
+                            const d = r.data();
+                            div.innerHTML += `<div class="node"><b>${d.username}</b><br><small>${d.email} | ${d.password}</small><br>
+                            <button class="c-btn" onclick="window.del('requests','${r.id}')">Delete</button></div>`;
+                        });
+                    });
+                }
+                await setDoc(doc(db, "active_sessions", res.user.uid), { username: e.split('@')[0], email: e });
+            } catch { alert("Invalid Credentials"); }
+        };
+
+        document.getElementById('submit-req').onclick = async () => {
+            const d = { 
+                username: document.getElementById('r-user').value, 
+                email: document.getElementById('r-email').value, 
+                password: document.getElementById('r-pass').value 
+            };
+            await addDoc(collection(db, "requests"), d);
+            emailjs.send("service_06y4hgi", "template_56l2irz", d);
+            alert("Request Sent"); toggleView(false);
+        };
+
+        window.del = async (col, id) => await deleteDoc(doc(db, col, id));
+        document.getElementById('logout').onclick = async () => {
+            if(auth.currentUser) await window.del("active_sessions", auth.currentUser.uid);
             await signOut(auth); location.reload();
         };
     </script>
