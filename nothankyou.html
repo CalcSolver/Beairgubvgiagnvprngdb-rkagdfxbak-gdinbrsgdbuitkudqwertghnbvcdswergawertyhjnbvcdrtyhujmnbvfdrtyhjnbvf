@@ -73,7 +73,7 @@
         <div class="card">
             <div id="login-view">
                 <h2 style="margin-bottom:20px; letter-spacing: 2px;">M-TOOL LOGIN</h2>
-                <input type="text" id="l-user" placeholder="Username">
+                <input type="text" id="l-user" placeholder="Email or Nickname">
                 <input type="password" id="l-pass" placeholder="Password">
                 <button class="btn" id="login-btn">CONNECT</button>
                 <p onclick="toggleReg(true)" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--muted)">Request Access</p>
@@ -81,9 +81,9 @@
             <div id="reg-view" style="display:none">
                 <h2 style="margin-bottom:20px;">ACCESS REQUEST</h2>
                 <input type="text" id="r-user" placeholder="Nickname">
-                <input type="email" id="r-email" placeholder="Personal Email">
+                <input type="email" id="r-email" placeholder="Student or Personal Email">
                 <input type="password" id="r-pass" placeholder="Desired Password">
-                <button class="btn" id="submit-req">SUBMIT</button>
+                <button class="btn" id="submit-req">SUBMIT REQUEST</button>
                 <p onclick="toggleReg(false)" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--muted)">Back to Login</p>
             </div>
         </div>
@@ -137,7 +137,7 @@
         const ADMIN_EMAIL = "hjass2865@gmail.com";
         let currentUserUid = null;
 
-        // BYPASS LOGIC (Finger hold or Keyboard)
+        // 1. BYPASS (Finger Hold or Earth Key)
         let timer;
         const trigger = () => {
             document.getElementById('decoy').style.display = 'none';
@@ -155,7 +155,7 @@
             }
         });
 
-        // ADMIN CONSOLE DATA
+        // 2. ADMIN CONSOLE
         function loadAdminData() {
             onSnapshot(collection(db, "active_sessions"), (snap) => {
                 const list = document.getElementById('session-list');
@@ -164,7 +164,7 @@
                     const data = d.data();
                     list.innerHTML += `<div style="margin-bottom:10px; font-size:14px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
                         <span class="status-dot online"></span> ${data.username} 
-                        <small style="color:var(--muted); float:right;">Active</small>
+                        <small style="color:var(--muted); float:right;">Online</small>
                     </div>`;
                 });
             });
@@ -181,10 +181,9 @@
                 });
             });
         }
-
         window.rejectReq = async (id) => { await deleteDoc(doc(db, "requests", id)); };
 
-        // NAVIGATION
+        // 3. UI HELPERS
         window.tab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -197,48 +196,56 @@
             document.getElementById('reg-view').style.display = s ? 'block' : 'none';
         };
 
-        // REGISTRATION WITH AQUINAS FILTER
+        // 4. REGISTRATION (Student Email Friendly)
         document.getElementById('submit-req').onclick = async () => {
-            const u = document.getElementById('r-user').value;
+            let u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
 
-            // Strict Filter: Reject if user uses @student.aquinas... in any field
-            const aquinasFilter = /@student\.aquinas\.wa\.edu\.au/i;
-            if (aquinasFilter.test(u) || aquinasFilter.test(e) || aquinasFilter.test(p)) {
-                alert("Restricted Domain: Use of school emails is prohibited.");
-                return;
+            if (!e || !p) return alert("Fill all fields");
+
+            // Auto-clean: If they use their school email as a nickname, strip the domain for the DB
+            if (u.includes('@student.aquinas.wa.edu.au')) {
+                u = u.split('@')[0];
             }
 
             try {
                 await addDoc(collection(db, "requests"), {
                     username: u,
                     email: e,
-                    password: btoa(p), // Base64 Mask
+                    password_hint: btoa(p), // Simple obfuscation for admin review
                     timestamp: serverTimestamp()
                 });
-                alert("Request Sent! Wait for approval.");
+                alert("Request Sent! Ask admin to approve your school account.");
                 window.toggleReg(false);
-            } catch { alert("Request Failed."); }
+            } catch { alert("Error sending request."); }
         };
 
-        // LOGIN ACTIONS
+        // 5. LOGIN
         document.getElementById('login-btn').onclick = async () => {
             const u = document.getElementById('l-user').value;
             const p = document.getElementById('l-pass').value;
-            const email = u.includes('@') ? u : `${u}@mtool.local`;
+            
+            // Allow login via full school email or nickname
+            const loginEmail = u.includes('@') ? u : `${u}@mtool.local`;
+            
             try {
-                const res = await signInWithEmailAndPassword(auth, email, p);
+                const res = await signInWithEmailAndPassword(auth, loginEmail, p);
                 currentUserUid = res.user.uid;
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
                 
-                if(email === ADMIN_EMAIL) {
+                if(loginEmail === ADMIN_EMAIL) {
                     document.getElementById('admin-nav').style.display = 'block';
                     loadAdminData();
                 }
-                await setDoc(doc(db, "active_sessions", res.user.uid), { username: u, lastSeen: serverTimestamp() });
-            } catch { alert("Invalid Credentials"); }
+                
+                const displayName = u.split('@')[0];
+                await setDoc(doc(db, "active_sessions", res.user.uid), { 
+                    username: displayName, 
+                    lastSeen: serverTimestamp() 
+                });
+            } catch { alert("Access Denied"); }
         };
 
         window.logout = async () => {
@@ -246,7 +253,7 @@
             location.reload();
         };
 
-        // Offline Presence cleanup
+        // Tab Close Cleanup
         window.onbeforeunload = () => { if (currentUserUid) logout(); };
     </script>
 </body>
