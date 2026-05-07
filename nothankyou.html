@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>404 Not Found</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root { 
             --bg: #0b0b18; 
@@ -21,9 +20,14 @@
         #decoy { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; align-items: center; justify-content: center; 
-            padding: 20px; cursor: default; user-select: none; -webkit-user-select: none;
+            padding: 20px; cursor: default; 
+            /* CRITICAL FOR FINGER HOLD */
+            user-select: none; 
+            -webkit-user-select: none;
+            -webkit-touch-callout: none; 
+            touch-action: none; 
         }
-        .g-container { max-width: 650px; width: 100%; }
+        .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { 
             background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
             width: 256px; height: 256px; float: right; margin: 0 0 0 20px; 
@@ -34,41 +38,18 @@
         .g-text p { font-size: 14px; line-height: 1.6; color: #202124; margin: 15px 0; }
         .g-text ins { color: #70757a; text-decoration: none; }
 
-        /* AUTH OVERLAY */
-        #auth-overlay { 
-            display: none; position: fixed; inset: 0; background: var(--bg); 
-            z-index: 10000; align-items: center; justify-content: center; 
-            font-family: 'Segoe UI', sans-serif; 
-        }
-        .card { 
-            width: 360px; padding: 30px; background: var(--glass); 
-            border: 1px solid var(--border); border-radius: 24px; 
-            backdrop-filter: blur(20px); text-align: center; color: #fff; 
-        }
-        input { 
-            width: 100%; padding: 12px; margin-bottom: 15px; 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); 
-            border-radius: 12px; color: #fff; outline: none; 
-        }
-        .btn { 
-            width: 100%; padding: 12px; border: none; border-radius: 10px; 
-            background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
-            color: white; font-weight: 700; cursor: pointer; 
-        }
-
-        /* PORTAL & IFRAME */
+        /* AUTH & PORTAL */
+        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
+        .card { width: 360px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
         #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); gap: 10px; }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; padding: 8px 12px; border-radius: 8px; }
         .nav-item.active { background: rgba(124,58,237,0.2); color: var(--accent); }
-        
         .view { display: none; flex: 1; width: 100%; height: 100%; }
-        .view.active { display: flex; flex-direction: column; }
-        
-        #calc-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
-
-        .node { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px; margin: 20px; border: 1px solid var(--border); }
-        .c-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; border: none; cursor: pointer; background: var(--accent); color: #fff; }
+        .view.active { display: flex; }
+        #calc-frame { flex: 1; border: none; width: 100%; height: 100%; }
 
         @media (max-width: 600px) {
             .g-robot { float: none; margin: 0 auto 20px; display: block; }
@@ -91,19 +72,10 @@
     <div id="auth-overlay">
         <div class="card">
             <div id="login-view">
-                <h2 style="margin-bottom:20px;">M-TOOL ACCESS</h2>
+                <h2 style="margin-bottom:20px">M-TOOL</h2>
                 <input type="text" id="l-user" placeholder="Username">
                 <input type="password" id="l-pass" placeholder="Password">
                 <button class="btn" id="login-btn">Connect</button>
-                <p onclick="toggleReg(true)" style="margin-top:15px; font-size:11px; cursor:pointer; color:var(--muted)">Request Access</p>
-            </div>
-            <div id="reg-view" style="display:none">
-                <h2>REGISTRATION</h2>
-                <input type="text" id="r-user" placeholder="Nickname">
-                <input type="email" id="r-email" placeholder="Email">
-                <input type="password" id="r-pass" placeholder="Password">
-                <button class="btn" id="submit-req">Submit Request</button>
-                <p onclick="toggleReg(false)" style="margin-top:15px; font-size:11px; cursor:pointer; color:var(--muted)">Back to Login</p>
             </div>
         </div>
     </div>
@@ -111,30 +83,19 @@
     <div id="portal">
         <div id="nav">
             <b style="color:var(--accent)">M-TOOL</b>
-            <div class="nav-item active" onclick="tab('home')">Calculator</div>
-            <div class="nav-item" id="admin-nav" style="display:none; color:gold" onclick="tab('admin')">Console</div>
+            <div class="nav-item active">Calculator</div>
             <div style="flex:1"></div>
-            <button id="logout" class="c-btn" style="background:#ff4b4b">Logout</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:#ff4b4b; cursor:pointer;">Logout</button>
         </div>
-
-        <div id="v-home" class="view active">
+        <div class="view active">
             <iframe id="calc-frame" src="https://harrythehacker.neocities.org/Calculator"></iframe>
-        </div>
-
-        <div id="v-admin" class="view">
-            <div class="node">
-                <h3>Admin Console</h3>
-                <input type="text" id="global-msg" placeholder="Broadcast Message..." style="margin-top:10px;">
-                <button class="c-btn" onclick="sendGlobalAlert()">Broadcast</button>
-            </div>
-            <div id="session-list" style="padding: 0 20px;"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -148,63 +109,59 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADMIN_EMAIL = "hjass2865@gmail.com";
 
-        // BYPASS LOGIC (Hold or Shortcut)
-        let timer;
+        // BYPASS LOGIC
         const decoy = document.getElementById('decoy');
+        let timer;
 
-        const triggerUnlock = () => {
+        const unlock = () => {
             decoy.style.display = 'none';
             document.getElementById('auth-overlay').style.display = 'flex';
         };
 
-        // 5-Sec Hold
-        decoy.onmousedown = () => timer = setTimeout(triggerUnlock, 5000);
-        decoy.onmouseup = () => clearTimeout(timer);
-        decoy.ontouchstart = () => timer = setTimeout(triggerUnlock, 5000);
-        decoy.ontouchend = () => clearTimeout(timer);
-
-        // Shortcut Logic (Ctrl/Cmd + G for Global/Globe)
+        // KEYBOARD: Globe (Earth) or Ctrl/Cmd + G
         document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g') {
+            // Specifically targeting the Globe key behavior + G
+            const isEarthKey = e.key === 'Fn' || e.key === 'Global';
+            const isControlG = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g';
+
+            if (isControlG || (isEarthKey && e.key.toLowerCase() === 'g')) {
                 e.preventDefault();
-                triggerUnlock();
+                unlock();
             }
         });
 
-        // UI HELPERS
-        window.toggleReg = (s) => {
-            document.getElementById('login-view').style.display = s ? 'none' : 'block';
-            document.getElementById('reg-view').style.display = s ? 'block' : 'none';
+        // FINGER HOLD (5 SECONDS)
+        const startHold = (e) => {
+            // Clear any existing timer to prevent double-triggering
+            clearTimeout(timer);
+            timer = setTimeout(unlock, 5000);
         };
 
-        window.tab = (id) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('v-'+id).classList.add('active');
-            event.target.classList.add('active');
-        };
+        const stopHold = () => clearTimeout(timer);
 
-        // AUTH & DATABASE ACTIONS
+        // Mobile Finger Events
+        decoy.addEventListener('touchstart', startHold, { passive: true });
+        decoy.addEventListener('touchend', stopHold);
+        decoy.addEventListener('touchcancel', stopHold);
+
+        // Mouse Backup
+        decoy.addEventListener('mousedown', startHold);
+        decoy.addEventListener('mouseup', stopHold);
+        decoy.addEventListener('mouseleave', stopHold);
+
+        // AUTH
         document.getElementById('login-btn').onclick = async () => {
-            const user = document.getElementById('l-user').value;
-            const pass = document.getElementById('l-pass').value;
-            const email = user.includes('@') ? user : `${user}@mtool.local`;
-
+            const u = document.getElementById('l-user').value;
+            const p = document.getElementById('l-pass').value;
+            const email = u.includes('@') ? u : `${u}@mtool.local`;
             try {
-                const res = await signInWithEmailAndPassword(auth, email, pass);
+                const res = await signInWithEmailAndPassword(auth, email, p);
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
-                
-                if(email === ADMIN_EMAIL) {
-                    document.getElementById('admin-nav').style.display = 'block';
-                }
-                await setDoc(doc(db, "active_sessions", res.user.uid), { username: user, lastSeen: serverTimestamp() });
-            } catch { alert("Invalid Credentials"); }
+                await setDoc(doc(db, "active_sessions", res.user.uid), { username: u, lastSeen: serverTimestamp() });
+            } catch { alert("Denied"); }
         };
-
-        document.getElementById('logout').onclick = () => location.reload();
     </script>
 </body>
 </html>
