@@ -103,17 +103,22 @@
             appId: "1:626782607651:web:c5980863cef82d904a5496"
         };
 
+        // Initialize Firebase
+        console.log("Initializing Firebase...");
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        console.log("Firebase Ready.");
+
         const ADMIN_EMAIL = "hjass2865@gmail.com";
         let currentUserUid = null;
 
-        // BYPASS
+        // BYPASS Logic
         let timer;
         const trigger = () => { document.getElementById('decoy').style.display='none'; document.getElementById('auth-overlay').style.display='flex'; };
-        document.getElementById('decoy').onmousedown = () => timer = setTimeout(trigger, 5000);
-        document.getElementById('decoy').ontouchstart = () => timer = setTimeout(trigger, 5000);
+        const decoy = document.getElementById('decoy');
+        decoy.onmousedown = () => timer = setTimeout(trigger, 5000);
+        decoy.ontouchstart = () => timer = setTimeout(trigger, 5000);
         document.addEventListener('keydown', e => { if((e.ctrlKey || e.metaKey || e.key==='Fn' || e.key==='Global') && e.key.toLowerCase()==='g') trigger(); });
 
         // NAVIGATION
@@ -128,34 +133,50 @@
             document.getElementById('reg-view').style.display = s ? 'block' : 'none';
         };
 
-        // REQUEST SUBMISSION (STRENGTHENED)
+        // REQUEST SUBMISSION (With Status Timeout)
         document.getElementById('submit-req').onclick = async () => {
             const u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
+
             if(!u || !e || !p) return alert("Fill all fields");
 
+            console.log("Button clicked. Data:", {u, e});
+
+            // Set a timeout in case Firebase hangs
+            const timeout = setTimeout(() => {
+                alert("Request timed out. Check your internet or Firebase Rules.");
+            }, 10000);
+
             try {
-                console.log("Attempting to send request...");
-                await addDoc(collection(db, "requests"), {
-                    username: u, email: e, password_hint: p, timestamp: serverTimestamp()
+                console.log("Step 1: Contacting Collection...");
+                const colRef = collection(db, "requests");
+                
+                console.log("Step 2: Sending Doc...");
+                await addDoc(colRef, {
+                    username: u,
+                    email: e,
+                    password_hint: p,
+                    timestamp: serverTimestamp()
                 });
-                alert("Request Sent! Ask admin to approve.");
+
+                clearTimeout(timeout);
+                console.log("Step 3: Success!");
+                alert("Request Sent Successfully!");
                 window.toggleReg(false);
             } catch (err) {
-                console.error("FIREBASE ERROR:", err);
-                alert("Failed: " + err.message);
+                clearTimeout(timeout);
+                console.error("Step 4: CRASH!", err);
+                alert("Error: " + err.code + " - " + err.message);
             }
         };
 
-        // ADMIN CONSOLE (FIXED SNAPSHOTS)
+        // ADMIN LOADER
         function loadAdmin() {
             onSnapshot(collection(db, "active_sessions"), (snap) => {
                 const list = document.getElementById('session-list');
                 list.innerHTML = "";
-                snap.forEach(d => {
-                    list.innerHTML += `<div class="node">${d.data().username} (Online)</div>`;
-                });
+                snap.forEach(d => { list.innerHTML += `<div class="node">${d.data().username}</div>`; });
             });
             onSnapshot(collection(db, "requests"), (snap) => {
                 const list = document.getElementById('request-list');
@@ -171,7 +192,7 @@
         }
         window.delReq = async (id) => { await deleteDoc(doc(db, "requests", id)); };
 
-        // LOGIN
+        // LOGIN Logic
         document.getElementById('login-btn').onclick = async () => {
             const u = document.getElementById('l-user').value;
             const p = document.getElementById('l-pass').value;
@@ -186,11 +207,10 @@
                     loadAdmin();
                 }
                 await setDoc(doc(db, "active_sessions", res.user.uid), { username: u, lastSeen: serverTimestamp() });
-            } catch { alert("Denied"); }
+            } catch { alert("Login Denied"); }
         };
 
         window.logout = async () => { if(currentUserUid) await deleteDoc(doc(db,"active_sessions", currentUserUid)); location.reload(); };
-        window.onbeforeunload = () => { if(currentUserUid) logout(); };
     </script>
 </body>
 </html>
