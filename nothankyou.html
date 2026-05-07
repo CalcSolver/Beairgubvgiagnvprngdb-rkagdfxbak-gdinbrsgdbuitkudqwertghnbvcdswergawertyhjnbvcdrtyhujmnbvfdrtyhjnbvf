@@ -13,19 +13,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: arial, sans-serif; }
         
-        /* GOOGLE DECOY */
-        #decoy { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* THE GOOGLE DECOY */
+        #decoy { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; cursor: default; }
         .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; margin: 0 0 0 20px; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
 
-        /* AUTH UI */
+        /* AUTH INTERFACE */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
         .card { width: 380px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
         input { width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn:hover { opacity: 0.9; }
 
-        /* PORTAL UI */
+        /* MAIN PORTAL */
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; }
         #nav { height: 70px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border); gap: 15px; }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 14px; padding: 10px 15px; border-radius: 10px; }
@@ -33,6 +34,7 @@
         .view { display: none; flex: 1; overflow-y: auto; padding: 30px; }
         .view.active { display: block; }
         .node { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 15px; }
     </style>
 </head>
 <body>
@@ -70,17 +72,22 @@
     <div id="portal">
         <div id="nav">
             <b style="color:var(--accent)">M-TOOL</b>
-            <div class="nav-item active" onclick="tab('home', this)">Calculator</div>
-            <div class="nav-item" id="admin-nav" style="display:none; color:gold" onclick="tab('admin', this)">Console</div>
+            <div class="nav-item active" onclick="tab('home', this)">Tool</div>
+            <div class="nav-item" id="admin-nav" style="display:none; color:gold" onclick="tab('admin', this)">Admin Console</div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">DISCONNECT</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">LOGOUT</button>
         </div>
+
         <div id="v-home" class="view active" style="padding:0;">
-            <iframe src="https://harrythehacker.neocities.org/Calculator" style="width:100%; height:100%; border:none;"></iframe>
+            <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
         </div>
+
         <div id="v-admin" class="view">
-            <h2>Management Console</h2>
-            <div class="node"><h3>Pending Requests</h3><div id="request-list"></div></div>
+            <h2 style="margin-bottom:20px;">Admin Management</h2>
+            <div class="node">
+                <h3>Pending Requests</h3>
+                <div id="request-list" style="margin-top:15px;"></div>
+            </div>
         </div>
     </div>
 
@@ -89,14 +96,14 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot, serverTimestamp, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // UPDATED WITH YOUR NEW APP CONFIG
+        // YOUR UPDATED FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
             authDomain: "testing-12bc9.firebaseapp.com",
             projectId: "testing-12bc9",
             storageBucket: "testing-12bc9.firebasestorage.app",
             messagingSenderId: "626782607651",
-            appId: "1:626782607651:web:a5365719812c13504a5496", // Fixed AppId
+            appId: "1:626782607651:web:a5365719812c13504a5496",
             measurementId: "G-SM00NGD98F"
         };
 
@@ -105,14 +112,19 @@
         const db = getFirestore(app);
         const ADMIN_EMAIL = "hjass2865@gmail.com";
 
-        // BYPASS: 5s hold
+        // 1. BYPASS LOGIC (Hold for 5s)
         let timer;
-        const trigger = () => { document.getElementById('decoy').style.display='none'; document.getElementById('auth-overlay').style.display='flex'; };
-        document.getElementById('decoy').onmousedown = () => timer = setTimeout(trigger, 5000);
-        document.getElementById('decoy').ontouchstart = () => timer = setTimeout(trigger, 5000);
-        document.getElementById('decoy').onmouseup = () => clearTimeout(timer);
+        const trigger = () => {
+            document.getElementById('decoy').style.display = 'none';
+            document.getElementById('auth-overlay').style.display = 'flex';
+        };
+        const decoy = document.getElementById('decoy');
+        decoy.onmousedown = () => timer = setTimeout(trigger, 5000);
+        decoy.ontouchstart = () => timer = setTimeout(trigger, 5000);
+        decoy.onmouseup = () => clearTimeout(timer);
+        decoy.ontouchend = () => clearTimeout(timer);
 
-        // UI HELPERS
+        // 2. NAVIGATION
         window.tab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -124,23 +136,27 @@
             document.getElementById('reg-view').style.display = s ? 'block' : 'none';
         };
 
-        // REQUEST SUBMIT (Student Email Friendly)
+        // 3. SEND REQUEST
         document.getElementById('submit-req').onclick = async () => {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            if(!u || !e || !p) return alert("Fill all fields");
+            const nickname = document.getElementById('r-user').value;
+            const email = document.getElementById('r-email').value;
+            const pass = document.getElementById('r-pass').value;
+
+            if(!nickname || !email || !pass) return alert("All fields required!");
 
             try {
                 await addDoc(collection(db, "requests"), {
-                    username: u, email: e, pass: p, timestamp: serverTimestamp()
+                    username: nickname,
+                    email: email,
+                    password: pass,
+                    timestamp: serverTimestamp()
                 });
-                alert("Request Sent! Tell the admin to approve you.");
+                alert("Request Sent to Firebase!");
                 window.toggleReg(false);
-            } catch (err) { alert("Error: " + err.message); }
+            } catch (e) { alert("Error: " + e.message); }
         };
 
-        // ADMIN LOADER
+        // 4. ADMIN CONSOLE
         function loadAdmin() {
             onSnapshot(query(collection(db, "requests"), orderBy("timestamp", "desc")), (snap) => {
                 const list = document.getElementById('request-list');
@@ -148,30 +164,30 @@
                 snap.forEach(d => {
                     const data = d.data();
                     list.innerHTML += `<div class="node">
-                        <b>${data.username}</b> (${data.email})<br>Password: ${data.pass}
-                        <button onclick="window.delReq('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer;">Remove</button>
+                        <b>${data.username}</b> (${data.email})<br>
+                        Password Choice: ${data.password}
+                        <button onclick="window.delReq('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer;">Delete</button>
                     </div>`;
                 });
             });
         }
         window.delReq = async (id) => { await deleteDoc(doc(db, "requests", id)); };
 
-        // LOGIN
+        // 5. LOGIN & PERSISTENCE
         document.getElementById('login-btn').onclick = async () => {
             const u = document.getElementById('l-user').value;
             const p = document.getElementById('l-pass').value;
-            const email = u.includes('@') ? u : u + "@mtool.local";
+            const loginEmail = u.includes('@') ? u : u + "@mtool.local";
             try {
-                await signInWithEmailAndPassword(auth, email, p);
+                await signInWithEmailAndPassword(auth, loginEmail, p);
             } catch { alert("Access Denied"); }
         };
 
-        // AUTH PERSISTENCE
         onAuthStateChanged(auth, (user) => {
-            if(user) {
+            if (user) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
-                if(user.email === ADMIN_EMAIL) {
+                if (user.email === ADMIN_EMAIL) {
                     document.getElementById('admin-nav').style.display = 'block';
                     loadAdmin();
                 }
