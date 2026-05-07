@@ -8,7 +8,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          // Replace "6iGADKihYbPC4ecb_" with the one from your EmailJS Account tab
           emailjs.init("6iGADKihYbPC4ecb_"); 
        })();
     </script>
@@ -20,28 +19,31 @@
             --danger: #ef4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: arial, sans-serif; }
+        body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: 'Segoe UI', arial, sans-serif; }
         
-        /* DECOY */
-        #decoy { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* GOOGLE DECOY */
+        #decoy { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; cursor: default; }
         .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; margin: 0 0 0 20px; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
 
-        /* AUTH UI */
-        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
+        /* AUTH INTERFACE */
+        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
         .card { width: 380px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
-        input { width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; border: 1px solid var(--border); }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        input { width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* PORTAL UI */
-        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; }
+        /* MAIN PORTAL */
+        #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
         #nav { height: 70px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border); gap: 15px; }
         .nav-item { color: var(--muted); cursor: pointer; font-size: 14px; padding: 10px 15px; border-radius: 10px; }
         .nav-item.active { background: rgba(124,58,237,0.15); color: var(--accent); font-weight: 600; }
         .view { display: none; flex: 1; overflow-y: auto; padding: 30px; }
         .view.active { display: block; }
-        .node { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px; }
+        .node { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 20px; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 15px; }
     </style>
 </head>
 <body>
@@ -79,16 +81,18 @@
     <div id="portal">
         <div id="nav">
             <b style="color:var(--accent)">M-TOOL</b>
-            <div class="nav-item active" onclick="tab('home', this)">Tool</div>
+            <div class="nav-item active" onclick="tab('home', this)">Calculator</div>
             <div class="nav-item" id="admin-nav" style="display:none; color:gold" onclick="tab('admin', this)">Admin Console</div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">LOGOUT</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">DISCONNECT</button>
         </div>
+        
         <div id="v-home" class="view active" style="padding:0;">
-            <iframe src="https://harrythehacker.neocities.org/Calculator" style="width:100%; height:100%; border:none;"></iframe>
+            <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
         </div>
+
         <div id="v-admin" class="view">
-            <h2>Requests</h2>
+            <h2 style="margin-bottom:20px;">Incoming Requests</h2>
             <div id="request-list"></div>
         </div>
     </div>
@@ -110,19 +114,21 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const ADMIN_EMAIL = "hjass2865@gmail.com";
 
-        // 5s Decoy Bypass
+        // 5s Hold Bypass
         let timer;
         const trigger = () => { document.getElementById('decoy').style.display='none'; document.getElementById('auth-overlay').style.display='flex'; };
         document.getElementById('decoy').onmousedown = () => timer = setTimeout(trigger, 5000);
         document.getElementById('decoy').ontouchstart = () => timer = setTimeout(trigger, 5000);
         document.getElementById('decoy').onmouseup = () => clearTimeout(timer);
+        document.getElementById('decoy').ontouchend = () => clearTimeout(timer);
 
+        // UI Toggles
         window.toggleReg = (s) => {
             document.getElementById('login-view').style.display = s ? 'none' : 'block';
             document.getElementById('reg-view').style.display = s ? 'block' : 'none';
         };
-
         window.tab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -130,13 +136,13 @@
             el.classList.add('active');
         };
 
-        // SUBMIT WITH FIREBASE + EMAILJS
+        // REQUEST SUBMISSION
         document.getElementById('submit-req').onclick = async () => {
-            const nick = document.getElementById('r-user').value;
-            const email = document.getElementById('r-email').value;
+            const nick = document.getElementById('r-user').value.trim();
+            const email = document.getElementById('r-email').value.trim();
             const pass = document.getElementById('r-pass').value;
 
-            if(!nick || !email || !pass) return alert("Fill all fields");
+            if(!nick || !email || !pass) return alert("Please fill in all details.");
 
             try {
                 // 1. Save to Database
@@ -144,48 +150,53 @@
                     user: nick, email: email, pass: pass, time: serverTimestamp()
                 });
 
-                // 2. Send Email
+                // 2. Send Email via EmailJS
                 await emailjs.send("service_06y4hgi", "template_56l2irz", {
                     from_name: nick,
                     user_email: email,
                     user_pass: pass
                 });
 
-                alert("Request Sent & Admin Notified!");
+                alert("Request Sent! Admin has been notified.");
                 window.toggleReg(false);
             } catch (e) { alert("Error: " + e.message); }
         };
 
-        // ADMIN LOGIC
+        // ADMIN LOADER
         function loadAdmin() {
-            onSnapshot(query(collection(db, "requests"), orderBy("time", "desc")), (snap) => {
+            const q = query(collection(db, "requests"), orderBy("time", "desc"));
+            onSnapshot(q, (snap) => {
                 const list = document.getElementById('request-list');
-                list.innerHTML = "";
+                list.innerHTML = snap.empty ? "No pending requests." : "";
                 snap.forEach(d => {
                     const data = d.data();
                     list.innerHTML += `<div class="node">
                         <b>${data.user}</b> (${data.email})<br>Password: ${data.pass}
-                        <button onclick="window.del('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer;">Remove</button>
+                        <button onclick="window.del('${d.id}')" style="float:right; color:red; border:none; background:none; cursor:pointer; font-weight:bold;">DELETE</button>
                     </div>`;
                 });
             });
         }
         window.del = (id) => deleteDoc(doc(db, "requests", id));
 
-        // LOGIN logic
+        // LOGIN LOGIC
         document.getElementById('login-btn').onclick = async () => {
-            const user = document.getElementById('l-user').value;
-            const email = user.includes('@') ? user : user + "@mtool.local";
+            const input = document.getElementById('l-user').value.trim();
+            const p = document.getElementById('l-pass').value;
+            if(!input || !p) return alert("Enter credentials.");
+
+            const email = input.includes('@') ? input.toLowerCase() : (input + "@mtool.local").toLowerCase();
             try {
-                await signInWithEmailAndPassword(auth, email, document.getElementById('l-pass').value);
-            } catch { alert("Failed"); }
+                await signInWithEmailAndPassword(auth, email, p);
+            } catch { alert("Access Denied: Account not found or wrong password."); }
         };
 
+        // AUTH PERSISTENCE
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
-                if(user.email === "hjass2865@gmail.com") {
+                if(user.email === ADMIN_EMAIL) {
                     document.getElementById('admin-nav').style.display = 'block';
                     loadAdmin();
                 }
