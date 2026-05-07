@@ -8,162 +8,48 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          // Using your provided Public Key
-          emailjs.init("6iGADKihYbPC4ecb_"); 
+          try {
+              emailjs.init("6iGADKihYbPC4ecb_"); 
+              console.log("EmailJS Initialized");
+          } catch(e) {
+              console.error("EmailJS Failed:", e);
+          }
        })();
     </script>
 
     <style>
         :root { 
-            --bg: #0b0b18; 
-            --accent: #7c3aed; 
-            --accent-2: #4f46e5; 
-            --muted: #8078a8; 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --border: rgba(255, 255, 255, 0.1); 
-            --danger: #ef4444;
-            --success: #10b981;
+            --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5; --muted: #8078a8; 
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); 
+            --danger: #ef4444; --success: #10b981;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        
-        body { 
-            background: #fff; 
-            color: #222; 
-            overflow: hidden; 
-            height: 100vh; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-        }
+        body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: 'Segoe UI', sans-serif; }
 
-        /* GOOGLE 404 DECOY LAYER */
-        #decoy-layer { 
-            position: fixed; 
-            inset: 0; 
-            background: #fff; 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
-            cursor: default;
-            user-select: none;
-        }
+        /* DECOY */
+        #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; cursor: default; user-select: none; }
         .g-container { max-width: 650px; width: 100%; }
-        .g-robot { 
-            background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
-            width: 256px; 
-            height: 256px; 
-            float: right; 
-        }
+        .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
-        .g-text p { font-size: 14px; color: #202124; line-height: 1.6; }
 
-        /* AUTHENTICATION OVERLAY */
-        #auth-overlay { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg); 
-            z-index: 10000; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .auth-card { 
-            width: 400px; 
-            padding: 40px; 
-            background: var(--glass); 
-            border: 1px solid var(--border); 
-            border-radius: 28px; 
-            backdrop-filter: blur(25px); 
-            text-align: center; 
-            color: #fff; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .auth-card h2 { margin-bottom: 25px; letter-spacing: 2px; font-weight: 800; color: #fff; }
-        
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; margin-left: 10px; text-transform: uppercase; }
-        
-        input { 
-            width: 100%; 
-            padding: 14px; 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid var(--border); 
-            border-radius: 14px; 
-            color: #fff; 
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+        /* AUTH */
+        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
+        .auth-card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 28px; backdrop-filter: blur(25px); text-align: center; color: #fff; }
+        input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 14px; color: #fff; }
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
 
-        .btn-main { 
-            width: 100%; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 14px; 
-            background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
-            color: white; 
-            font-weight: 700; 
-            cursor: pointer; 
-            font-size: 15px;
-            margin-top: 10px;
-            transition: transform 0.2s;
-        }
-        .btn-main:active { transform: scale(0.98); }
-
-        /* PORTAL INTERFACE */
-        #portal-interface { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            flex-direction: column; 
-            background: var(--bg); 
-            color: #fff; 
-        }
-        #top-nav { 
-            height: 75px; 
-            background: rgba(0,0,0,0.4); 
-            display: flex; 
-            align-items: center; 
-            padding: 0 30px; 
-            border-bottom: 1px solid var(--border); 
-        }
-        .nav-logo { font-size: 20px; font-weight: 900; background: linear-gradient(to right, #fff, var(--muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
+        /* PORTAL */
+        #portal-interface { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
+        #top-nav { height: 75px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border); }
+        .nav-logo { font-size: 20px; font-weight: 900; color: var(--accent); }
         .nav-tabs { display: flex; gap: 10px; margin-left: 40px; }
-        .tab-link { 
-            padding: 10px 20px; 
-            border-radius: 12px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--muted); 
-            cursor: pointer; 
-            transition: 0.3s; 
-        }
+        .tab-link { padding: 10px 20px; border-radius: 12px; font-size: 13px; color: var(--muted); cursor: pointer; }
         .tab-link.active { background: rgba(124, 58, 237, 0.1); color: var(--accent); }
-        
         .view-container { display: none; flex: 1; overflow: auto; padding: 40px; }
         .view-container.active { display: block; }
-        
-        /* ADMIN STYLES */
-        .request-node { 
-            background: rgba(255,255,255,0.02); 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            padding: 25px; 
-            margin-bottom: 15px; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .req-info b { font-size: 18px; display: block; color: var(--accent); }
-        .req-info span { font-size: 13px; color: var(--muted); }
-        
-        .admin-actions { display: flex; gap: 10px; }
-        .btn-approve { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .btn-delete { background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
         iframe { width: 100%; height: 100%; border: none; border-radius: 20px; }
+        
+        .request-node { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
@@ -173,7 +59,7 @@
             <div class="g-robot"></div>
             <div class="g-text">
                 <h1><b>404.</b> <span>That’s an error.</span></h1>
-                <p>The requested URL was not found on this server. <br><ins>That’s all we know.</ins></p>
+                <p>The requested URL was not found on this server.</p>
             </div>
         </div>
     </div>
@@ -181,26 +67,19 @@
     <div id="auth-overlay">
         <div class="auth-card">
             <div id="login-form">
-                <h2>M-TOOL ACCESS</h2>
-                <div class="input-group">
-                    <label>Identification</label>
-                    <input type="text" id="l-user" placeholder="Nickname">
-                </div>
-                <div class="input-group">
-                    <label>Security Key</label>
-                    <input type="password" id="l-pass" placeholder="••••••••">
-                </div>
-                <button class="btn-main" id="login-btn">CONNECT SYSTEM</button>
-                <p onclick="toggleAuthMode(true)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Request New Access Path</p>
+                <h2 style="margin-bottom:20px;">SYSTEM LOGIN</h2>
+                <input type="text" id="l-user" placeholder="Nickname">
+                <input type="password" id="l-pass" placeholder="Password">
+                <button class="btn-main" id="login-btn">CONNECT</button>
+                <p onclick="toggleAuth(true)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Need Access?</p>
             </div>
-
-            <div id="register-form" style="display:none">
-                <h2>REQUEST ACCESS</h2>
-                <input type="text" id="r-user" placeholder="Desired Nickname" style="margin-bottom:10px;">
-                <input type="email" id="r-email" placeholder="Student Email" style="margin-bottom:10px;">
-                <input type="password" id="r-pass" placeholder="Desired Password" style="margin-bottom:10px;">
-                <button class="btn-main" id="submit-req">SEND TO DATABASE</button>
-                <p onclick="toggleAuthMode(false)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Return to Login</p>
+            <div id="reg-form" style="display:none">
+                <h2 style="margin-bottom:20px;">REQUEST</h2>
+                <input type="text" id="r-user" placeholder="Nickname">
+                <input type="email" id="r-email" placeholder="Email">
+                <input type="password" id="r-pass" placeholder="Password">
+                <button class="btn-main" id="submit-req">SUBMIT</button>
+                <p onclick="toggleAuth(false)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Back</p>
             </div>
         </div>
     </div>
@@ -209,32 +88,28 @@
         <div id="top-nav">
             <div class="nav-logo">M-TOOL</div>
             <div class="nav-tabs">
-                <div class="tab-link active" onclick="switchTab('home', this)">Calculations</div>
-                <div id="admin-tab" class="tab-link" style="display:none; color:gold" onclick="switchTab('admin', this)">Database Console</div>
+                <div class="tab-link active" onclick="switchTab('home', this)">Calculator</div>
+                <div id="admin-tab" class="tab-link" style="display:none; color:gold" onclick="switchTab('admin', this)">Admin</div>
             </div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:1px solid var(--danger); color:var(--danger); padding:8px 15px; border-radius:10px; cursor:pointer; font-weight:bold;">DISCONNECT</button>
+            <button onclick="location.reload()" style="background:none; border:1px solid red; color:red; padding:5px 10px; border-radius:8px; cursor:pointer;">LOGOUT</button>
         </div>
-
         <div id="view-home" class="view-container active" style="padding:0;">
             <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
         </div>
-
         <div id="view-admin" class="view-container">
-            <h1 style="margin-bottom:30px;">Inbound Requests</h1>
-            <div id="request-list">
-                <p style="color:var(--muted)">Scanning for new requests...</p>
-            </div>
+            <h1>Admin Panel</h1>
+            <div id="request-list"></div>
         </div>
     </div>
 
     <script type="module">
-        // FIREBASE CORE
+        console.log("Script Loading...");
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // YOUR CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
             authDomain: "testing-12bc9.firebaseapp.com",
@@ -244,132 +119,95 @@
             appId: "1:626782607651:web:a5365719812c13504a5496"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            console.log("Firebase Connected");
 
-        // --- 1. BYPASS LOGIC (The 5-Second Hold) ---
-        let holdTimer;
-        const decoy = document.getElementById('decoy-layer');
-        
-        const openAuth = () => {
-            decoy.style.display = 'none';
-            document.getElementById('auth-overlay').style.display = 'flex';
-        };
+            // Bypass (5s Hold)
+            let hold;
+            const decoy = document.getElementById('decoy-layer');
+            decoy.onmousedown = () => hold = setTimeout(() => {
+                decoy.style.display = 'none';
+                document.getElementById('auth-overlay').style.display = 'flex';
+            }, 5000);
+            decoy.onmouseup = () => clearTimeout(hold);
 
-        decoy.addEventListener('mousedown', () => holdTimer = setTimeout(openAuth, 5000));
-        decoy.addEventListener('touchstart', () => holdTimer = setTimeout(openAuth, 5000));
-        decoy.addEventListener('mouseup', () => clearTimeout(holdTimer));
-        decoy.addEventListener('mouseleave', () => clearTimeout(holdTimer));
+            // Tabs
+            window.toggleAuth = (isReg) => {
+                document.getElementById('login-form').style.display = isReg ? 'none' : 'block';
+                document.getElementById('reg-form').style.display = isReg ? 'block' : 'none';
+            };
+            window.switchTab = (t, el) => {
+                document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+                document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+                document.getElementById('view-'+t).classList.add('active');
+                el.classList.add('active');
+            };
 
-        // --- 2. UI NAVIGATION ---
-        window.toggleAuthMode = (isReg) => {
-            document.getElementById('login-form').style.display = isReg ? 'none' : 'block';
-            document.getElementById('register-form').style.display = isReg ? 'block' : 'none';
-        };
+            // CONNECT BUTTON
+            document.getElementById('login-btn').onclick = async () => {
+                console.log("Connect Clicked");
+                const u = document.getElementById('l-user').value.trim();
+                const p = document.getElementById('l-pass').value;
+                if(!u || !p) return alert("Fill fields");
 
-        window.switchTab = (target, el) => {
-            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
-            document.getElementById('view-' + target).classList.add('active');
-            el.classList.add('active');
-        };
-
-        // --- 3. LOGIN LOGIC (THE CONNECT BUTTON) ---
-        document.getElementById('login-btn').onclick = async () => {
-            const nick = document.getElementById('l-user').value.trim();
-            const pass = document.getElementById('l-pass').value;
-
-            if(!nick || !pass) return alert("All fields are mandatory.");
-
-            // Convert nickname to the mtool.local format
-            const email = nick.includes('@') ? nick.toLowerCase() : (nick + "@mtool.local").toLowerCase();
-
-            try {
-                console.log("Attempting handshake with:", email);
-                await signInWithEmailAndPassword(auth, email, pass);
-            } catch (error) {
-                console.error("Auth Error:", error.code);
-                alert("CONNECT FAILED: " + error.message);
-            }
-        };
-
-        // --- 4. REQUEST LOGIC (WITH EMAILJS) ---
-        document.getElementById('submit-req').onclick = async () => {
-            const n = document.getElementById('r-user').value.trim();
-            const e = document.getElementById('r-email').value.trim();
-            const p = document.getElementById('r-pass').value;
-
-            if(!n || !e || !p) return alert("Fill all fields.");
-
-            try {
-                // Save to Firestore
-                await addDoc(collection(db, "requests"), {
-                    user: n, email: e, pass: p, time: serverTimestamp()
-                });
-
-                // Send Email Notification
-                await emailjs.send("service_06y4hgi", "template_56l2irz", {
-                    from_name: n,
-                    user_email: e,
-                    user_pass: p
-                });
-
-                alert("SUCCESS: Request logged and Admin notified.");
-                toggleAuthMode(false);
-            } catch (err) {
-                alert("DATABASE ERROR: " + err.message);
-            }
-        };
-
-        // --- 5. ADMIN CONSOLE LOGIC ---
-        function startAdminMonitor() {
-            const q = query(collection(db, "requests"), orderBy("time", "desc"));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('request-list');
-                list.innerHTML = snap.empty ? '<p style="color:var(--muted)">No pending requests found.</p>' : "";
+                const email = u.includes('@') ? u.toLowerCase() : (u + "@mtool.local").toLowerCase();
                 
-                snap.forEach(d => {
-                    const data = d.data();
-                    const node = document.createElement('div');
-                    node.className = 'request-node';
-                    node.innerHTML = `
-                        <div class="req-info">
-                            <b>${data.user}</b>
-                            <span>${data.email} | Pass: ${data.pass}</span>
-                        </div>
-                        <div class="admin-actions">
-                            <button class="btn-approve" onclick="window.markDone('${d.id}')">MARK DONE</button>
-                            <button class="btn-delete" onclick="window.delDoc('${d.id}')">REJECT</button>
-                        </div>
-                    `;
-                    list.appendChild(node);
-                });
-            });
-        }
-
-        window.delDoc = async (id) => {
-            if(confirm("Delete this request?")) await deleteDoc(doc(db, "requests", id));
-        };
-        
-        window.markDone = async (id) => {
-            alert("Now go to Firebase Auth and manually add this user's nickname@mtool.local.");
-            await deleteDoc(doc(db, "requests", id));
-        };
-
-        // --- 6. SESSION PERSISTENCE ---
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('portal-interface').style.display = 'flex';
-                
-                // If it's you, show the Admin tab
-                if(user.email === "hjass2865@gmail.com") {
-                    document.getElementById('admin-tab').style.display = 'block';
-                    startAdminMonitor();
+                try {
+                    await signInWithEmailAndPassword(auth, email, p);
+                    console.log("Success login");
+                } catch (e) {
+                    alert("Fail: " + e.message);
                 }
+            };
+
+            // REQUEST BUTTON
+            document.getElementById('submit-req').onclick = async () => {
+                const n = document.getElementById('r-user').value.trim();
+                const e = document.getElementById('r-email').value.trim();
+                const p = document.getElementById('r-pass').value;
+                try {
+                    await addDoc(collection(db, "requests"), { user: n, email: e, pass: p, time: serverTimestamp() });
+                    await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: n, user_email: e, user_pass: p });
+                    alert("Sent!");
+                    window.toggleAuth(false);
+                } catch (err) { alert(err.message); }
+            };
+
+            // ADMIN Monitor
+            function loadAdmin() {
+                onSnapshot(query(collection(db, "requests"), orderBy("time", "desc")), (snap) => {
+                    const list = document.getElementById('request-list');
+                    list.innerHTML = "";
+                    snap.forEach(d => {
+                        const data = d.data();
+                        list.innerHTML += `<div class="request-node">
+                            <div><b>${data.user}</b><br>${data.email} | Pass: ${data.pass}</div>
+                            <button onclick="window.delDoc('${d.id}')" style="color:red; background:none; border:none; cursor:pointer;">Delete</button>
+                        </div>`;
+                    });
+                });
             }
-        });
+            window.delDoc = (id) => deleteDoc(doc(db, "requests", id));
+
+            // Auth Check
+            onAuthStateChanged(auth, (user) => {
+                if(user) {
+                    document.getElementById('auth-overlay').style.display = 'none';
+                    document.getElementById('portal-interface').style.display = 'flex';
+                    if(user.email === "hjass2865@gmail.com") {
+                        document.getElementById('admin-tab').style.display = 'block';
+                        loadAdmin();
+                    }
+                }
+            });
+
+        } catch (fatal) {
+            console.error("FATAL SCRIPT ERROR:", fatal);
+            alert("Script crashed! Check console.");
+        }
     </script>
 </body>
 </html>
