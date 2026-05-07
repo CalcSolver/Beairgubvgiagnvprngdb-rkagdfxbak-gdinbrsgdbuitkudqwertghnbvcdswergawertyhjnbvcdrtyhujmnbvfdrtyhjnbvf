@@ -81,7 +81,7 @@
             <div id="reg-view" style="display:none">
                 <h2 style="margin-bottom:20px;">ACCESS REQUEST</h2>
                 <input type="text" id="r-user" placeholder="Nickname">
-                <input type="email" id="r-email" placeholder="Email">
+                <input type="email" id="r-email" placeholder="Personal Email">
                 <input type="password" id="r-pass" placeholder="Desired Password">
                 <button class="btn" id="submit-req">SUBMIT</button>
                 <p onclick="toggleReg(false)" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--muted)">Back to Login</p>
@@ -120,7 +120,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -137,31 +137,26 @@
         const ADMIN_EMAIL = "hjass2865@gmail.com";
         let currentUserUid = null;
 
-        // 1. BYPASS LOGIC
+        // BYPASS LOGIC (Finger hold or Keyboard)
         let timer;
         const trigger = () => {
             document.getElementById('decoy').style.display = 'none';
             document.getElementById('auth-overlay').style.display = 'flex';
         };
-        document.getElementById('decoy').onmousedown = () => timer = setTimeout(trigger, 5000);
-        document.getElementById('decoy').onmouseup = () => clearTimeout(timer);
+        const decoy = document.getElementById('decoy');
+        decoy.onmousedown = () => timer = setTimeout(trigger, 5000);
+        decoy.onmouseup = () => clearTimeout(timer);
+        decoy.ontouchstart = () => timer = setTimeout(trigger, 5000);
+        decoy.ontouchend = () => clearTimeout(timer);
+
         document.addEventListener('keydown', e => {
             if ((e.ctrlKey || e.metaKey || e.key === 'Fn' || e.key === 'Global') && e.key.toLowerCase() === 'g') {
                 e.preventDefault(); trigger();
             }
         });
 
-        // 2. OFFLINE DETECTION (Presence)
-        window.addEventListener('beforeunload', () => {
-            if (currentUserUid) {
-                // Use beacon or a fast delete
-                navigator.sendBeacon(`https://firestore.googleapis.com/v1/projects/testing-12bc9/databases/(default)/documents/active_sessions/${currentUserUid}`);
-            }
-        });
-
-        // 3. ADMIN CONSOLE LOGIC
+        // ADMIN CONSOLE DATA
         function loadAdminData() {
-            // Live Users
             onSnapshot(collection(db, "active_sessions"), (snap) => {
                 const list = document.getElementById('session-list');
                 list.innerHTML = "";
@@ -174,7 +169,6 @@
                 });
             });
 
-            // Pending Requests
             onSnapshot(collection(db, "requests"), (snap) => {
                 const list = document.getElementById('request-list');
                 list.innerHTML = "";
@@ -182,13 +176,15 @@
                     const data = d.data();
                     list.innerHTML += `<div style="margin-bottom:10px; font-size:13px; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
                         <b>${data.username}</b> (${data.email})
-                        <button onclick="deleteDoc(doc(db, 'requests', '${d.id}'))" style="background:none; border:none; color:red; cursor:pointer; float:right;">Reject</button>
+                        <button onclick="window.rejectReq('${d.id}')" style="background:none; border:none; color:red; cursor:pointer; float:right;">Reject</button>
                     </div>`;
                 });
             });
         }
 
-        // 4. NAVIGATION
+        window.rejectReq = async (id) => { await deleteDoc(doc(db, "requests", id)); };
+
+        // NAVIGATION
         window.tab = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -201,7 +197,32 @@
             document.getElementById('reg-view').style.display = s ? 'block' : 'none';
         };
 
-        // 5. AUTH ACTIONS
+        // REGISTRATION WITH AQUINAS FILTER
+        document.getElementById('submit-req').onclick = async () => {
+            const u = document.getElementById('r-user').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+
+            // Strict Filter: Reject if user uses @student.aquinas... in any field
+            const aquinasFilter = /@student\.aquinas\.wa\.edu\.au/i;
+            if (aquinasFilter.test(u) || aquinasFilter.test(e) || aquinasFilter.test(p)) {
+                alert("Restricted Domain: Use of school emails is prohibited.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "requests"), {
+                    username: u,
+                    email: e,
+                    password: btoa(p), // Base64 Mask
+                    timestamp: serverTimestamp()
+                });
+                alert("Request Sent! Wait for approval.");
+                window.toggleReg(false);
+            } catch { alert("Request Failed."); }
+        };
+
+        // LOGIN ACTIONS
         document.getElementById('login-btn').onclick = async () => {
             const u = document.getElementById('l-user').value;
             const p = document.getElementById('l-pass').value;
@@ -224,6 +245,9 @@
             if (currentUserUid) await deleteDoc(doc(db, "active_sessions", currentUserUid));
             location.reload();
         };
+
+        // Offline Presence cleanup
+        window.onbeforeunload = () => { if (currentUserUid) logout(); };
     </script>
 </body>
 </html>
