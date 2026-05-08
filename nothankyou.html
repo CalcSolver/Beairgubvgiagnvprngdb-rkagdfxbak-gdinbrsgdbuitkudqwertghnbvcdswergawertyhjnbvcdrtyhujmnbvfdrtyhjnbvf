@@ -11,7 +11,7 @@
           try {
               emailjs.init("6iGADKihYbPC4ecb_"); 
           } catch(e) {
-              console.error("EmailJS Failed:", e);
+              console.error("EmailJS Failed");
           }
        })();
     </script>
@@ -20,51 +20,62 @@
         :root { 
             --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5; --muted: #8078a8; 
             --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); 
-            --danger: #ef4444; --success: #10b981;
+            --danger: #ef4444;
         }
         
-        /* Disable Mouse Globally */
+        /* 1. DISABLE MOUSE & SELECTION */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; outline: none; 
-            cursor: none !important; /* Hides cursor */
+            cursor: none !important; /* Hide mouse cursor */
+            user-select: none; 
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
         }
 
         body { 
             background: #fff; color: #222; overflow: hidden; height: 100vh; 
             font-family: 'Segoe UI', sans-serif;
-            touch-action: none; /* Disables browser gestures */
+            touch-action: none; /* Block browser gestures */
         }
 
-        /* DECOY LAYER */
+        /* 2. DECOY LAYER */
         #decoy-layer { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; align-items: center; justify-content: center; 
             padding: 20px; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-touch-callout: none; 
+            pointer-events: none; /* Disabled by default until device check passes */
         }
         
-        /* Only allow pointer events for actual touches */
-        #decoy-layer {
-            pointer-events: none; 
-        }
-
         .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
 
-        /* AUTH OVERLAY */
-        #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
-        .auth-card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 28px; backdrop-filter: blur(25px); text-align: center; color: #fff; }
-        input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 14px; color: #fff; }
-        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; }
+        /* 3. AUTH OVERLAY (Hidden Login Page) */
+        #auth-overlay { 
+            display: none; position: fixed; inset: 0; background: var(--bg); 
+            z-index: 10000; align-items: center; justify-content: center; 
+        }
+        .auth-card { 
+            width: 90%; max-width: 400px; padding: 40px; background: var(--glass); 
+            border: 1px solid var(--border); border-radius: 28px; 
+            backdrop-filter: blur(25px); text-align: center; color: #fff; 
+        }
+        input { 
+            width: 100%; padding: 14px; margin-bottom: 15px; 
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); 
+            border-radius: 14px; color: #fff; pointer-events: auto;
+        }
+        .btn-main { 
+            width: 100%; padding: 15px; border: none; border-radius: 14px; 
+            background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
+            color: white; font-weight: 700; pointer-events: auto;
+        }
 
-        /* PORTAL INTERFACE */
+        /* 4. MAIN INTERFACE */
         #portal-interface { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
         #top-nav { height: 75px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border); }
         .nav-logo { font-size: 20px; font-weight: 900; color: var(--accent); }
-        iframe { width: 100%; height: 100%; border: none; border-radius: 20px; }
+        iframe { width: 100%; height: 100%; border: none; border-radius: 20px; pointer-events: auto; }
     </style>
 </head>
 <body oncontextmenu="return false;"> <div id="decoy-layer">
@@ -92,7 +103,7 @@
         <div id="top-nav">
             <div class="nav-logo">M-TOOL</div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:1px solid red; color:red; padding:5px 10px; border-radius:8px;">LOGOUT</button>
+            <button onclick="location.reload()" style="background:none; border:1px solid red; color:red; padding:5px 10px; border-radius:8px; pointer-events:auto;">LOGOUT</button>
         </div>
         <div id="view-home" style="flex:1;">
             <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
@@ -101,7 +112,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -115,7 +126,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- HARDWARE & BROWSER CHECK (iPad Safari Only) ---
+        // --- IPAD SAFARI GATEKEEPER ---
+        // Modern iPads often use "Macintosh" string but include 'ontouchend'
         const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
@@ -123,12 +135,12 @@
             const decoy = document.getElementById('decoy-layer');
             const authOverlay = document.getElementById('auth-overlay');
             
-            // Re-enable pointer events ONLY for this specific device
+            // Re-enable interactions only if the device is correct
             decoy.style.pointerEvents = "auto";
 
-            // --- TOUCH ONLY BYPASS (5s Hold) ---
             let touchTimer;
             
+            // 5-Second Hold Gesture
             decoy.addEventListener('touchstart', (e) => {
                 touchTimer = setTimeout(() => {
                     decoy.style.display = 'none';
@@ -138,8 +150,10 @@
 
             decoy.addEventListener('touchend', () => clearTimeout(touchTimer));
             decoy.addEventListener('touchmove', () => clearTimeout(touchTimer));
+            decoy.addEventListener('touchcancel', () => clearTimeout(touchTimer));
         } else {
-            console.log("Device Not Authorized.");
+            // Windows and Mac users stay here forever
+            console.warn("Unauthorized Hardware.");
         }
 
         // --- FAULTY CONNECT BUTTON ---
@@ -155,7 +169,7 @@
             }, 2000);
         };
 
-        // State Observer
+        // Auth Observer
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 document.getElementById('decoy-layer').style.display = 'none';
