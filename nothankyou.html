@@ -10,117 +10,65 @@
        (function(){
           try {
               emailjs.init("6iGADKihYbPC4ecb_"); 
-          } catch(e) {
-              console.error("EmailJS Error");
-          }
+          } catch(e) { console.error("Mail Error"); }
        })();
     </script>
 
     <style>
         :root { 
-            --bg: #05050a; 
-            --accent: #7c3aed; 
-            --accent-2: #4f46e5; 
-            --glass: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.1); 
+            --bg: #05050a; --accent: #7c3aed; --accent-2: #4f46e5; 
+            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.1); 
             --danger: #ef4444;
         }
         
-        /* DISABLE ALL MOUSE INPUT */
+        /* NO MOUSE - NO SELECTION */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; outline: none; 
-            cursor: none !important; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-touch-callout: none; 
+            cursor: none !important; user-select: none; 
+            -webkit-user-select: none; -webkit-touch-callout: none; 
         }
 
-        body { 
-            background: #fff; 
-            color: #222; 
-            overflow: hidden; 
-            height: 100vh; 
-            font-family: 'Segoe UI', sans-serif;
-            touch-action: none; 
-        }
+        body { background: #fff; overflow: hidden; height: 100vh; font-family: 'Segoe UI', sans-serif; touch-action: none; }
 
-        /* --- 1. THE DECOY (Visible first) --- */
+        /* LAYER 1: 404 DECOY */
         #decoy-layer { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; align-items: center; justify-content: center; 
-            pointer-events: none; /* Only iPad can touch this */
+            pointer-events: none; 
         }
-        
-        .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-        .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
+        .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin-bottom: 15px; }
 
-        /* --- 2. THE LOGIN PAGE (THE SECRET DOOR) --- */
+        /* LAYER 2: AUTH MODAL */
         #auth-overlay { 
-            display: none; /* Hidden until 5s hold */
-            position: fixed; inset: 0; 
-            background: var(--bg); 
-            z-index: 10000; 
-            align-items: center; justify-content: center; 
+            display: none; position: fixed; inset: 0; background: var(--bg); 
+            z-index: 10000; align-items: center; justify-content: center; 
         }
-
         .auth-card { 
-            width: 90%; max-width: 450px; 
-            padding: 60px 40px; 
-            background: var(--glass); 
-            border: 2px solid var(--border); 
-            border-radius: 40px; 
-            backdrop-filter: blur(40px); 
-            text-align: center; 
-            box-shadow: 0 0 100px rgba(124, 58, 237, 0.1);
+            width: 90%; max-width: 450px; padding: 50px 40px; 
+            background: var(--glass); border: 2px solid var(--border); 
+            border-radius: 40px; backdrop-filter: blur(40px); text-align: center; 
         }
-
-        .auth-card h2 {
-            color: #fff; font-size: 28px; font-weight: 900;
-            letter-spacing: 4px; margin-bottom: 40px;
-        }
-
         input { 
-            width: 100%; padding: 20px; margin-bottom: 25px; 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            color: #fff; font-size: 18px;
-            pointer-events: auto; 
+            width: 100%; padding: 18px; margin-bottom: 20px; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); 
+            border-radius: 15px; color: #fff; font-size: 16px; pointer-events: auto; 
         }
-
         .btn-main { 
-            width: 100%; padding: 20px; border: none; border-radius: 20px; 
+            width: 100%; padding: 18px; border: none; border-radius: 15px; 
             background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
-            color: white; font-weight: 900; font-size: 16px;
-            text-transform: uppercase; letter-spacing: 2px;
-            pointer-events: auto;
+            color: white; font-weight: 900; pointer-events: auto;
         }
 
-        /* --- 3. THE TOOL PORTAL --- */
-        #portal-interface { 
-            display: none; 
-            position: fixed; inset: 0; 
-            flex-direction: column; 
-            background: var(--bg); 
-        }
-
-        #top-nav { 
-            height: 80px; background: rgba(0,0,0,0.8); 
-            display: flex; align-items: center; padding: 0 30px; 
-            border-bottom: 1px solid var(--border); 
-        }
-
-        iframe { 
-            flex: 1; width: 100%; height: 100%; 
-            border: none; pointer-events: auto; 
-        }
+        /* LAYER 3: PORTAL */
+        #portal-interface { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 10001; }
+        iframe { flex: 1; width: 100%; height: 100%; border: none; pointer-events: auto; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="decoy-layer">
-        <div class="g-container">
+        <div style="max-width:650px; width:100%; pointer-events:none;">
             <div class="g-robot"></div>
             <div class="g-text">
                 <h1><b>404.</b> <span>That’s an error.</span></h1>
@@ -131,95 +79,98 @@
 
     <div id="auth-overlay">
         <div class="auth-card">
-            <div id="login-form">
-                <h2>CORE LOGIN</h2>
-                <input type="text" id="l-user" placeholder="USERNAME">
+            <div id="login-view">
+                <h2 style="color:white; margin-bottom:30px;">SYSTEM LOGIN</h2>
+                <input type="text" id="l-user" placeholder="NICKNAME">
                 <input type="password" id="l-pass" placeholder="PASSWORD">
                 <button class="btn-main" id="login-btn">CONNECT</button>
+                <p onclick="toggleForm('reg')" style="color:var(--accent); margin-top:20px; font-size:13px; pointer-events:auto;">Request Account Access</p>
+            </div>
+
+            <div id="reg-view" style="display:none;">
+                <h2 style="color:white; margin-bottom:30px;">ACCOUNT REQUEST</h2>
+                <input type="text" id="r-user" placeholder="DESIRED NICKNAME">
+                <input type="email" id="r-email" placeholder="EMAIL ADDRESS">
+                <input type="password" id="r-pass" placeholder="PASSWORD">
+                <button class="btn-main" id="req-btn">SEND REQUEST</button>
+                <p onclick="toggleForm('login')" style="color:#888; margin-top:20px; font-size:13px; pointer-events:auto;">Return to Login</p>
             </div>
         </div>
     </div>
 
     <div id="portal-interface">
-        <div id="top-nav">
-            <div style="color:var(--accent); font-weight:900;">SYSTEM ACTIVE</div>
-            <div style="flex:1"></div>
-            <button id="logout-trigger" style="background:none; border:1px solid red; color:red; padding:10px; border-radius:10px; pointer-events:auto;">LOGOUT</button>
+        <div style="height:50px; background:#000; display:flex; align-items:center; padding:0 20px;">
+            <button onclick="location.reload()" style="color:red; background:none; border:none; pointer-events:auto;">DISCONNECT</button>
         </div>
         <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
             authDomain: "testing-12bc9.firebaseapp.com",
-            projectId: "testing-12bc9",
-            storageBucket: "testing-12bc9.firebasestorage.app",
-            messagingSenderId: "626782607651",
-            appId: "1:626782607651:web:a5365719812c13504a5496"
+            projectId: "testing-12bc9"
         };
-
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // --- GATEKEEPER ---
+        // GATEKEEPER (iPad Safari Only)
         const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         if (isiPad && isSafari) {
             const decoy = document.getElementById('decoy-layer');
-            const authOverlay = document.getElementById('auth-overlay');
             decoy.style.pointerEvents = "auto";
-
             let timer;
             decoy.addEventListener('touchstart', () => {
                 timer = setTimeout(() => {
                     decoy.style.display = 'none';
-                    authOverlay.style.display = 'flex';
+                    document.getElementById('auth-overlay').style.display = 'flex';
                 }, 5000);
             });
             decoy.addEventListener('touchend', () => clearTimeout(timer));
         }
 
-        // --- FAULTY BUTTON ---
+        // TOGGLE FORMS
+        window.toggleForm = (mode) => {
+            document.getElementById('login-view').style.display = mode === 'reg' ? 'none' : 'block';
+            document.getElementById('reg-view').style.display = mode === 'reg' ? 'block' : 'none';
+        };
+
+        // REQUEST ACCOUNT
+        document.getElementById('req-btn').onclick = async function() {
+            const u = document.getElementById('r-user').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+            if(!u || !e || !p) return alert("Fill all fields");
+            
+            try {
+                await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
+                await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
+                alert("Request Sent to Admin.");
+                toggleForm('login');
+            } catch(err) { alert("Error sending request."); }
+        };
+
+        // CONNECT BUTTON
         document.getElementById('login-btn').onclick = function() {
-            this.style.background = 'var(--danger)';
-            this.innerText = "REFUSED";
-            setTimeout(() => {
-                this.style.background = '';
-                this.innerText = "CONNECT";
-                alert("Handshake timeout. Protocol 0x8842 failed.");
-            }, 2000);
-        };
-
-        // --- LOGOUT LOGIC ---
-        document.getElementById('logout-trigger').onclick = () => {
-            signOut(auth).then(() => {
-                location.reload();
-            });
-        };
-
-        // --- AUTH STATE ---
-        onAuthStateChanged(auth, (user) => {
-            const decoy = document.getElementById('decoy-layer');
-            const authOverlay = document.getElementById('auth-overlay');
-            const portal = document.getElementById('portal-interface');
-
-            if(user) {
-                // If logged in, skip straight to iframe
-                decoy.style.display = 'none';
-                authOverlay.style.display = 'none';
-                portal.style.display = 'flex';
+            const user = document.getElementById('l-user').value.toUpperCase();
+            if (user === "ADMIN") {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('portal-interface').style.display = 'flex';
             } else {
-                // If NOT logged in, show 404 decoy
-                decoy.style.display = 'flex';
-                authOverlay.style.display = 'none';
-                portal.style.display = 'none';
+                this.style.background = 'var(--danger)';
+                this.innerText = "REFUSED";
+                setTimeout(() => {
+                    this.style.background = '';
+                    this.innerText = "CONNECT";
+                    alert("Handshake timeout. Protocol 0x8842 failed.");
+                }, 1500);
             }
-        });
+        };
     </script>
 </body>
 </html>
