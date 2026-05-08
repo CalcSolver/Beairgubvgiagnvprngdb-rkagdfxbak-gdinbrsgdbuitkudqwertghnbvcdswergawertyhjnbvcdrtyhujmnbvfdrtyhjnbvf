@@ -5,102 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>404 Not Found</title>
     
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          try {
-              emailjs.init("6iGADKihYbPC4ecb_"); 
-          } catch(e) { console.error("Mail Error"); }
-       })();
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>emailjs.init("6iGADKihYbPC4ecb_");</script>
 
     <style>
         :root { 
-            --bg: #05050a; --accent: #7c3aed; --accent-2: #4f46e5; 
-            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.1); 
-            --danger: #ef4444;
+            --bg: #0a0a0f; --accent: #7c3aed; --danger: #ef4444; 
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); 
         }
-        
-        /* NO MOUSE - NO SELECTION */
+
+        /* DISABLE MOUSE & SELECTION */
         * { 
-            margin: 0; padding: 0; box-sizing: border-box; outline: none; 
+            margin: 0; padding: 0; box-sizing: border-box; 
             cursor: none !important; user-select: none; 
             -webkit-user-select: none; -webkit-touch-callout: none; 
         }
 
-        body { background: #fff; overflow: hidden; height: 100vh; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+        body { background: #fff; height: 100vh; overflow: hidden; font-family: sans-serif; touch-action: none; }
 
-        /* LAYER 1: 404 DECOY */
-        #decoy-layer { 
-            position: fixed; inset: 0; background: #fff; z-index: 9999; 
+        /* DECOY LAYER */
+        #decoy { 
+            position: fixed; inset: 0; background: #fff; z-index: 100; 
             display: flex; align-items: center; justify-content: center; 
-            pointer-events: none; 
+            pointer-events: auto; /* Ensure we can touch this */
         }
-        .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-        .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin-bottom: 15px; }
+        .g-robot { background: url('https://www.google.com/images/errors/robot.png'); width: 256px; height: 256px; float: right; }
 
-        /* LAYER 2: AUTH MODAL */
-        #auth-overlay { 
+        /* AUTH LAYER */
+        #auth { 
             display: none; position: fixed; inset: 0; background: var(--bg); 
-            z-index: 10000; align-items: center; justify-content: center; 
+            z-index: 200; align-items: center; justify-content: center; 
         }
-        .auth-card { 
-            width: 90%; max-width: 450px; padding: 50px 40px; 
-            background: var(--glass); border: 2px solid var(--border); 
-            border-radius: 40px; backdrop-filter: blur(40px); text-align: center; 
-        }
-        input { 
-            width: 100%; padding: 18px; margin-bottom: 20px; 
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); 
-            border-radius: 15px; color: #fff; font-size: 16px; pointer-events: auto; 
-        }
-        .btn-main { 
-            width: 100%; padding: 18px; border: none; border-radius: 15px; 
-            background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
-            color: white; font-weight: 900; pointer-events: auto;
+        .card { 
+            width: 90%; max-width: 400px; padding: 40px; 
+            background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 30px; backdrop-filter: blur(20px); text-align: center; color: #fff;
         }
 
-        /* LAYER 3: PORTAL */
-        #portal-interface { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); z-index: 10001; }
-        iframe { flex: 1; width: 100%; height: 100%; border: none; pointer-events: auto; }
+        input { 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); 
+            border-radius: 12px; color: #fff; pointer-events: auto;
+        }
+
+        .btn { 
+            width: 100%; padding: 15px; border: none; border-radius: 12px; 
+            background: var(--accent); color: #fff; font-weight: bold; 
+            pointer-events: auto; margin-top: 10px;
+        }
+
+        /* PORTAL LAYER */
+        #portal { display: none; position: fixed; inset: 0; z-index: 300; background: #000; flex-direction: column; }
+        iframe { flex: 1; border: none; pointer-events: auto; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div id="decoy-layer">
-        <div style="max-width:650px; width:100%; pointer-events:none;">
+    <div id="decoy">
+        <div style="max-width: 600px; padding: 20px;">
             <div class="g-robot"></div>
-            <div class="g-text">
-                <h1><b>404.</b> <span>That’s an error.</span></h1>
+            <div style="font-size: 18px; color: #222;">
+                <b>404.</b> <span style="color:#777">That’s an error.</span><br><br>
                 <p>The requested URL was not found on this server.</p>
             </div>
         </div>
     </div>
 
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <div id="login-view">
-                <h2 style="color:white; margin-bottom:30px;">SYSTEM LOGIN</h2>
-                <input type="text" id="l-user" placeholder="NICKNAME">
-                <input type="password" id="l-pass" placeholder="PASSWORD">
-                <button class="btn-main" id="login-btn">CONNECT</button>
-                <p onclick="toggleForm('reg')" style="color:var(--accent); margin-top:20px; font-size:13px; pointer-events:auto;">Request Account Access</p>
-            </div>
+    <div id="auth">
+        <div class="card" id="login-box">
+            <h2 style="margin-bottom:20px;">SYSTEM ACCESS</h2>
+            <input type="text" id="user" placeholder="NICKNAME">
+            <input type="password" id="pass" placeholder="PASSWORD">
+            <button class="btn" id="login-btn">CONNECT</button>
+            <p onclick="showBox('reg')" style="margin-top:20px; font-size:12px; color:var(--accent); pointer-events:auto;">Request Access</p>
+        </div>
 
-            <div id="reg-view" style="display:none;">
-                <h2 style="color:white; margin-bottom:30px;">ACCOUNT REQUEST</h2>
-                <input type="text" id="r-user" placeholder="DESIRED NICKNAME">
-                <input type="email" id="r-email" placeholder="EMAIL ADDRESS">
-                <input type="password" id="r-pass" placeholder="PASSWORD">
-                <button class="btn-main" id="req-btn">SEND REQUEST</button>
-                <p onclick="toggleForm('login')" style="color:#888; margin-top:20px; font-size:13px; pointer-events:auto;">Return to Login</p>
-            </div>
+        <div class="card" id="reg-box" style="display:none;">
+            <h2 style="margin-bottom:20px;">REQUEST ACCOUNT</h2>
+            <input type="text" id="r-user" placeholder="NICKNAME">
+            <input type="email" id="r-email" placeholder="EMAIL">
+            <input type="password" id="r-pass" placeholder="PASSWORD">
+            <button class="btn" id="req-btn">SEND REQUEST</button>
+            <p onclick="showBox('login')" style="margin-top:20px; font-size:12px; color:#888; pointer-events:auto;">Back</p>
         </div>
     </div>
 
-    <div id="portal-interface">
-        <div style="height:50px; background:#000; display:flex; align-items:center; padding:0 20px;">
-            <button onclick="location.reload()" style="color:red; background:none; border:none; pointer-events:auto;">DISCONNECT</button>
+    <div id="portal">
+        <div style="height:50px; padding:10px; text-align:right;">
+            <button onclick="location.reload()" style="color:red; background:none; border:none; pointer-events:auto;">LOGOUT</button>
         </div>
         <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
     </div>
@@ -117,58 +109,58 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // GATEKEEPER (iPad Safari Only)
+        // --- IPAD SAFARI GATE ---
         const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         if (isiPad && isSafari) {
-            const decoy = document.getElementById('decoy-layer');
-            decoy.style.pointerEvents = "auto";
             let timer;
+            const decoy = document.getElementById('decoy');
+            
             decoy.addEventListener('touchstart', () => {
                 timer = setTimeout(() => {
                     decoy.style.display = 'none';
-                    document.getElementById('auth-overlay').style.display = 'flex';
+                    document.getElementById('auth').style.display = 'flex';
                 }, 5000);
             });
             decoy.addEventListener('touchend', () => clearTimeout(timer));
         }
 
-        // TOGGLE FORMS
-        window.toggleForm = (mode) => {
-            document.getElementById('login-view').style.display = mode === 'reg' ? 'none' : 'block';
-            document.getElementById('reg-view').style.display = mode === 'reg' ? 'block' : 'none';
+        // --- UI SWITCHER ---
+        window.showBox = (mode) => {
+            document.getElementById('login-box').style.display = mode === 'reg' ? 'none' : 'block';
+            document.getElementById('reg-box').style.display = mode === 'reg' ? 'block' : 'none';
         };
 
-        // REQUEST ACCOUNT
-        document.getElementById('req-btn').onclick = async function() {
+        // --- SUBMIT REQUEST ---
+        document.getElementById('req-btn').onclick = async () => {
             const u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
             if(!u || !e || !p) return alert("Fill all fields");
-            
+
             try {
                 await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
                 await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
-                alert("Request Sent to Admin.");
-                toggleForm('login');
-            } catch(err) { alert("Error sending request."); }
+                alert("Request Sent");
+                showBox('login');
+            } catch(err) { alert("Error"); }
         };
 
-        // CONNECT BUTTON
+        // --- LOGIN ---
         document.getElementById('login-btn').onclick = function() {
-            const user = document.getElementById('l-user').value.toUpperCase();
-            if (user === "ADMIN") {
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('portal-interface').style.display = 'flex';
+            const val = document.getElementById('user').value.toUpperCase();
+            if(val === "ADMIN") {
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('portal').style.display = 'flex';
             } else {
-                this.style.background = 'var(--danger)';
+                this.style.background = 'red';
                 this.innerText = "REFUSED";
                 setTimeout(() => {
                     this.style.background = '';
                     this.innerText = "CONNECT";
-                    alert("Handshake timeout. Protocol 0x8842 failed.");
-                }, 1500);
+                    alert("System Error: Handshake timeout. Protocol 0x8842 failed.");
+                }, 1000);
             }
         };
     </script>
