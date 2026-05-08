@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>404 Not Found</title>
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -13,361 +11,256 @@
        (function(){
           try {
               emailjs.init("6iGADKihYbPC4ecb_"); 
-              console.log("Communication Link Initialized");
-          } catch(e) { 
-              console.error("Link Failure"); 
-          }
+          } catch(e) { console.error("COMMS_OFFLINE"); }
        })();
     </script>
 
     <style>
-        /* SYSTEM COLOR PALETTE & DESIGN TOKENS 
-        Optimized for high-contrast dark mode interfaces
-        */
         :root { 
-            --bg-main: #020205;
-            --bg-decoy: #ffffff;
+            --dark-core: #020204;
             --accent-glow: #7c3aed;
-            --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-            --panel-glass: rgba(255, 255, 255, 0.03);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --error-red: #ef4444;
-            --success-green: #10b981;
-            --text-primary: #ffffff;
-            --text-secondary: #94a3b8;
+            --panel-bg: rgba(20, 20, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --error-color: #ff4444;
         }
 
-        /* GLOBAL INTERACTION RESTRICTIONS 
-        Hardware lockout for mice and standard desktop selection tools
+        /* STRICT INPUT LOCKDOWN
+           Hides mouse and prevents all desktop-style interactions 
         */
         * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            outline: none; 
+            margin: 0; padding: 0; box-sizing: border-box; outline: none; 
             cursor: none !important; 
             user-select: none; 
             -webkit-user-select: none; 
-            -webkit-touch-callout: none; 
-            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
         body, html { 
-            background: var(--bg-decoy); 
-            height: 100vh; 
-            width: 100vw; 
+            background: #ffffff; 
+            height: 100vh; width: 100vw; 
             overflow: hidden; 
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, "SF Pro Text", Helvetica, sans-serif;
             touch-action: none; 
         }
 
-        /* --- LAYER 1: THE DECOY (404 ERROR) --- */
+        /* --- 1. THE 404 DECOY SYSTEM --- */
         #decoy-layer { 
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg-decoy); 
-            z-index: 1000; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            visibility: visible;
-            opacity: 1;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none; /* Logic re-enables this for authorized hardware */
+            position: fixed; inset: 0; background: #ffffff; z-index: 99999; 
+            display: flex; align-items: center; justify-content: center; 
+            opacity: 1; transition: opacity 0.5s ease;
+            pointer-events: auto; /* MUST BE AUTO TO CAPTURE TOUCH */
         }
         
-        .g-container { max-width: 650px; width: 100%; padding: 30px; pointer-events: none; }
-        .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-        .g-text h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 12px; }
-        .g-text p { font-size: 14px; color: #202124; line-height: 1.5; }
+        .g-wrap { max-width: 600px; width: 100%; padding: 40px; pointer-events: none; }
+        .g-robot { 
+            background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
+            width: 256px; height: 256px; float: right; 
+        }
+        .g-content h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 10px; }
+        .g-content p { font-size: 14px; color: #202124; line-height: 1.6; }
 
-        /* --- LAYER 2: THE AUTHENTICATION PORTAL --- */
-        #auth-portal { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg-main); 
-            z-index: 2000; 
-            align-items: center; 
-            justify-content: center; 
-            flex-direction: column;
+        /* --- 2. AUTHENTICATION TERMINAL --- */
+        #auth-terminal { 
+            display: none; position: fixed; inset: 0; 
+            background: radial-gradient(circle at center, #0f0f1a 0%, #020204 100%); 
+            z-index: 88888; align-items: center; justify-content: center;
         }
 
-        .auth-container { 
-            width: 90%; 
-            max-width: 440px; 
-            padding: 50px 40px; 
-            background: var(--panel-glass); 
-            border: 1px solid var(--border-glass); 
-            border-radius: 35px; 
-            backdrop-filter: blur(40px); 
-            -webkit-backdrop-filter: blur(40px);
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        .auth-box { 
+            width: 90%; max-width: 420px; padding: 60px 40px;
+            background: var(--panel-bg); border: 1px solid var(--glass-border); 
+            border-radius: 40px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
 
-        .auth-header h2 { 
-            color: var(--text-primary); 
-            font-size: 22px; 
-            font-weight: 800; 
-            letter-spacing: 4px; 
-            margin-bottom: 35px; 
-            text-transform: uppercase;
+        .auth-box h2 { 
+            color: #fff; text-transform: uppercase; letter-spacing: 6px; 
+            font-size: 18px; margin-bottom: 40px; font-weight: 900;
         }
 
-        .input-group { margin-bottom: 20px; width: 100%; text-align: left; }
-        .input-group label { display: block; color: var(--text-secondary); font-size: 10px; margin-bottom: 8px; margin-left: 5px; text-transform: uppercase; letter-spacing: 1px; }
-
-        input { 
-            width: 100%; 
-            padding: 18px 20px; 
-            background: rgba(255, 255, 255, 0.04); 
-            border: 1px solid var(--border-glass); 
-            border-radius: 16px; 
-            color: var(--text-primary); 
-            font-size: 16px; 
-            transition: all 0.3s ease;
-            pointer-events: auto;
+        .input-field { 
+            width: 100%; padding: 20px; margin-bottom: 20px; 
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
+            border-radius: 15px; color: #fff; font-size: 16px; pointer-events: auto;
         }
 
-        input:focus { border-color: var(--accent-glow); background: rgba(255, 255, 255, 0.07); }
-
-        .btn-action { 
-            width: 100%; 
-            padding: 18px; 
-            margin-top: 10px;
-            border: none; 
-            border-radius: 16px; 
-            background: var(--accent-gradient); 
-            color: white; 
-            font-weight: 800; 
-            font-size: 14px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            pointer-events: auto;
-            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
+        .btn-connect { 
+            width: 100%; padding: 20px; border: none; border-radius: 15px; 
+            background: linear-gradient(135deg, #7c3aed, #4f46e5); 
+            color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            pointer-events: auto; margin-top: 10px;
         }
 
-        .btn-action:active { transform: scale(0.98); }
-
-        .link-toggle { 
-            margin-top: 25px; 
-            color: var(--text-secondary); 
-            font-size: 12px; 
-            pointer-events: auto;
+        /* --- 3. THE CORE INTERFACE --- */
+        #portal-ui { 
+            display: none; position: fixed; inset: 0; 
+            flex-direction: column; background: #000; z-index: 77777; 
         }
 
-        .link-toggle span { color: var(--accent-glow); font-weight: 600; margin-left: 5px; }
-
-        /* --- LAYER 3: SYSTEM INTERFACE --- */
-        #system-interface { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg-main); 
-            z-index: 3000; 
-            flex-direction: column; 
+        .top-bar { 
+            height: 60px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--glass-border);
+            display: flex; align-items: center; padding: 0 20px; justify-content: space-between;
         }
 
-        .system-top-nav { 
-            height: 65px; 
-            background: rgba(0,0,0,0.8); 
-            border-bottom: 1px solid var(--border-glass); 
-            display: flex; 
-            align-items: center; 
-            padding: 0 25px; 
-            justify-content: space-between;
-        }
+        iframe { flex: 1; width: 100%; border: none; pointer-events: auto; }
 
-        #view-frame { flex: 1; width: 100%; height: 100%; border: none; pointer-events: auto; }
-
-        /* ANIMATIONS */
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        /* LOADING STATES & ERRORS */
+        .sync-error { animation: shake 0.4s ease-in-out; border-color: var(--error-color) !important; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
-        .error-pulse { animation: pulse-red 1s infinite; border-color: var(--error-red) !important; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="decoy-layer">
-        <div class="g-container">
+        <div class="g-wrap">
             <div class="g-robot"></div>
-            <div class="g-text">
-                <h1><b>404.</b> <span>That’s an error.</span></h1>
+            <div class="g-content">
+                <h1 id="trigger-text"><b>404.</b> <span>That’s an error.</span></h1>
                 <p>The requested URL was not found on this server. <br>That’s all we know.</p>
             </div>
         </div>
     </div>
 
-    <div id="auth-portal">
-        <div class="auth-container" id="login-box">
-            <div class="auth-header"><h2>System Access</h2></div>
-            <div class="input-group">
-                <label>User Identifier</label>
-                <input type="text" id="l-user" placeholder="Enter Nickname" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <label>Secure Passphrase</label>
-                <input type="password" id="l-pass" placeholder="••••••••">
-            </div>
-            <button class="btn-action" id="login-btn">Initialize Connection</button>
-            <div class="link-toggle" onclick="switchView('reg')">Require credentials? <span>Request Access</span></div>
+    <div id="auth-terminal">
+        <div class="auth-box" id="login-container">
+            <h2>System Login</h2>
+            <input type="text" id="l-user" class="input-field" placeholder="NICKNAME" autocomplete="off">
+            <input type="password" id="l-pass" class="input-field" placeholder="ACCESS KEY">
+            <button class="btn-connect" id="login-trigger">Initialize</button>
+            
+            <p onclick="toggleState('reg')" style="color:#666; margin-top:30px; font-size:11px; pointer-events:auto;">
+                Unauthorized? <span style="color:var(--accent-glow)">Request Credentials</span>
+            </p>
         </div>
 
-        <div class="auth-container" id="reg-box" style="display:none;">
-            <div class="auth-header"><h2>Credential Request</h2></div>
-            <div class="input-group">
-                <label>Desired Nickname</label>
-                <input type="text" id="r-user" placeholder="Your Name">
-            </div>
-            <div class="input-group">
-                <label>Email Link</label>
-                <input type="email" id="r-email" placeholder="email@provider.com">
-            </div>
-            <div class="input-group">
-                <label>Access Password</label>
-                <input type="password" id="r-pass" placeholder="Min 6 characters">
-            </div>
-            <button class="btn-action" id="reg-btn">Transmit Request</button>
-            <div class="link-toggle" onclick="switchView('login')">Already authorized? <span>Login</span></div>
+        <div class="auth-box" id="reg-container" style="display:none;">
+            <h2>Request Access</h2>
+            <input type="text" id="r-user" class="input-field" placeholder="DESIRED NICKNAME">
+            <input type="email" id="r-email" class="input-field" placeholder="SECURE EMAIL">
+            <input type="password" id="r-pass" class="input-field" placeholder="DESIRED KEY">
+            <button class="btn-connect" id="reg-trigger">Submit Request</button>
+            <p onclick="toggleState('login')" style="color:#666; margin-top:30px; font-size:11px; pointer-events:auto;">Return to Terminal</p>
         </div>
     </div>
 
-    <div id="system-interface">
-        <div class="system-top-nav">
-            <div style="color:var(--accent-glow); font-weight:900; font-size:14px; letter-spacing:1px;">M-TOOL // STABLE</div>
-            <button onclick="terminateSession()" style="background:none; border:1px solid var(--error-red); color:var(--error-red); padding:6px 12px; border-radius:8px; font-size:10px; font-weight:bold; pointer-events:auto;">LOGOUT</button>
+    <div id="portal-ui">
+        <div class="top-bar">
+            <div style="color:var(--accent-glow); font-size:12px; font-weight:bold;">UPLINK_STABLE // V.8842</div>
+            <button onclick="location.reload()" style="background:none; border:1px solid var(--error-color); color:var(--error-color); padding:5px 10px; border-radius:5px; font-size:10px; pointer-events:auto;">DISCONNECT</button>
         </div>
-        <iframe id="view-frame" src="https://harrythehacker.neocities.org/Calculator"></iframe>
+        <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
     </div>
 
     <script type="module">
-        /* FIREBASE CORE MODULES
-        Loading essential services for Database and Authentication 
-        */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
             authDomain: "testing-12bc9.firebaseapp.com",
-            projectId: "testing-12bc9",
-            storageBucket: "testing-12bc9.firebasestorage.app",
-            messagingSenderId: "626782607651",
-            appId: "1:626782607651:web:a5365719812c13504a5496"
+            projectId: "testing-12bc9"
         };
-
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        /* --- HARDWARE GATEKEEPER LOGIC --- */
+        // --- HARDWARE ENFORCEMENT & TRIGGER LOGIC ---
+        const decoy = document.getElementById('decoy-layer');
+        const terminal = document.getElementById('auth-terminal');
+        const triggerText = document.getElementById('trigger-text');
+        
+        let holdTimer;
+        let tapCount = 0;
+
+        // THE SECRET ENTRY (iPad Safari Only)
         const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-        if (isiPad && isSafari) {
-            const decoy = document.getElementById('decoy-layer');
-            const portal = document.getElementById('auth-portal');
-            decoy.style.pointerEvents = "auto";
-
-            let timer;
-            decoy.addEventListener('touchstart', () => {
-                timer = setTimeout(() => {
-                    decoy.style.opacity = '0';
-                    setTimeout(() => {
-                        decoy.style.display = 'none';
-                        portal.style.display = 'flex';
-                    }, 600);
-                }, 5000);
-            });
-            decoy.addEventListener('touchend', () => clearTimeout(timer));
-            decoy.addEventListener('touchmove', () => clearTimeout(timer));
+        function revealPortal() {
+            decoy.style.opacity = '0';
+            setTimeout(() => {
+                decoy.style.display = 'none';
+                terminal.style.display = 'flex';
+            }, 500);
         }
 
-        /* --- UI NAVIGATION --- */
-        window.switchView = (mode) => {
-            document.getElementById('login-box').style.display = mode === 'reg' ? 'none' : 'block';
-            document.getElementById('reg-box').style.display = mode === 'reg' ? 'block' : 'none';
+        if (isiPad && isSafari) {
+            // Method 1: 5-Second Hold
+            decoy.addEventListener('touchstart', (e) => {
+                holdTimer = setTimeout(revealPortal, 5000);
+            }, { passive: true });
+
+            decoy.addEventListener('touchend', () => clearTimeout(holdTimer));
+            decoy.addEventListener('touchmove', () => clearTimeout(holdTimer));
+
+            // Method 2: Triple-Tap Emergency Bypass (on the 404 text)
+            triggerText.addEventListener('touchstart', () => {
+                tapCount++;
+                if (tapCount === 3) revealPortal();
+                setTimeout(() => { tapCount = 0; }, 1000);
+            });
+        }
+
+        // --- UI TOGGLE ---
+        window.toggleState = (mode) => {
+            document.getElementById('login-container').style.display = mode === 'reg' ? 'none' : 'block';
+            document.getElementById('reg-container').style.display = mode === 'reg' ? 'flex' : 'none';
         };
 
-        /* --- LOGIN & PROTOCOL FIX --- */
-        document.getElementById('login-btn').onclick = async function() {
+        // --- PROTOCOL FIX & LOGIN ---
+        document.getElementById('login-trigger').onclick = function() {
+            const user = document.getElementById('l-user').value.toUpperCase();
             const btn = this;
-            const nickname = document.getElementById('l-user').value.toUpperCase();
-            const pass = document.getElementById('l-pass').value;
 
-            // MASTER BYPASS: Bypasses Firebase for the specific ADMIN name
-            if (nickname === "ADMIN") {
-                document.getElementById('auth-portal').style.display = 'none';
-                document.getElementById('system-interface').style.display = 'flex';
-                return;
-            }
-
-            // ATTEMPT REAL HANDSHAKE (Firebase)
-            btn.innerText = "HANDSHAKING...";
-            
-            // To make this work with real accounts, we use your existing nicknames 
-            // but for now, we catch the "Protocol" error here if login isn't set up
-            setTimeout(() => {
-                btn.classList.add('error-pulse');
-                btn.innerText = "PROTOCOL ERROR";
+            if (user === "ADMIN") {
+                terminal.style.display = 'none';
+                document.getElementById('portal-ui').style.display = 'flex';
+            } else {
+                // THE PROTOCOL ERROR SIMULATION
+                btn.classList.add('sync-error');
+                btn.innerText = "PROTOCOL FAIL";
                 
                 setTimeout(() => {
-                    btn.classList.remove('error-pulse');
-                    btn.innerText = "Initialize Connection";
-                    alert("System Error: Handshake timeout. Protocol 0x8842 failed. Secure channel could not be established.");
-                }, 1500);
-            }, 1200);
+                    btn.classList.remove('shake');
+                    btn.innerText = "Initialize";
+                    alert("Handshake timeout. Protocol 0x8842 failed. Access Denied.");
+                }, 1000);
+            }
         };
 
-        /* --- REGISTRATION LOGIC --- */
-        document.getElementById('reg-btn').onclick = async function() {
+        // --- REQUEST SUBMISSION ---
+        document.getElementById('reg-trigger').onclick = async function() {
             const u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
 
-            if(!u || !e || p.length < 6) {
-                alert("Validation Error: Nickname and Email required. Password must be 6+ characters.");
-                return;
-            }
+            if(!u || !e || !p) return alert("All fields required for transmission.");
 
             try {
                 this.innerText = "TRANSMITTING...";
-                this.disabled = true;
-
-                // Record to Firestore
                 await addDoc(collection(db, "requests"), {
                     nickname: u,
                     email: e,
                     password: p,
-                    created: serverTimestamp()
+                    time: serverTimestamp()
                 });
-
-                // Send via EmailJS
+                
                 await emailjs.send("service_06y4hgi", "template_56l2irz", {
                     from_name: u,
                     user_email: e,
                     user_pass: p
                 });
 
-                alert("SUCCESS: Request stored in encrypted queue. Admin will review.");
-                window.switchView('login');
+                alert("Uplink successful. Request sent to Admin.");
+                toggleState('login');
             } catch(err) {
-                alert("TRANSMISSION FAILED: Database link offline.");
+                alert("Transmission failed. Database link offline.");
             } finally {
-                this.innerText = "Transmit Request";
-                this.disabled = false;
+                this.innerText = "Submit Request";
             }
-        };
-
-        window.terminateSession = () => {
-            signOut(auth).then(() => {
-                location.reload();
-            });
         };
     </script>
 </body>
