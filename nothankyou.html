@@ -11,23 +11,22 @@
           try {
               emailjs.init("6iGADKihYbPC4ecb_"); 
           } catch(e) {
-              console.error("EmailJS Offline");
+              console.error("EmailJS Error");
           }
        })();
     </script>
 
     <style>
-        /* --- SYSTEM STYLING --- */
         :root { 
-            --bg: #0b0b18; 
+            --bg: #05050a; 
             --accent: #7c3aed; 
             --accent-2: #4f46e5; 
-            --glass: rgba(255, 255, 255, 0.05); 
+            --glass: rgba(255, 255, 255, 0.03); 
             --border: rgba(255, 255, 255, 0.1); 
             --danger: #ef4444;
         }
         
-        /* BLOCK MOUSE INTERACTION */
+        /* DISABLE ALL MOUSE INPUT */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; outline: none; 
             cursor: none !important; 
@@ -41,110 +40,81 @@
             color: #222; 
             overflow: hidden; 
             height: 100vh; 
-            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             touch-action: none; 
         }
 
-        /* --- LAYER 1: THE DECOY (Visible to everyone) --- */
+        /* --- 1. THE DECOY (Visible first) --- */
         #decoy-layer { 
-            position: fixed; 
-            inset: 0; 
-            background: #fff; 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
-            pointer-events: none; /* Only enabled for iPad Safari */
+            position: fixed; inset: 0; background: #fff; z-index: 9999; 
+            display: flex; align-items: center; justify-content: center; 
+            pointer-events: none; /* Only iPad can touch this */
         }
         
         .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
 
-        /* --- LAYER 2: THE LOGIN PAGE (Hidden until iPad gesture) --- */
+        /* --- 2. THE LOGIN PAGE (THE SECRET DOOR) --- */
         #auth-overlay { 
-            display: none; /* <--- THIS IS WHY YOU DON'T SEE IT ON LOAD */
-            position: fixed; 
-            inset: 0; 
+            display: none; /* Hidden until 5s hold */
+            position: fixed; inset: 0; 
             background: var(--bg); 
             z-index: 10000; 
-            align-items: center; 
-            justify-content: center; 
+            align-items: center; justify-content: center; 
         }
 
         .auth-card { 
-            width: 90%; 
-            max-width: 420px; 
-            padding: 50px 40px; 
+            width: 90%; max-width: 450px; 
+            padding: 60px 40px; 
             background: var(--glass); 
-            border: 1px solid var(--border); 
-            border-radius: 35px; 
-            backdrop-filter: blur(30px); 
+            border: 2px solid var(--border); 
+            border-radius: 40px; 
+            backdrop-filter: blur(40px); 
             text-align: center; 
-            color: #fff; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 100px rgba(124, 58, 237, 0.1);
         }
 
         .auth-card h2 {
-            font-size: 24px;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            font-weight: 800;
-            color: #fff;
+            color: #fff; font-size: 28px; font-weight: 900;
+            letter-spacing: 4px; margin-bottom: 40px;
         }
 
         input { 
-            width: 100%; 
-            padding: 16px; 
-            margin-bottom: 20px; 
+            width: 100%; padding: 20px; margin-bottom: 25px; 
             background: rgba(255, 255, 255, 0.05); 
             border: 1px solid var(--border); 
-            border-radius: 18px; 
-            color: #fff; 
-            font-size: 16px;
-            pointer-events: auto; /* Re-enables touch for typing */
+            border-radius: 20px; 
+            color: #fff; font-size: 18px;
+            pointer-events: auto; 
         }
 
         .btn-main { 
-            width: 100%; 
-            padding: 18px; 
-            border: none; 
-            border-radius: 18px; 
+            width: 100%; padding: 20px; border: none; border-radius: 20px; 
             background: linear-gradient(135deg, var(--accent), var(--accent-2)); 
-            color: white; 
-            font-weight: 800; 
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: white; font-weight: 900; font-size: 16px;
+            text-transform: uppercase; letter-spacing: 2px;
             pointer-events: auto;
-            transition: transform 0.2s ease;
         }
 
-        /* --- LAYER 3: THE MAIN PORTAL (Post-Login) --- */
+        /* --- 3. THE TOOL PORTAL --- */
         #portal-interface { 
             display: none; 
-            position: fixed; 
-            inset: 0; 
+            position: fixed; inset: 0; 
             flex-direction: column; 
             background: var(--bg); 
-            color: #fff; 
         }
 
         #top-nav { 
-            height: 80px; 
-            background: rgba(0,0,0,0.6); 
-            display: flex; 
-            align-items: center; 
-            padding: 0 40px; 
+            height: 80px; background: rgba(0,0,0,0.8); 
+            display: flex; align-items: center; padding: 0 30px; 
             border-bottom: 1px solid var(--border); 
-            backdrop-filter: blur(10px);
         }
 
-        .nav-logo { font-size: 22px; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
-
-        #view-content { flex: 1; padding: 20px; }
-        iframe { width: 100%; height: 100%; border: none; border-radius: 25px; pointer-events: auto; }
+        iframe { 
+            flex: 1; width: 100%; height: 100%; 
+            border: none; pointer-events: auto; 
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -162,30 +132,27 @@
     <div id="auth-overlay">
         <div class="auth-card">
             <div id="login-form">
-                <h2>CORE SYSTEM ACCESS</h2>
-                <input type="text" id="l-user" placeholder="SECURE NICKNAME">
-                <input type="password" id="l-pass" placeholder="ACCESS KEY">
-                <button class="btn-main" id="login-btn">ESTABLISH CONNECTION</button>
+                <h2>CORE LOGIN</h2>
+                <input type="text" id="l-user" placeholder="USERNAME">
+                <input type="password" id="l-pass" placeholder="PASSWORD">
+                <button class="btn-main" id="login-btn">CONNECT</button>
             </div>
         </div>
     </div>
 
     <div id="portal-interface">
         <div id="top-nav">
-            <div class="nav-logo">M-TOOL // V2.0</div>
+            <div style="color:var(--accent); font-weight:900;">SYSTEM ACTIVE</div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:1px solid #ef4444; color:#ef4444; padding:8px 15px; border-radius:12px; font-weight:bold; pointer-events:auto;">TERMINATE SESSION</button>
+            <button id="logout-trigger" style="background:none; border:1px solid red; color:red; padding:10px; border-radius:10px; pointer-events:auto;">LOGOUT</button>
         </div>
-        <div id="view-content">
-            <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
-        </div>
+        <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
             authDomain: "testing-12bc9.firebaseapp.com",
@@ -198,53 +165,59 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- IPAD SAFARI GATEKEEPER SCRIPT ---
+        // --- GATEKEEPER ---
         const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
         if (isiPad && isSafari) {
             const decoy = document.getElementById('decoy-layer');
             const authOverlay = document.getElementById('auth-overlay');
-            
-            // Allow touch interaction only for iPad
             decoy.style.pointerEvents = "auto";
 
             let timer;
-            
-            // The 5-Second Secret Trigger
-            decoy.addEventListener('touchstart', (e) => {
+            decoy.addEventListener('touchstart', () => {
                 timer = setTimeout(() => {
-                    decoy.style.display = 'none'; // Removes 404
-                    authOverlay.style.display = 'flex'; // Shows Login Page
+                    decoy.style.display = 'none';
+                    authOverlay.style.display = 'flex';
                 }, 5000);
             });
-
             decoy.addEventListener('touchend', () => clearTimeout(timer));
-            decoy.addEventListener('touchmove', () => clearTimeout(timer));
-            decoy.addEventListener('touchcancel', () => clearTimeout(timer));
-        } else {
-            console.warn("Hardware mismatched. System lockout active.");
         }
 
-        // --- FAULTY CONNECT BUTTON LOGIC ---
+        // --- FAULTY BUTTON ---
         document.getElementById('login-btn').onclick = function() {
-            const btn = this;
-            btn.style.background = 'var(--danger)';
-            btn.innerText = "HANDSHAKE REFUSED...";
-            
+            this.style.background = 'var(--danger)';
+            this.innerText = "REFUSED";
             setTimeout(() => {
-                btn.style.background = '';
-                btn.innerText = "ESTABLISH CONNECTION";
-                alert("CRITICAL ERROR: Handshake timeout. Protocol 0x8842 failed to respond.");
+                this.style.background = '';
+                this.innerText = "CONNECT";
+                alert("Handshake timeout. Protocol 0x8842 failed.");
             }, 2000);
         };
 
-        // AUTH MONITOR
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logout-trigger').onclick = () => {
+            signOut(auth).then(() => {
+                location.reload();
+            });
+        };
+
+        // --- AUTH STATE ---
         onAuthStateChanged(auth, (user) => {
+            const decoy = document.getElementById('decoy-layer');
+            const authOverlay = document.getElementById('auth-overlay');
+            const portal = document.getElementById('portal-interface');
+
             if(user) {
-                document.getElementById('decoy-layer').style.display = 'none';
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('portal-interface').style.display = 'flex';
+                // If logged in, skip straight to iframe
+                decoy.style.display = 'none';
+                authOverlay.style.display = 'none';
+                portal.style.display = 'flex';
+            } else {
+                // If NOT logged in, show 404 decoy
+                decoy.style.display = 'flex';
+                authOverlay.style.display = 'none';
+                portal.style.display = 'none';
             }
         });
     </script>
