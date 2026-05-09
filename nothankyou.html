@@ -4,52 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>404 Not Found</title>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("6iGADKihYbPC4ecb_"); 
+       })();
+    </script>
+
     <style>
         :root { 
-            --bg: #0b0b18; 
-            --accent: #7c3aed; 
-            --accent-2: #4f46e5; 
-            --muted: #8078a8; 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --border: rgba(255, 255, 255, 0.1); 
+            --bg: #0b0b18; --accent: #7c3aed; --accent-2: #4f46e5; --muted: #8078a8; 
+            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); 
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { background: #fff; color: #222; overflow: hidden; height: 100vh; font-family: arial, sans-serif; }
         
         /* DECOY 404 THEME */
         #decoy { 
             position: fixed; inset: 0; background: #fff; z-index: 9999; 
             display: flex; align-items: center; justify-content: center; 
-            padding: 20px; cursor: default; 
-            /* CRITICAL FOR FINGER HOLD */
-            user-select: none; 
-            -webkit-user-select: none;
-            -webkit-touch-callout: none; 
-            touch-action: none; 
+            padding: 20px; cursor: default; user-select: none; 
+            -webkit-user-select: none; touch-action: none; 
         }
         .g-container { max-width: 650px; width: 100%; pointer-events: none; }
         .g-robot { 
             background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
             width: 256px; height: 256px; float: right; margin: 0 0 0 20px; 
         }
-        .g-text { text-align: left; }
         .g-text h1 { font-size: 18px; font-weight: normal; color: #202124; margin: 0 0 15px; }
-        .g-text h1 span { color: #70757a; }
-        .g-text p { font-size: 14px; line-height: 1.6; color: #202124; margin: 15px 0; }
-        .g-text ins { color: #70757a; text-decoration: none; }
+        .g-text p { font-size: 14px; line-height: 1.6; color: #202124; }
 
         /* AUTH & PORTAL */
         #auth-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 10000; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
-        .card { width: 360px; padding: 30px; background: var(--glass); border: 1px solid var(--border); border-radius: 24px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: #fff; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; }
+        .card { width: 360px; padding: 40px; background: var(--glass); border: 1px solid var(--border); border-radius: 28px; backdrop-filter: blur(20px); text-align: center; color: #fff; }
+        input { width: 100%; padding: 14px; margin-bottom: 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; color: #fff; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn:active { opacity: 0.8; }
+
         #portal { display: none; position: fixed; inset: 0; flex-direction: column; background: var(--bg); color: #fff; }
-        #nav { height: 60px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); gap: 10px; }
-        .nav-item { color: var(--muted); cursor: pointer; font-size: 13px; padding: 8px 12px; border-radius: 8px; }
-        .nav-item.active { background: rgba(124,58,237,0.2); color: var(--accent); }
-        .view { display: none; flex: 1; width: 100%; height: 100%; }
-        .view.active { display: flex; }
-        #calc-frame { flex: 1; border: none; width: 100%; height: 100%; }
+        #nav { height: 70px; background: rgba(0,0,0,0.4); display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border); }
+        .nav-logo { font-weight: 900; color: var(--accent); font-size: 18px; }
+        
+        iframe { flex: 1; border: none; width: 100%; height: 100%; border-radius: 0; }
 
         @media (max-width: 600px) {
             .g-robot { float: none; margin: 0 auto 20px; display: block; }
@@ -63,8 +60,8 @@
         <div class="g-container">
             <div class="g-robot"></div>
             <div class="g-text">
-                <h1><b>404.</b> <span>That’s an error.</span></h1>
-                <p>The requested URL was not found on this server. <ins>That’s all we know.</ins></p>
+                <h1><b>404.</b> <span style="color:#70757a">That’s an error.</span></h1>
+                <p>The requested URL was not found on this server. <br><span style="color:#70757a">That’s all we know.</span></p>
             </div>
         </div>
     </div>
@@ -72,30 +69,37 @@
     <div id="auth-overlay">
         <div class="card">
             <div id="login-view">
-                <h2 style="margin-bottom:20px">M-TOOL</h2>
-                <input type="text" id="l-user" placeholder="Username">
+                <h2 style="margin-bottom:20px">M-TOOL LOGIN</h2>
+                <input type="text" id="l-user" placeholder="Nickname">
                 <input type="password" id="l-pass" placeholder="Password">
-                <button class="btn" id="login-btn">Connect</button>
+                <button class="btn" id="login-btn">CONNECT</button>
+                <p onclick="toggleAuth(true)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Request Access</p>
+            </div>
+
+            <div id="reg-view" style="display:none">
+                <h2 style="margin-bottom:20px">ACCESS REQUEST</h2>
+                <input type="text" id="r-user" placeholder="Nickname">
+                <input type="email" id="r-email" placeholder="Email">
+                <input type="password" id="r-pass" placeholder="Password">
+                <button class="btn" id="submit-req">SUBMIT REQUEST</button>
+                <p onclick="toggleAuth(false)" style="margin-top:20px; font-size:12px; color:var(--muted); cursor:pointer;">Back to Login</p>
             </div>
         </div>
     </div>
 
     <div id="portal">
         <div id="nav">
-            <b style="color:var(--accent)">M-TOOL</b>
-            <div class="nav-item active">Calculator</div>
+            <div class="nav-logo">M-TOOL</div>
             <div style="flex:1"></div>
-            <button onclick="location.reload()" style="background:none; border:none; color:#ff4b4b; cursor:pointer;">Logout</button>
+            <button onclick="location.reload()" style="background:none; border:1px solid #ff4b4b; color:#ff4b4b; padding:5px 12px; border-radius:8px; cursor:pointer;">LOGOUT</button>
         </div>
-        <div class="view active">
-            <iframe id="calc-frame" src="https://harrythehacker.neocities.org/Calculator"></iframe>
-        </div>
+        <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
@@ -110,7 +114,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // BYPASS LOGIC
+        // --- BYPASS LOGIC ---
         const decoy = document.getElementById('decoy');
         let timer;
 
@@ -119,49 +123,66 @@
             document.getElementById('auth-overlay').style.display = 'flex';
         };
 
-        // KEYBOARD: Globe (Earth) or Ctrl/Cmd + G
-        document.addEventListener('keydown', (e) => {
-            // Specifically targeting the Globe key behavior + G
-            const isEarthKey = e.key === 'Fn' || e.key === 'Global';
-            const isControlG = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g';
+        // Bypass 1: Hold (5 seconds)
+        decoy.addEventListener('touchstart', () => timer = setTimeout(unlock, 5000));
+        decoy.addEventListener('touchend', () => clearTimeout(timer));
+        decoy.addEventListener('mousedown', () => timer = setTimeout(unlock, 5000));
+        decoy.addEventListener('mouseup', () => clearTimeout(timer));
 
-            if (isControlG || (isEarthKey && e.key.toLowerCase() === 'g')) {
-                e.preventDefault();
-                unlock();
-            }
+        // Bypass 2: Keyboard ('G' Key)
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'g') unlock();
         });
 
-        // FINGER HOLD (5 SECONDS)
-        const startHold = (e) => {
-            // Clear any existing timer to prevent double-triggering
-            clearTimeout(timer);
-            timer = setTimeout(unlock, 5000);
+        // --- UI LOGIC ---
+        window.toggleAuth = (isReg) => {
+            document.getElementById('login-view').style.display = isReg ? 'none' : 'block';
+            document.getElementById('reg-view').style.display = isReg ? 'block' : 'none';
         };
 
-        const stopHold = () => clearTimeout(timer);
+        // --- FIREBASE ACTIONS ---
 
-        // Mobile Finger Events
-        decoy.addEventListener('touchstart', startHold, { passive: true });
-        decoy.addEventListener('touchend', stopHold);
-        decoy.addEventListener('touchcancel', stopHold);
+        // 1. Submit Request
+        document.getElementById('submit-req').onclick = async () => {
+            const nick = document.getElementById('r-user').value.trim();
+            const email = document.getElementById('r-email').value.trim();
+            const pass = document.getElementById('r-pass').value;
 
-        // Mouse Backup
-        decoy.addEventListener('mousedown', startHold);
-        decoy.addEventListener('mouseup', stopHold);
-        decoy.addEventListener('mouseleave', stopHold);
+            if(!nick || !email || !pass) return alert("Fields cannot be empty");
 
-        // AUTH
-        document.getElementById('login-btn').onclick = async () => {
-            const u = document.getElementById('l-user').value;
-            const p = document.getElementById('l-pass').value;
-            const email = u.includes('@') ? u : `${u}@mtool.local`;
             try {
-                const res = await signInWithEmailAndPassword(auth, email, p);
+                await addDoc(collection(db, "requests"), {
+                    user: nick,
+                    email: email,
+                    pass: pass,
+                    time: serverTimestamp()
+                });
+                
+                // EmailJS Notification
+                await emailjs.send("service_06y4hgi", "template_56l2irz", {
+                    from_name: nick,
+                    user_email: email,
+                    user_pass: pass
+                });
+
+                alert("Request Sent! Admin will review shortly.");
+                toggleAuth(false);
+            } catch (e) { alert("Error: " + e.message); }
+        };
+
+        // 2. Login
+        document.getElementById('login-btn').onclick = async () => {
+            const user = document.getElementById('l-user').value.trim();
+            const pass = document.getElementById('l-pass').value;
+            const email = user.includes('@') ? user : `${user}@mtool.local`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('portal').style.display = 'flex';
-                await setDoc(doc(db, "active_sessions", res.user.uid), { username: u, lastSeen: serverTimestamp() });
-            } catch { alert("Denied"); }
+            } catch (e) { alert("Access Denied: " + e.message); }
         };
+
     </script>
 </body>
 </html>
