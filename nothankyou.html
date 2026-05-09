@@ -5,70 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>404 Not Found</title>
     
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){ emailjs.init("6iGADKihYbPC4ecb"); })();
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function(){ 
+            try { emailjs.init("6iGADKihYbPC4ecb"); } catch(e) { console.error("EmailJS Init Failed"); }
+        })();
     </script>
 
     <style>
         :root { 
-            --dark: #020204; 
-            --accent: #00ff88; 
-            --purple: #7c3aed;
-            --panel: rgba(20, 20, 30, 0.95); 
-            --border: rgba(255, 255, 255, 0.1);
+            --dark: #020204; --accent: #00ff88; --purple: #7c3aed;
+            --panel: rgba(20, 20, 30, 0.95); --border: rgba(255, 255, 255, 0.1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; -webkit-user-select: none; }
-        body, html { background: #fff; height: 100vh; width: 100vw; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body, html { background: #fff; height: 100vh; width: 100vw; overflow: hidden; font-family: monospace; }
 
-        /* --- 404 DECOY LAYER --- */
-        #decoy-layer { 
-            position: fixed; inset: 0; background: #fff; z-index: 100; 
-            display: flex; align-items: center; justify-content: center; 
-        }
+        /* DECOY */
+        #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .g-wrap { max-width: 600px; width: 100%; padding: 40px; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-        .g-text h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 10px; }
-        .g-text p { font-size: 14px; color: #202124; line-height: 1.6; }
 
-        /* --- AUTH TERMINAL --- */
-        #auth-terminal { 
-            display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, #0f0f1a 0%, #020204 100%); 
-            z-index: 200; align-items: center; justify-content: center;
-        }
-        .auth-box { 
-            width: 90%; max-width: 400px; padding: 40px; 
-            background: var(--panel); border: 1px solid var(--border); 
-            border-radius: 24px; text-align: center; backdrop-filter: blur(20px);
-        }
-        input { 
-            width: 100%; padding: 15px; margin-bottom: 15px; 
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border); 
-            border-radius: 12px; color: #fff; font-family: monospace;
-        }
-        input:focus { border-color: var(--purple); }
-        .btn-main { 
-            width: 100%; padding: 15px; border: none; border-radius: 12px; 
-            background: linear-gradient(135deg, var(--purple), #4f46e5); 
-            color: #fff; font-weight: bold; cursor: pointer; letter-spacing: 1px;
-        }
+        /* TERMINAL */
+        #auth-terminal { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 200; align-items: center; justify-content: center; }
+        .auth-box { width: 90%; max-width: 400px; padding: 40px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; text-align: center; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); }
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--purple); color: #fff; font-weight: bold; cursor: pointer; }
 
-        /* --- ADMIN MONITOR --- */
-        #admin-panel { 
-            display: none; position: fixed; inset: 0; 
-            background: var(--dark); z-index: 300; padding: 20px; overflow-y: auto; 
-        }
-        .monitor-card { 
-            background: #1e293b; padding: 15px; margin-bottom: 10px; 
-            border-radius: 12px; border-left: 4px solid var(--accent);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        /* ADMIN */
+        #admin-panel { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 300; padding: 20px; overflow-y: auto; }
+        .user-card { background: #1e293b; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--accent); display: flex; justify-content: space-between; }
 
-        /* --- FINAL PORTAL IFRAME --- */
+        /* PORTAL */
         #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 50; }
-        iframe { flex: 1; width: 100%; height: 100%; border: none; }
+        iframe { flex: 1; width: 100%; border: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -76,36 +45,33 @@
     <div id="decoy-layer">
         <div class="g-wrap">
             <div class="g-robot"></div>
-            <div class="g-text">
-                <h1 id="hold-trigger"><b>404.</b> <span>That’s an error.</span></h1>
-                <p>The requested URL was not found on this server. <br>That’s all we know.</p>
-            </div>
+            <h1 id="hold-target" style="font-weight:400; font-size:18px;"><b>404.</b> That’s an error.</h1>
+            <p style="font-size:14px; margin-top:10px;">The requested URL was not found on this server.</p>
         </div>
     </div>
 
     <div id="auth-terminal">
-        <div class="auth-box" id="login-container">
-            <h2 style="color:#fff; margin-bottom:30px; letter-spacing:3px;">SYSTEM LOGIN</h2>
-            <input type="text" id="l-user" placeholder="NICKNAME" autocomplete="off">
-            <input type="password" id="l-pass" placeholder="ACCESS KEY">
-            <button class="btn-main" id="login-btn">INITIALIZE</button>
-            <p id="switch-to-reg" style="color:#666; margin-top:20px; font-size:12px; cursor:pointer;">REQUEST_CREDENTIALS</p>
+        <div class="auth-box" id="login-form">
+            <h2 style="color:#fff; margin-bottom:20px; letter-spacing:2px;">TERMINAL_ACCESS</h2>
+            <input type="text" id="l-user" placeholder="NICKNAME">
+            <input type="password" id="l-pass" placeholder="ACCESS_KEY">
+            <button class="btn-main" id="login-trigger">INITIALIZE</button>
+            <p id="to-reg" style="color:#444; font-size:11px; margin-top:15px; cursor:pointer;">REQUEST_UPLINK</p>
         </div>
-
-        <div class="auth-box" id="reg-container" style="display:none;">
-            <h2 style="color:var(--accent); margin-bottom:30px; letter-spacing:3px;">NEW REQUEST</h2>
-            <input type="text" id="r-user" placeholder="DESIRED NICKNAME">
-            <input type="email" id="r-email" placeholder="SECURE EMAIL">
-            <input type="password" id="r-pass" placeholder="DESIRED KEY">
-            <button class="btn-main" id="reg-btn" style="background:var(--accent); color:#000;">SUBMIT UPLINK</button>
-            <p id="switch-to-login" style="color:#666; margin-top:20px; font-size:12px; cursor:pointer;">RETURN_TO_TERMINAL</p>
+        <div class="auth-box" id="reg-form" style="display:none;">
+            <h2 style="color:var(--accent); margin-bottom:20px;">NEW_NODE</h2>
+            <input type="text" id="r-user" placeholder="NICKNAME">
+            <input type="email" id="r-email" placeholder="EMAIL">
+            <input type="password" id="r-pass" placeholder="KEY">
+            <button class="btn-main" id="reg-trigger" style="background:var(--accent); color:#000;">SUBMIT</button>
+            <p id="to-login" style="color:#444; font-size:11px; margin-top:15px; cursor:pointer;">BACK</p>
         </div>
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--accent); margin-bottom:20px; font-family:monospace;">NETWORK_MONITOR</h2>
+        <h2 style="color:var(--accent); margin-bottom:20px;">LIVE_FEED</h2>
         <div id="user-list"></div>
-        <button onclick="location.reload()" style="background:#333; color:#fff; border:none; padding:10px; margin-top:20px; border-radius:5px;">DISCONNECT</button>
+        <button onclick="location.reload()" style="background:#333; color:#fff; border:none; padding:10px; border-radius:5px; margin-top:20px;">DISCONNECT</button>
     </div>
 
     <div id="portal-ui">
@@ -129,78 +95,83 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-        // --- TRIGGER LOGIC (5s Hold) ---
-        let holdTimer;
-        const trigger = document.getElementById('hold-trigger');
-        trigger.addEventListener('touchstart', () => {
-            holdTimer = setTimeout(() => {
+        // --- TRIGGER ---
+        let timer;
+        document.getElementById('hold-target').addEventListener('touchstart', () => {
+            timer = setTimeout(() => {
                 document.getElementById('decoy-layer').style.display = 'none';
                 document.getElementById('auth-terminal').style.display = 'flex';
             }, 5000);
         });
-        trigger.addEventListener('touchend', () => clearTimeout(holdTimer));
+        document.getElementById('hold-target').addEventListener('touchend', () => clearTimeout(timer));
 
-        // --- PRESENCE LOGIC ---
-        function trackSession(nickname) {
-            const userRef = ref(rtdb, 'sessions/' + nickname);
-            set(userRef, { status: 'online', time: Date.now() });
-            onDisconnect(userRef).remove(); // Deletes session when tab closes
+        // --- SESSION TRACKING ---
+        function trackSession(name) {
+            const sRef = ref(rtdb, 'online/' + name);
+            set(sRef, { active: true, since: Date.now() });
+            onDisconnect(sRef).remove(); 
         }
 
-        // --- LOGIN & ADMIN ---
-        document.getElementById('login-btn').onclick = async function() {
+        // --- LOGIN ---
+        document.getElementById('login-trigger').onclick = async function() {
             const u = document.getElementById('l-user').value;
             const p = document.getElementById('l-pass').value;
-            this.innerText = "VERIFYING...";
+            if(!u || !p) return;
+            this.innerText = "AUTHENTICATING...";
 
-            const q = query(collection(db, "requests"), where("nickname", "==", u), where("password", "==", p));
-            const snap = await getDocs(q);
+            try {
+                const q = query(collection(db, "requests"), where("nickname", "==", u), where("password", "==", p));
+                const snap = await getDocs(q);
 
-            if (!snap.empty) {
-                const user = snap.docs[0].data();
-                trackSession(u);
-                document.getElementById('auth-terminal').style.display = 'none';
-
-                if (user.role === 'admin') {
-                    document.getElementById('admin-panel').style.display = 'block';
-                    onValue(ref(rtdb, 'sessions'), (snapshot) => {
-                        const list = document.getElementById('user-list');
-                        list.innerHTML = "";
-                        const data = snapshot.val() || {};
-                        for (let name in data) {
-                            list.innerHTML += `<div class="monitor-card"><span style="color:#fff">${name}</span><span style="color:var(--accent)">ONLINE</span></div>`;
-                        }
-                    });
+                if (!snap.empty) {
+                    const data = snap.docs[0].data();
+                    trackSession(u);
+                    document.getElementById('auth-terminal').style.display = 'none';
+                    
+                    if (data.role === 'admin') {
+                        document.getElementById('admin-panel').style.display = 'block';
+                        onValue(ref(rtdb, 'online'), (s) => {
+                            const list = document.getElementById('user-list');
+                            list.innerHTML = "";
+                            const val = s.val() || {};
+                            for(let n in val) list.innerHTML += `<div class="user-card"><span>${n}</span> <span style="color:var(--accent)">ONLINE</span></div>`;
+                        });
+                    } else {
+                        document.getElementById('portal-ui').style.display = 'flex';
+                    }
                 } else {
-                    document.getElementById('portal-ui').style.display = 'flex';
+                    alert("HANDSHAKE_ERROR: Check credentials.");
+                    this.innerText = "INITIALIZE";
                 }
-            } else {
-                alert("HANDSHAKE_ERROR: Access Denied.");
-                this.innerText = "INITIALIZE";
-            }
+            } catch(e) { alert("SYSTEM_OFFLINE"); this.innerText = "INITIALIZE"; }
         };
 
-        // --- REQUEST LOGIC ---
-        document.getElementById('reg-btn').onclick = async function() {
+        // --- REGISTER ---
+        document.getElementById('reg-trigger').onclick = async function() {
             const u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
-
-            if(!u || !e || !p) return alert("Fields required.");
+            if(!u || !e || !p) return alert("Fill all fields.");
             this.innerText = "TRANSMITTING...";
 
             try {
                 await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
-                await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
-                alert("Request Sent.");
-                document.getElementById('switch-to-login').click();
+                
+                if(typeof emailjs !== 'undefined') {
+                    await emailjs.send("service_06y4hgi", "template_56l2irz", { 
+                        from_name: u, user_email: e, user_pass: p 
+                    });
+                }
+                
+                alert("UPLINK_SUCCESS");
+                document.getElementById('to-login').click();
             } catch(err) { alert("FAIL: " + err.message); }
-            this.innerText = "SUBMIT UPLINK";
+            this.innerText = "SUBMIT";
         };
 
-        // --- NAVIGATION ---
-        document.getElementById('switch-to-reg').onclick = () => { document.getElementById('login-container').style.display='none'; document.getElementById('reg-container').style.display='block'; };
-        document.getElementById('switch-to-login').onclick = () => { document.getElementById('login-container').style.display='block'; document.getElementById('reg-container').style.display='none'; };
+        // --- NAV ---
+        document.getElementById('to-reg').onclick = () => { document.getElementById('login-form').style.display='none'; document.getElementById('reg-form').style.display='block'; };
+        document.getElementById('to-login').onclick = () => { document.getElementById('login-form').style.display='block'; document.getElementById('reg-form').style.display='none'; };
     </script>
 </body>
 </html>
