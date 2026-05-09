@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
         (function(){ 
-            try { emailjs.init("6iGADKihYbPC4ecb"); } catch(e) { console.log("EmailJS wait..."); }
+            try { emailjs.init("6iGADKihYbPC4ecb"); } catch(e) { console.log("EmailJS initializing..."); }
         })();
     </script>
 
@@ -16,15 +16,23 @@
         :root { --dark: #020204; --accent: #00ff88; --purple: #7c3aed; --panel: rgba(20, 20, 30, 0.95); --border: rgba(255, 255, 255, 0.1); }
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; -webkit-user-select: none; }
         body, html { background: #fff; height: 100vh; width: 100vw; overflow: hidden; font-family: monospace; }
+        
+        /* 404 DECOY */
         #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 100; display: flex; align-items: center; justify-content: center; }
         .g-wrap { max-width: 600px; width: 100%; padding: 40px; }
         .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
+        
+        /* AUTH UI */
         #auth-terminal { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 200; align-items: center; justify-content: center; }
         .auth-box { width: 90%; max-width: 400px; padding: 40px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; text-align: center; }
-        input { width: 100%; padding: 15px; margin-bottom: 10px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); }
+        input { width: 100%; padding: 15px; margin-bottom: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); }
         .btn-main { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--purple); color: #fff; font-weight: bold; cursor: pointer; }
+        
+        /* MONITOR */
         #admin-panel { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 300; padding: 20px; overflow-y: auto; }
         .user-card { background: #1e293b; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--accent); display: flex; justify-content: space-between; }
+        
+        /* CALCULATOR PORTAL */
         #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 50; }
         iframe { flex: 1; width: 100%; border: none; }
     </style>
@@ -41,15 +49,15 @@
 
     <div id="auth-terminal">
         <div class="auth-box" id="login-form">
-            <h2 style="color:#fff; margin-bottom:20px;">ACCESS_GATE</h2>
-            <input type="text" id="l-user" placeholder="NICKNAME">
+            <h2 style="color:#fff; margin-bottom:20px;">GATEWAY_LOGIN</h2>
+            <input type="email" id="l-user" placeholder="EMAIL_ADDRESS">
             <input type="password" id="l-pass" placeholder="ACCESS_KEY">
             <button class="btn-main" id="login-trigger">INITIALIZE</button>
             <p id="to-reg" style="color:#444; font-size:11px; margin-top:15px; cursor:pointer;">REQUEST_UPLINK</p>
         </div>
         <div class="auth-box" id="reg-form" style="display:none;">
             <h2 style="color:var(--accent); margin-bottom:20px;">NEW_UPLINK</h2>
-            <input type="text" id="r-user" placeholder="NICKNAME">
+            <input type="text" id="r-nick" placeholder="NICKNAME">
             <input type="email" id="r-email" placeholder="EMAIL">
             <input type="password" id="r-pass" placeholder="KEY">
             <button class="btn-main" id="reg-trigger" style="background:var(--accent); color:#000;">SUBMIT</button>
@@ -58,9 +66,9 @@
     </div>
 
     <div id="admin-panel">
-        <h2 style="color:var(--accent); margin-bottom:20px;">LIVE_FEED</h2>
+        <h2 style="color:var(--accent); margin-bottom:20px;">NETWORK_MONITOR</h2>
         <div id="user-list"></div>
-        <button onclick="location.reload()" style="background:#333; color:#fff; border:none; padding:10px; border-radius:5px; margin-top:20px;">DISCONNECT</button>
+        <button onclick="location.reload()" style="background:#333; color:#fff; border:none; padding:10px; border-radius:5px; margin-top:20px;">LOGOUT</button>
     </div>
 
     <div id="portal-ui">
@@ -84,7 +92,7 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-        // HOLD TRIGGER
+        // --- 5s HOLD TRIGGER ---
         let timer;
         document.getElementById('hold-target').addEventListener('touchstart', () => {
             timer = setTimeout(() => {
@@ -94,21 +102,25 @@
         });
         document.getElementById('hold-target').addEventListener('touchend', () => clearTimeout(timer));
 
-        // LOGIN
+        // --- LOGIN LOGIC ---
         document.getElementById('login-trigger').onclick = async function() {
             const u = document.getElementById('l-user').value.trim();
             const p = document.getElementById('l-pass').value.trim();
             if(!u || !p) return;
-            this.innerText = "SEARCHING...";
+            this.innerText = "AUTHENTICATING...";
 
             try {
-                const q = query(collection(db, "requests"), where("nickname", "==", u), where("password", "==", p));
+                // Fixed: Searching for email field
+                const q = query(collection(db, "requests"), where("email", "==", u), where("password", "==", p));
                 const snap = await getDocs(q);
 
                 if (!snap.empty) {
                     const data = snap.docs[0].data();
-                    const sRef = ref(rtdb, 'online/' + u);
-                    set(sRef, { active: true });
+                    
+                    // Session tracking (clean email for RTDB key)
+                    const cleanEmail = u.replace(/[.#$[\]]/g, "_");
+                    const sRef = ref(rtdb, 'online/' + cleanEmail);
+                    set(sRef, { active: true, user: data.nickname || u });
                     onDisconnect(sRef).remove();
 
                     document.getElementById('auth-terminal').style.display = 'none';
@@ -118,41 +130,44 @@
                             const list = document.getElementById('user-list');
                             list.innerHTML = "";
                             const val = s.val() || {};
-                            for(let n in val) list.innerHTML += `<div class="user-card"><span>${n}</span> <span style="color:var(--accent)">ONLINE</span></div>`;
+                            for(let n in val) list.innerHTML += `<div class="user-card"><span>${val[n].user}</span> <span style="color:var(--accent)">ONLINE</span></div>`;
                         });
                     } else {
                         document.getElementById('portal-ui').style.display = 'flex';
                     }
                 } else {
-                    alert("HANDSHAKE_ERROR: Check credentials.");
+                    alert("HANDSHAKE_ERROR: Credentials not found.");
                     this.innerText = "INITIALIZE";
                 }
-            } catch(e) { alert("CONNECTION_LOST"); this.innerText = "INITIALIZE"; }
+            } catch(e) { alert("FAIL: Check connection/rules."); this.innerText = "INITIALIZE"; }
         };
 
-        // REGISTER
+        // --- REGISTER LOGIC ---
         document.getElementById('reg-trigger').onclick = async function() {
-            const u = document.getElementById('r-user').value.trim();
-            const e = document.getElementById('r-email').value.trim();
-            const p = document.getElementById('r-pass').value.trim();
-            if(!u || !e || !p) return alert("Fill all fields.");
+            const nick = document.getElementById('r-nick').value.trim();
+            const email = document.getElementById('r-email').value.trim();
+            const pass = document.getElementById('r-pass').value.trim();
+            if(!nick || !email || !pass) return alert("All fields required.");
             this.innerText = "TRANSMITTING...";
 
             try {
-                await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
+                await addDoc(collection(db, "requests"), { 
+                    nickname: nick, email: email, password: pass, time: serverTimestamp() 
+                });
                 
                 if(window.emailjs) {
-                    await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
+                    await emailjs.send("service_06y4hgi", "template_56l2irz", { 
+                        from_name: nick, user_email: email, user_pass: pass 
+                    });
                 }
                 
                 alert("UPLINK_SUCCESS");
                 document.getElementById('to-login').click();
-            } catch(err) { 
-                alert("FAIL: " + (err.message || "Database Error")); 
-            }
+            } catch(err) { alert("FAIL: " + (err.message || "Database Busy")); }
             this.innerText = "SUBMIT";
         };
 
+        // --- NAVIGATION ---
         document.getElementById('to-reg').onclick = () => { document.getElementById('login-form').style.display='none'; document.getElementById('reg-form').style.display='block'; };
         document.getElementById('to-login').onclick = () => { document.getElementById('login-form').style.display='block'; document.getElementById('reg-form').style.display='none'; };
     </script>
