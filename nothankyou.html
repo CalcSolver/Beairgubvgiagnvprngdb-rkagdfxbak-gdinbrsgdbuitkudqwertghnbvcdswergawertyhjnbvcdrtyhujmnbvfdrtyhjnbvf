@@ -7,100 +7,70 @@
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-       (function(){
-          // REMOVED THE UNDERSCORE FROM THE KEY
-          emailjs.init("6iGADKihYbPC4ecb"); 
-       })();
+       (function(){ emailjs.init("6iGADKihYbPC4ecb"); })();
     </script>
 
     <style>
         :root { 
-            --dark-core: #020204;
-            --accent-glow: #7c3aed;
-            --panel-bg: rgba(20, 20, 30, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --error-color: #ff4444;
+            --dark: #020204; --accent: #00ff88; --purple: #7c3aed;
+            --panel: rgba(20, 20, 30, 0.9); --border: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; -webkit-user-select: none; }
+        body, html { background: #fff; height: 100vh; width: 100vw; overflow: hidden; font-family: monospace; }
 
-        body, html { 
-            background: #ffffff; height: 100vh; width: 100vw; 
-            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            touch-action: none; 
-        }
-
-        /* --- 404 DECOY --- */
-        #decoy-layer { 
-            position: fixed; inset: 0; background: #ffffff; z-index: 99999; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: opacity 0.5s ease;
-        }
-        .g-wrap { max-width: 600px; width: 100%; padding: 40px; pointer-events: none; }
-        .g-robot { background: url('https://www.google.com/images/errors/robot.png') no-repeat; width: 256px; height: 256px; float: right; }
-        .g-content h1 { font-size: 18px; font-weight: 400; color: #202124; margin-bottom: 10px; }
-        .g-content p { font-size: 14px; color: #202124; line-height: 1.6; }
+        /* --- DECOY --- */
+        #decoy-layer { position: fixed; inset: 0; background: #fff; z-index: 99; display: flex; align-items: center; justify-content: center; }
+        .g-wrap { max-width: 600px; width: 100%; padding: 40px; }
+        .g-robot { background: url('https://www.google.com/images/errors/robot.png'); width: 256px; height: 256px; float: right; }
 
         /* --- TERMINAL --- */
-        #auth-terminal { 
-            display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, #0f0f1a 0%, #020204 100%); 
-            z-index: 88888; align-items: center; justify-content: center;
-        }
-        .auth-box { 
-            width: 90%; max-width: 420px; padding: 40px;
-            background: var(--panel-bg); border: 1px solid var(--glass-border); 
-            border-radius: 24px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            text-align: center;
-        }
-        .auth-box h2 { color: #fff; letter-spacing: 4px; font-size: 18px; margin-bottom: 30px; }
+        #auth-terminal { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 100; align-items: center; justify-content: center; }
+        .auth-box { width: 90%; max-width: 400px; padding: 40px; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); }
+        button { width: 100%; padding: 15px; border: none; border-radius: 8px; background: var(--purple); color: #fff; font-weight: bold; cursor: pointer; }
 
-        .input-field { 
-            width: 100%; padding: 15px; margin-bottom: 15px; 
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); 
-            border-radius: 12px; color: #fff; font-size: 16px; pointer-events: auto;
-        }
-        .btn-connect { 
-            width: 100%; padding: 15px; border: none; border-radius: 12px; 
-            background: linear-gradient(135deg, #7c3aed, #4f46e5); 
-            color: #fff; font-weight: bold; cursor: pointer; pointer-events: auto;
-        }
+        /* --- ADMIN CONSOLE --- */
+        #admin-panel { display: none; position: fixed; inset: 0; background: var(--dark); z-index: 200; padding: 20px; overflow-y: auto; }
+        .user-card { background: #1e293b; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--accent); display: flex; justify-content: space-between; }
 
-        #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 77777; }
-        iframe { flex: 1; width: 100%; border: none; pointer-events: auto; }
+        /* --- IFRAME --- */
+        #portal-ui { display: none; position: fixed; inset: 0; flex-direction: column; background: #000; z-index: 50; }
+        iframe { flex: 1; width: 100%; border: none; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
     <div id="decoy-layer">
         <div class="g-wrap">
             <div class="g-robot"></div>
-            <div class="g-content">
-                <h1 id="trigger-text"><b>404.</b> <span>That’s an error.</span></h1>
-                <p>The requested URL was not found on this server. <br>That’s all we know.</p>
-            </div>
+            <h1 id="hold-target" style="font-weight:400; font-size:18px;"><b>404.</b> That’s an error.</h1>
+            <p style="font-size:14px; margin-top:10px;">The requested URL was not found on this server.</p>
         </div>
     </div>
 
     <div id="auth-terminal">
-        <div class="auth-box" id="login-container">
-            <h2>System Login</h2>
-            <input type="text" id="l-user" class="input-field" placeholder="NICKNAME">
-            <input type="password" id="l-pass" class="input-field" placeholder="ACCESS KEY">
-            <button class="btn-connect" id="login-trigger">Initialize</button>
-            <p id="to-reg" style="color:#666; margin-top:20px; font-size:12px; pointer-events:auto; cursor:pointer;">
-                Unauthorized? <span style="color:var(--accent-glow)">Request Credentials</span>
-            </p>
+        <div class="auth-box" id="login-form">
+            <h2 style="color:#fff; margin-bottom:20px; letter-spacing:2px;">SYSTEM_AUTH</h2>
+            <input type="text" id="l-user" placeholder="NICKNAME">
+            <input type="password" id="l-pass" placeholder="ACCESS_KEY">
+            <button id="login-trigger">INITIALIZE</button>
+            <p id="goto-reg" style="color:#666; font-size:11px; margin-top:15px; cursor:pointer;">REQUEST ACCESS</p>
         </div>
+        <div class="auth-box" id="reg-form" style="display:none;">
+            <h2 style="color:var(--accent); margin-bottom:20px;">NEW_REQUEST</h2>
+            <input type="text" id="r-user" placeholder="DESIRED_NAME">
+            <input type="email" id="r-email" placeholder="EMAIL">
+            <input type="password" id="r-pass" placeholder="PASSWORD">
+            <button id="reg-trigger" style="background:var(--accent); color:#000;">SUBMIT</button>
+            <p id="goto-login" style="color:#666; font-size:11px; margin-top:15px; cursor:pointer;">BACK</p>
+        </div>
+    </div>
 
-        <div class="auth-box" id="reg-container" style="display:none;">
-            <h2>Request Access</h2>
-            <input type="text" id="r-user" class="input-field" placeholder="NICKNAME">
-            <input type="email" id="r-email" class="input-field" placeholder="EMAIL">
-            <input type="password" id="r-pass" class="input-field" placeholder="PASSWORD">
-            <button class="btn-connect" id="reg-trigger">Submit Request</button>
-            <p id="to-login" style="color:#666; margin-top:20px; font-size:12px; pointer-events:auto; cursor:pointer;">Return to Terminal</p>
-        </div>
+    <div id="admin-panel">
+        <h1 style="color:var(--accent); margin-bottom:20px;">NETWORK_MONITOR</h1>
+        <div id="monitor-list"></div>
+        <button onclick="location.reload()" style="background:#333; margin-top:20px;">LOGOUT</button>
     </div>
 
     <div id="portal-ui">
@@ -109,84 +79,84 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getDatabase, ref, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyD5TALVIdPm5P8RuKjINsOmKW1XrK53u1Q",
+            apiKey: "PASTE_YOUR_API_KEY_HERE",
             authDomain: "testing-12bc9.firebaseapp.com",
-            projectId: "testing-12bc9"
+            projectId: "testing-12bc9",
+            databaseURL: "https://testing-12bc9-default-rtdb.firebaseio.com",
+            appId: "PASTE_YOUR_APP_ID_HERE"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const rtdb = getDatabase(app);
 
-        const decoy = document.getElementById('decoy-layer');
-        const terminal = document.getElementById('auth-terminal');
-        
+        // --- 1. THE TRIGGER ---
         let holdTimer;
-
-        // --- THE TRIGGER ---
-        // Works on any touch device (iPad, iPhone, Android)
-        decoy.addEventListener('touchstart', (e) => {
+        document.getElementById('hold-target').addEventListener('touchstart', () => {
             holdTimer = setTimeout(() => {
-                decoy.style.opacity = '0';
-                setTimeout(() => {
-                    decoy.style.display = 'none';
-                    terminal.style.display = 'flex';
-                }, 500);
+                document.getElementById('decoy-layer').style.display = 'none';
+                document.getElementById('auth-terminal').style.display = 'flex';
             }, 5000);
         });
+        document.getElementById('hold-target').addEventListener('touchend', () => clearTimeout(holdTimer));
 
-        decoy.addEventListener('touchend', () => clearTimeout(holdTimer));
+        // --- 2. SESSION TRACKING ---
+        function setPresence(nickname) {
+            const userRef = ref(rtdb, 'online_users/' + nickname);
+            set(userRef, { status: 'online', time: Date.now() });
+            onDisconnect(userRef).remove(); // Deletes session when tab closes
+        }
 
-        // --- NAVIGATION ---
-        document.getElementById('to-reg').onclick = () => {
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('reg-container').style.display = 'block';
-        };
+        // --- 3. LOGIN & ADMIN CONSOLE ---
+        document.getElementById('login-trigger').onclick = async function() {
+            const u = document.getElementById('l-user').value;
+            const p = document.getElementById('l-pass').value;
+            this.innerText = "LINKING...";
 
-        document.getElementById('to-login').onclick = () => {
-            document.getElementById('login-container').style.display = 'block';
-            document.getElementById('reg-container').style.display = 'none';
-        };
+            const qSnap = await getDocs(query(collection(db, "requests"), where("nickname", "==", u), where("password", "==", p)));
 
-        // --- LOGIN LOGIC ---
-        document.getElementById('login-trigger').onclick = function() {
-            const user = document.getElementById('l-user').value.toUpperCase();
-            if (user === "ADMIN") {
-                terminal.style.display = 'none';
-                document.getElementById('portal-ui').style.display = 'flex';
+            if (!qSnap.empty) {
+                const data = qSnap.docs[0].data();
+                setPresence(u);
+                document.getElementById('auth-terminal').style.display = 'none';
+
+                if (data.role === 'admin') {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    onValue(ref(rtdb, 'online_users'), (snap) => {
+                        const list = document.getElementById('monitor-list');
+                        list.innerHTML = "";
+                        const users = snap.val() || {};
+                        for (let name in users) {
+                            list.innerHTML += `<div class="user-card"><span>${name}</span> <span style="color:var(--accent)">ONLINE</span></div>`;
+                        }
+                    });
+                } else {
+                    document.getElementById('portal-ui').style.display = 'flex';
+                }
             } else {
-                alert("Access Denied: Protocol Handshake Failed.");
+                alert("HANDSHAKE_FAILED");
+                this.innerText = "INITIALIZE";
             }
         };
 
-        // --- REGISTER LOGIC ---
+        // --- 4. NAVIGATION & REQUESTS ---
+        document.getElementById('goto-reg').onclick = () => { document.getElementById('login-form').style.display = 'none'; document.getElementById('reg-form').style.display = 'block'; };
+        document.getElementById('goto-login').onclick = () => { document.getElementById('login-form').style.display = 'block'; document.getElementById('reg-form').style.display = 'none'; };
+
         document.getElementById('reg-trigger').onclick = async function() {
             const u = document.getElementById('r-user').value;
             const e = document.getElementById('r-email').value;
             const p = document.getElementById('r-pass').value;
-
-            if(!u || !e || !p) return alert("Fill all fields.");
-
-            try {
-                this.innerText = "TRANSMITTING...";
-                // 1. Save to Firebase
-                await addDoc(collection(db, "requests"), {
-                    nickname: u, email: e, password: p, time: serverTimestamp()
-                });
-                
-                // 2. Send via EmailJS
-                await emailjs.send("service_06y4hgi", "template_56l2irz", {
-                    from_name: u, user_email: e, user_pass: p
-                });
-
-                alert("Request Sent to Admin.");
-                document.getElementById('to-login').click();
-            } catch(err) {
-                alert("Error: " + err.message);
-            } finally {
-                this.innerText = "Submit Request";
-            }
+            if(!u || !e || !p) return;
+            
+            await addDoc(collection(db, "requests"), { nickname: u, email: e, password: p, time: serverTimestamp() });
+            await emailjs.send("service_06y4hgi", "template_56l2irz", { from_name: u, user_email: e, user_pass: p });
+            alert("UPLINK_SUCCESS");
+            document.getElementById('goto-login').click();
         };
     </script>
 </body>
